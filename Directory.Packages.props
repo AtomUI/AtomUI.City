@@ -18,21 +18,4 @@
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4" />
   </ItemGroup>
-
-  <ItemGroup Condition=" '$(Configuration)' == 'Release' ">
-    <PackageVersion Include="AtomUI.City.Build" Version="$(AtomUICityVersion)" />
-    <PackageVersion Include="AtomUI.City.Core" Version="$(AtomUICityVersion)" />
-    <PackageVersion Include="AtomUI.City.Cli" Version="$(AtomUICityVersion)" />
-    <PackageVersion Include="AtomUI.City.Data" Version="$(AtomUICityVersion)" />
-    <PackageVersion Include="AtomUI.City.EventBus" Version="$(AtomUICityVersion)" />
-    <PackageVersion Include="AtomUI.City.Localization" Version="$(AtomUICityVersion)" />
-    <PackageVersion Include="AtomUI.City.Mvvm" Version="$(AtomUICityVersion)" />
-    <PackageVersion Include="AtomUI.City.PluginSystem" Version="$(AtomUICityVersion)" />
-    <PackageVersion Include="AtomUI.City.Presentation" Version="$(AtomUICityVersion)" />
-    <PackageVersion Include="AtomUI.City.Routing" Version="$(AtomUICityVersion)" />
-    <PackageVersion Include="AtomUI.City.Security" Version="$(AtomUICityVersion)" />
-    <PackageVersion Include="AtomUI.City.State" Version="$(AtomUICityVersion)" />
-    <PackageVersion Include="AtomUI.City.Templates" Version="$(AtomUICityTemplatesVersion)" />
-    <PackageVersion Include="AtomUI.City.Testing" Version="$(AtomUICityVersion)" />
-  </ItemGroup>
 </Project>
