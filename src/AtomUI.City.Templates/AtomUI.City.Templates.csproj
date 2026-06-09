@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>$(AtomUICityDevelopTargetFramework)</TargetFramework>
+    <IsPackable>true</IsPackable>
+    <PackageType>Template</PackageType>
+    <PackageId>AtomUI.City.Templates</PackageId>
+    <Title>AtomUI.City Templates</Title>
+    <Description>Project templates for AtomUI.City applications.</Description>
+    <Version>$(AtomUICityTemplatesVersion)</Version>
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ContentTargetFolders>content</ContentTargetFolders>
+    <NoDefaultExcludes>true</NoDefaultExcludes>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="**/*.cs" />
+    <Content Include="templates/**/*" Exclude="templates/**/bin/**;templates/**/obj/**" />
+  </ItemGroup>
+
+</Project>

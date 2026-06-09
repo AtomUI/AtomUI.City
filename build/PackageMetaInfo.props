@@ -1,0 +1,22 @@
+<Project>
+  <PropertyGroup>
+    <PackageId>$(MSBuildProjectName)</PackageId>
+    <Title>AtomUI.City</Title>
+    <Author>Qinware Technologies Ltd.</Author>
+    <Authors>$(Author)</Authors>
+    <Description>AtomUI.City is a full-stack application framework for Avalonia and AtomUI applications.</Description>
+    <PackageTags>avalonia;AtomUI;full-stack;framework;desktop</PackageTags>
+    <ProjectUrl>https://github.com/AtomUI/AtomUICity</ProjectUrl>
+    <RepositoryUrl>https://github.com/AtomUI/AtomUICity</RepositoryUrl>
+    <Company>Qinware Technologies Ltd.</Company>
+    <Copyright>Copyright (c) 2018-2026, Qinware Technologies Co.,Ltd., All Rights Reserved.</Copyright>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Version>$(AtomUICityVersion)</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)../LICENSE" Visible="False" Pack="True" PackagePath="/" Condition="Exists('$(MSBuildThisFileDirectory)../LICENSE')" />
+    <None Include="$(MSBuildThisFileDirectory)../README.nuget.md" Visible="False" Pack="True" PackagePath="/" Condition="Exists('$(MSBuildThisFileDirectory)../README.nuget.md')" />
+    <None Include="$(MSBuildThisFileDirectory)../resources/logo.png" Visible="False" Pack="True" PackagePath="/" Condition="Exists('$(MSBuildThisFileDirectory)../resources/logo.png')" />
+  </ItemGroup>
+</Project>

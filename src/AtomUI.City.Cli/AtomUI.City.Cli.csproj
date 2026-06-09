@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\AtomUI.City.Build\AtomUI.City.Build.csproj" />
+    <ProjectReference Include="..\AtomUI.City.Core\AtomUI.City.Core.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>$(AtomUICityDevelopTargetFramework)</TargetFramework>
+  </PropertyGroup>
+
+</Project>

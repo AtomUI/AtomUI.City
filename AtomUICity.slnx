@@ -1,0 +1,34 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/AtomUI.City.Build/AtomUI.City.Build.csproj" />
+    <Project Path="src/AtomUI.City.Cli/AtomUI.City.Cli.csproj" />
+    <Project Path="src/AtomUI.City.Core/AtomUI.City.Core.csproj" />
+    <Project Path="src/AtomUI.City.Data/AtomUI.City.Data.csproj" />
+    <Project Path="src/AtomUI.City.EventBus/AtomUI.City.EventBus.csproj" />
+    <Project Path="src/AtomUI.City.Localization/AtomUI.City.Localization.csproj" />
+    <Project Path="src/AtomUI.City.Mvvm/AtomUI.City.Mvvm.csproj" />
+    <Project Path="src/AtomUI.City.PluginSystem/AtomUI.City.PluginSystem.csproj" />
+    <Project Path="src/AtomUI.City.Presentation/AtomUI.City.Presentation.csproj" />
+    <Project Path="src/AtomUI.City.Routing/AtomUI.City.Routing.csproj" />
+    <Project Path="src/AtomUI.City.Security/AtomUI.City.Security.csproj" />
+    <Project Path="src/AtomUI.City.State/AtomUI.City.State.csproj" />
+    <Project Path="src/AtomUI.City.Templates/AtomUI.City.Templates.csproj" />
+    <Project Path="src/AtomUI.City.Testing/AtomUI.City.Testing.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/AtomUI.City.Build.Tests/AtomUI.City.Build.Tests.csproj" />
+    <Project Path="tests/AtomUI.City.Cli.Tests/AtomUI.City.Cli.Tests.csproj" />
+    <Project Path="tests/AtomUI.City.Core.Tests/AtomUI.City.Core.Tests.csproj" />
+    <Project Path="tests/AtomUI.City.Data.Tests/AtomUI.City.Data.Tests.csproj" />
+    <Project Path="tests/AtomUI.City.EventBus.Tests/AtomUI.City.EventBus.Tests.csproj" />
+    <Project Path="tests/AtomUI.City.Localization.Tests/AtomUI.City.Localization.Tests.csproj" />
+    <Project Path="tests/AtomUI.City.Mvvm.Tests/AtomUI.City.Mvvm.Tests.csproj" />
+    <Project Path="tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj" />
+    <Project Path="tests/AtomUI.City.Presentation.Tests/AtomUI.City.Presentation.Tests.csproj" />
+    <Project Path="tests/AtomUI.City.Routing.Tests/AtomUI.City.Routing.Tests.csproj" />
+    <Project Path="tests/AtomUI.City.Security.Tests/AtomUI.City.Security.Tests.csproj" />
+    <Project Path="tests/AtomUI.City.State.Tests/AtomUI.City.State.Tests.csproj" />
+    <Project Path="tests/AtomUI.City.TemplateSmokeTests/AtomUI.City.TemplateSmokeTests.csproj" />
+    <Project Path="tests/AtomUI.City.Testing.Tests/AtomUI.City.Testing.Tests.csproj" />
+  </Folder>
+</Solution>

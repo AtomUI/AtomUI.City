@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\AtomUI.City.Core\AtomUI.City.Core.csproj" />
+    <ProjectReference Include="..\AtomUI.City.Data\AtomUI.City.Data.csproj" />
+    <ProjectReference Include="..\AtomUI.City.EventBus\AtomUI.City.EventBus.csproj" />
+    <ProjectReference Include="..\AtomUI.City.Localization\AtomUI.City.Localization.csproj" />
+    <ProjectReference Include="..\AtomUI.City.Mvvm\AtomUI.City.Mvvm.csproj" />
+    <ProjectReference Include="..\AtomUI.City.PluginSystem\AtomUI.City.PluginSystem.csproj" />
+    <ProjectReference Include="..\AtomUI.City.Presentation\AtomUI.City.Presentation.csproj" />
+    <ProjectReference Include="..\AtomUI.City.Routing\AtomUI.City.Routing.csproj" />
+    <ProjectReference Include="..\AtomUI.City.Security\AtomUI.City.Security.csproj" />
+    <ProjectReference Include="..\AtomUI.City.State\AtomUI.City.State.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFrameworks>$(AtomUICityTargetFrameworks)</TargetFrameworks>
+  </PropertyGroup>
+
+</Project>
