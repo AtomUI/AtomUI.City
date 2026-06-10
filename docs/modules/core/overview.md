@@ -32,8 +32,8 @@ Core 不依赖：
 
 ## 后续拆分
 
-- `hosting.md`
+- [lifecycle.md](lifecycle.md)
+- [hosting.md](hosting.md)
 - `modularity.md`
 - `configuration.md`
 - `dependency-injection.md`
-- `lifecycle.md`

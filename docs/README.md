@@ -2,7 +2,17 @@
 
 本目录维护 AtomUI.City 框架的正式设计、工程规范、模块文档、决策记录和使用指南。
 
-文档分层：
+## 全局强约束
+
+AtomUI.City 采用文档先行研发规则。
+
+所有模块必须有完善的文档后，才能开始写代码。任何改动都必须先完成文档对齐，并确认文档没有问题后，才能进入实现。
+
+具体规则见：[文档先行治理规范](engineering/documentation-governance.md)。
+
+该规则是项目级工程治理要求，不是建议。
+
+## 文档分层
 
 | 目录 | 职责 |
 |---|---|
@@ -19,6 +29,8 @@
 - [包边界](architecture/package-boundaries.md)
 - [编程范式](architecture/programming-model.md)
 - [生命周期](architecture/lifecycle.md)
+- [插件系统架构规范](architecture/plugin-system.md)
 - [开源依赖策略](architecture/dependency-strategy.md)
+- [文档先行治理规范](engineering/documentation-governance.md)
 - [模块文档索引](modules/README.md)
 - [架构决策记录](decisions/README.md)

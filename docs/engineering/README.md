@@ -2,6 +2,10 @@
 
 本目录维护 AtomUI.City 仓库工程化文档。
 
+强制规范：
+
+- [documentation-governance.md](documentation-governance.md)：文档先行治理规范。所有模块必须有完善文档后才能开始写代码，任何改动必须先完成文档对齐并确认。
+
 计划维护：
 
 - `repository-structure.md`：仓库目录、源码项目、测试项目、引用项目说明。

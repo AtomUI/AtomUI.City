@@ -26,6 +26,7 @@ AtomUI.City 第一版遵循以下原则：
 - Host-based：应用启动、DI、配置、模块加载和全局错误处理由统一 Host 管理。
 - Business-agnostic：框架层只提供业务无关能力，不内置具体业务形态。
 - C#-native API：公共 API 应符合 .NET/C# 生态习惯，不刻意引入 TypeScript 或 Rx 风格命名。
+- AOT-first / Source-generator-first：框架设计必须默认考虑 AOT、trimming、启动性能和包体积，优先使用显式注册、强类型 descriptor、构建期 manifest 和 source generator，尽可能避免运行时程序集扫描、反射发现、动态代理和表达式树编译。
 - Optional interop：ReactiveUI、Rx 等生态能力可以作为适配层接入，但不作为默认核心范式。
 
 ## 3. 非目标
@@ -39,6 +40,7 @@ AtomUI.City 第一版遵循以下原则：
 - 不把 IObservable 作为状态、命令、路由和事件系统的主公共 API。
 - 不重造 AtomUI 已经承担的控件、主题和视觉系统。
 - 不把包拆得过细。
+- 不把运行时反射扫描作为默认发现机制。
 
 复杂业务应用可以自行引入领域层、DDD 架构、CQRS、工作台模型或其他业务组织方式，但它们不是 AtomUI.City v1 的默认框架职责。
 
@@ -385,30 +387,23 @@ Presentation 层不提供具体业务 UI 形态，不内置 Workbench、Document
 
 AtomUI.City.PluginSystem 独立成包。
 
-核心职责：
+PluginSystem 是运行时扩展机制，用于让应用在不修改主程序代码的情况下增加模块、路由、资源、权限、本地化、数据客户端、命令、事件处理器和 UI 集成能力。
 
-- 插件发现。
-- 插件元数据。
-- 插件依赖。
-- 插件加载上下文。
-- 插件模块注册。
-- 插件生命周期。
-- 插件启用和禁用。
-- 插件资源贡献。
-- 插件隔离策略。
+PluginSystem 是全局一等架构能力，不只是 ModuleSystem 的附属工具。
 
-插件可以贡献：
+架构级规则：
 
-- 模块。
-- 服务。
-- 路由。
-- 权限。
-- 本地化资源。
-- Presentation 资源。
-- 命令或动作。
-- EventBus 处理器。
+- 插件必须通过 Host 暴露的受控 contract 贡献能力。
+- 插件贡献必须通过 Contribution Lease 管理，并支持撤销。
+- 插件服务必须位于插件服务 Scope，不能污染 Host Root ServiceProvider。
+- 插件生命周期必须接入全局 Lifecycle。
+- 插件可以运行时加载、启用、停用和卸载。
+- 插件卸载必须先阻止新入口、停用插件 UI、取消插件操作、撤销贡献、释放服务，再卸载程序集加载上下文。
+- PluginSystem 提供生命周期、依赖、版本、贡献和错误隔离，但不提供进程内安全沙箱。
 
-PluginSystem 和 Module System 的关系是：插件是可发现、可加载、可隔离的外部扩展单元；模块是框架运行时的应用组织单元。插件加载后通常通过模块向 Host 贡献能力。
+插件和模块的关系是：插件是运行时外部扩展单元，模块是应用内部组织单元。插件加载后通常通过插件模块向 Host 贡献能力，但插件和模块不是同一个概念。
+
+插件可扩展范围和 Host 交互模型见：[插件系统架构规范](plugin-system.md)。
 
 ## 18. Build
 
