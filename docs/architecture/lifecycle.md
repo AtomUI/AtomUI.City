@@ -187,21 +187,29 @@ Discovered
 路由生命周期：
 
 ```text
-NavigationRequested
+AcceptNavigationRequest
+-> NormalizeTarget
+-> CaptureRouteGraphSnapshot
 -> MatchRoute
--> CreateRouteScope
--> RunGuards
+-> BuildNavigationPlan
+-> RunMatchPolicies
+-> CreateProvisionalRouteScopes
+-> RunEnterGuards
+-> ConfirmLeavingRoutes
 -> ResolveData
--> DeactivateLeavingRoute
--> ActivateEnteringRoute
--> CreateViewModel
--> ActivateViewModel
+-> CreateViewModels
+-> PreparePresentationChange
+-> CommitOnUiThread
+-> UpdateNavigationStateAndJournal
+-> DisposeRemovedRouteBranches
 -> NavigationCompleted
 ```
 
 路由是页面进入的正式入口。权限检查、数据预取、ViewModel 创建和 Activation 都应由路由生命周期驱动。
 
 开发者不应在 ViewModel 构造函数中隐式发起页面级数据请求、权限判断或长期订阅。
+
+当前路由树不能在候选路由准备完成前被破坏。候选路由先创建 provisional `RouteScope`，守卫、解析器和 ViewModel 创建成功后再进入 UI Thread 提交。准备阶段失败时释放候选分支，当前页面保持活动。
 
 如果路由来自插件，`RouteScope` 仍然挂在 `NavigationScope` 下，但其 `Contribution` 指向对应插件模块。插件停用或卸载时，Host 通过该 Contribution 找到并关闭相关 RouteScope。
 

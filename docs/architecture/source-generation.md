@@ -14,7 +14,8 @@ Source Generator 是 AtomUI.City AOT-first 设计的核心基础设施。
 
 - 生成模块清单。
 - 生成路由清单。
-- 生成 View/ViewModel 映射清单。
+- 生成 Route 到 ViewModel Target 清单。
+- 生成 Presentation 的 View/ViewModel 绑定清单。
 - 生成权限清单。
 - 生成本地化资源清单。
 - 生成静态插件清单。
@@ -54,6 +55,7 @@ src/
     Routing/
     Presentation/
     Security/
+    EventBus/
     Localization/
     PluginSystem/
     Manifest/
@@ -93,8 +95,9 @@ Application
 |---|---|---|
 | Modularity generator | Module manifest、module dependency graph input | 运行时扫描模块类型。 |
 | Routing generator | Route manifest、route registrar | 运行时扫描 ViewModel 或 route attribute。 |
-| Presentation generator | View/ViewModel mapping manifest | 命名约定反射查找 View。 |
+| Presentation generator | View/ViewModel binding manifest | 命名约定反射查找 View。 |
 | Security generator | Permission manifest | 启动时汇总权限声明。 |
+| EventBus generator | Event contract、handler descriptor、强类型 invoker、channel metadata | 运行时扫描 handler 和反射调用。 |
 | Localization generator | Localization resource manifest | 运行时资源扫描。 |
 | Plugin static generator | Static plugin manifest | AOT 模式下动态插件发现。 |
 | Diagnostics analyzer | AOT/trimming/API 使用诊断 | 运行时才发现不兼容问题。 |
@@ -120,6 +123,7 @@ obj/AtomUI.City/manifests/
   routes.json
   views.json
   permissions.json
+  events.json
   localization.json
   plugins.json
 ```
@@ -138,6 +142,7 @@ JSON manifest 主要服务 Build、CLI、诊断、测试和插件打包。
 AtomUI.City/Modularity/{AssemblyName}.Modules.g.cs
 AtomUI.City/Routing/{AssemblyName}.Routes.g.cs
 AtomUI.City/Presentation/{AssemblyName}.Views.g.cs
+AtomUI.City/EventBus/{AssemblyName}.Events.g.cs
 ```
 
 生成类型建议：
@@ -230,6 +235,7 @@ ApplicationHost
 -> Register generated routes
 -> Register generated view mappings
 -> Register generated permissions
+-> Register generated event contracts and handlers
 -> Start lifecycle
 ```
 

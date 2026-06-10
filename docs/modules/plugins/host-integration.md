@@ -105,7 +105,8 @@ Host contract 应保持窄接口。不要把 Host 内部对象、全局容器、
 | 模块 | Core ModuleSystem |
 | 服务 | PluginSystem / Core DI adapter |
 | 路由 | Routing |
-| View / ViewModel 映射 | Presentation / Routing |
+| Route 到 ViewModel Target | Routing |
+| View/ViewModel 绑定 | Presentation |
 | 菜单、工具栏、命令入口 | Presentation / Mvvm |
 | 权限点 | Security |
 | 本地化资源 | Localization |

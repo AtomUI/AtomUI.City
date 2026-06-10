@@ -19,20 +19,21 @@
 - [x] Core overview：`docs/modules/core/overview.md`
 - [x] Core lifecycle：`docs/modules/core/lifecycle.md`
 - [x] Core hosting：`docs/modules/core/hosting.md`
-- [ ] Core modularity：模块定义、依赖、拓扑排序、模块贡献。
-- [ ] Core dependency injection：服务注册边界、Scope、插件隔离约束。
-- [ ] Core configuration：配置源、Options、验证、热更新边界。
-- [ ] Core errors and diagnostics：全局错误策略、诊断上下文、日志事件。
+- [x] Core modularity：`docs/modules/core/modularity.md`
+- [x] Core dependency injection：`docs/modules/core/dependency-injection.md`
+- [x] Core configuration：`docs/modules/core/configuration.md`
+- [x] Core errors and diagnostics：`docs/modules/core/errors-and-diagnostics.md`
+- [x] Core threading：`docs/modules/core/threading.md`
 
 ## 2. 开发者日常编程模型
 
-- [ ] Mvvm detailed design：ViewModel、Activation、Command、Interaction、Validation。
-- [ ] State detailed design：状态值、可写状态、计算状态、Reaction、Snapshot、StateScope。
-- [ ] EventBus detailed design：类型事件、作用域订阅、调度策略、错误策略、测试记录。
+- [x] Mvvm detailed design：`docs/modules/mvvm/detailed-design.md`
+- [x] State detailed design：`docs/modules/state/detailed-design.md`
+- [x] EventBus detailed design：`docs/modules/eventbus/detailed-design.md`
 
 ## 3. 页面进入模型
 
-- [ ] Routing detailed design：路由图、导航管线、Guard、Resolver、RouteScope、导航结果。
+- [x] Routing detailed design：`docs/modules/routing/detailed-design.md`，并已拆分 route definition syntax、route graph、navigation、guards、resolvers、viewmodel target、journal/reuse、plugins、diagnostics/testing。
 - [ ] Presentation detailed design：AtomUI/Avalonia 集成、ViewLocator、View/ViewModel 绑定、UI Dispatcher、Route Outlet、Activation 接入。
 
 ## 4. 通用应用基础设施

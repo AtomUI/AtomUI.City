@@ -137,6 +137,7 @@ Mark Deactivating
 - 已运行 Operation 必须收到取消。
 - EventBus 订阅必须撤销或禁用。
 - UI 入口必须移除或禁用。
+- Dispatcher callback、Timer 和后台任务必须解除或结束。
 
 ## 7. 卸载
 
@@ -176,6 +177,10 @@ Ensure Inactive
 - 插件不能重新启用。
 - Host 必须输出剩余引用相关诊断。
 - 可以允许后续重试卸载。
+
+插件线程模型必须遵守 Core Threading 设计。插件不能启动非受控线程，后台任务必须通过 Host 管理的调度入口创建并绑定插件生命周期。
+
+线程模型见：[Core Threading 设计](../core/threading.md)。
 
 ## 9. 生命周期 Middleware
 

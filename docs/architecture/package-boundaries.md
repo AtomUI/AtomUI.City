@@ -23,7 +23,7 @@
 | `AtomUI.City.Core` | Host、DI、配置、模块、生命周期基础、应用上下文、调度抽象、全局错误处理。 |
 | `AtomUI.City.Mvvm` | ViewModel、命令、Activation、Interaction、验证、CommunityToolkit.Mvvm 集成。 |
 | `AtomUI.City.State` | 状态值、可写状态、计算状态、Reaction、StateScope、Snapshot、集合状态。 |
-| `AtomUI.City.Routing` | 路由定义、导航、守卫、解析器、路由生命周期、View/ViewModel 映射。 |
+| `AtomUI.City.Routing` | 路由定义、导航、守卫、解析器、路由生命周期、Route 到 ViewModel Target 的映射。 |
 | `AtomUI.City.Data` | 数据请求、客户端代理、请求管线、缓存、错误模型、认证集成。 |
 | `AtomUI.City.Security` | 认证状态、权限检查、授权策略、路由和命令权限联动。 |
 | `AtomUI.City.EventBus` | 类型事件总线、作用域订阅、事件通道、线程调度、错误策略。 |

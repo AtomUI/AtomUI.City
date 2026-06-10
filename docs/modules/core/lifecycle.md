@@ -40,6 +40,7 @@ Core 可以定义通用抽象，例如：
 - Lifecycle diagnostic record。
 - Error policy。
 - Cancellation and disposal coordinator。
+- Threading 和调度抽象。
 
 具体 ViewModel Activation、Route Navigation、State Reaction、Plugin AssemblyLoadContext 由对应模块实现并接入 Core 生命周期系统。
 
@@ -73,6 +74,7 @@ Scope 的关键约束：
 - Scope 释放顺序必须和创建顺序相反。
 - Scope 停止时必须取消自己的 CancellationToken。
 - Scope 停止后不能再接受新的子 Scope 或 Contribution。
+- Scope 停止后不能再接受新的后台任务或 Operation。
 
 ## 4. Scope 类型
 
@@ -84,7 +86,7 @@ Core 应定义通用 Scope 类型枚举或等价概念。
 | `ApplicationScope` | 应用启动到应用关闭。 |
 | `PresentationScope` | Presentation 运行时启动到停止。 |
 | `WindowScope` | 桌面窗口创建到关闭。 |
-| `NavigationScope` | 某个导航容器或 route outlet 创建到释放。 |
+| `NavigationScope` | 独立导航上下文创建到释放，拥有 Router、当前导航状态、Journal 和导航并发边界。 |
 | `RouteScope` | 路由进入到路由离开。 |
 | `ActivationScope` | ViewModel 激活到停用。 |
 | `StateScope` | 状态作用域创建到释放。 |
@@ -234,6 +236,7 @@ Scope 创建时应创建与父 Scope 关联的 CancellationToken。
 - Command/Data 请求必须接收 OperationScope token。
 - 插件卸载时必须先取消由该插件 Contribution 创建的 OperationScope。
 - RouteScope 离开时必须取消页面级 OperationScope 和 ActivationScope。
+- 后台任务必须绑定 Scope token，不能脱离生命周期独立运行。
 
 取消不是错误。取消结果应与失败结果区分，便于 UI 和日志正确表达。
 
@@ -245,6 +248,7 @@ Scope 释放顺序：
 Stop accepting new children
 -> Cancel token
 -> Stop child scopes in reverse order
+-> Cancel and drain managed background tasks
 -> Revoke contribution leases in reverse order
 -> Dispose subscriptions
 -> Dispose registered resources
@@ -259,6 +263,7 @@ Stop accepting new children
 - 释放失败必须进入错误策略。
 - 已释放 Scope 不允许再次激活。
 - 释放期间不允许新建子 Scope。
+- 释放期间不允许新建 Operation 或后台任务。
 
 ## 12. 错误策略
 
@@ -336,6 +341,9 @@ Core 生命周期诊断应覆盖：
 - Lease 创建和撤销。
 - 资源释放数量。
 - 插件卸载状态。
+- 后台任务和 Operation 取消状态。
+
+线程模型、UI Dispatcher 抽象、后台任务和调度策略见：[Threading 设计](threading.md)。
 
 诊断信息既要服务开发调试，也要服务桌面软件现场排查。
 
@@ -366,6 +374,7 @@ Testing 包后续应支持：
 - Command/Data 执行必须绑定 OperationScope。
 - State Reaction 必须绑定 StateScope 或 ActivationScope。
 - 模块和插件贡献能力必须通过 Lease。
+- 后台任务必须通过 Host 管理的调度入口创建。
 - 插件代码不得把插件类型对象保存在全局静态结构中。
 
 这些约束是 AtomUI.City 编程范式的一部分。

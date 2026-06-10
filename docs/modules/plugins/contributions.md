@@ -155,7 +155,7 @@ Host 必须处理插件贡献冲突。
 - 权限点重复但语义不同。
 - 命令 Id 重复。
 - 本地化 key 重复。
-- View/ViewModel 映射重复。
+- ViewModel Target 或 View/ViewModel 绑定重复。
 - Data client 名称重复。
 
 默认策略：

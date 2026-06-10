@@ -5,7 +5,7 @@
 
 ## 职责
 
-`AtomUI.City.Core` 是框架运行时内核，负责 Host、DI、配置、模块、生命周期基础、应用上下文、调度抽象和全局错误处理。
+`AtomUI.City.Core` 是框架运行时内核，负责 Host、DI、配置、模块、生命周期基础、线程模型、应用上下文、调度抽象和全局错误处理。
 
 Core 是所有业务无关框架能力的基础，但不承担 UI、MVVM、HTTP client、CLI、Build 或 Testing 的具体实现。
 
@@ -37,3 +37,4 @@ Core 不依赖：
 - `modularity.md`
 - `configuration.md`
 - `dependency-injection.md`
+- [threading.md](threading.md)

@@ -28,7 +28,7 @@ Mvvm 不负责：
 - 权限策略存储。
 - UI 控件和 ViewLocator 实现。
 
-## 后续拆分
+## 详细文档
 
 - `activation.md`
 - `commands.md`

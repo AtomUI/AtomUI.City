@@ -23,7 +23,7 @@ Presentation 依赖：
 Presentation 负责：
 
 - View 与 ViewModel 映射。
-- UI 线程调度。
+- UI 线程调度，并提供 Core `IUiDispatcher` 的 Avalonia 实现。
 - ViewModel 激活接入。
 - Interaction Handler 接入。
 - AtomUI/Avalonia 应用生命周期接入。
@@ -41,3 +41,5 @@ Presentation 不负责：
 - `view-locator.md`
 - `dispatcher.md`
 - `activation-integration.md`
+
+UI Dispatcher 必须遵守 Core 线程模型。线程模型见：[Core Threading 设计](../core/threading.md)。

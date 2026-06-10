@@ -27,7 +27,8 @@ Hosting 的目标：
 Hosting 不负责：
 
 - UI 控件、主题、窗口和 Dispatcher 的具体实现。
-- View/ViewModel 映射。
+- Route 到 ViewModel Target 的选择。
+- View/ViewModel 绑定。
 - 路由图解释。
 - Data 请求管线。
 - 权限策略解释。

@@ -72,6 +72,6 @@ State 体系需要提供：
 
 AtomUI.City 的默认编程范式必须对 AOT、trimming、启动性能和包体积友好。
 
-应用开发者应优先使用显式注册和强类型 API，例如显式注册模块、路由、View/ViewModel 映射、权限、本地化资源和插件能力。框架应优先通过 source generator、analyzer、构建期 manifest 和模板生成来减少运行时反射。
+应用开发者应优先使用显式注册和强类型 API，例如显式注册模块、路由、ViewModel Target、View/ViewModel 绑定、权限、本地化资源和插件能力。框架应优先通过 source generator、analyzer、构建期 manifest 和模板生成来减少运行时反射。
 
 运行时程序集扫描、命名约定反射发现、动态代理、表达式树编译和动态插件加载都不应成为默认路径。确实需要这些能力时，必须作为 opt-in 能力暴露，并在文档、Build 或 Analyzer 中给出 AOT/trimming 兼容性诊断。
