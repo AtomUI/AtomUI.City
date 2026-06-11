@@ -20,6 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="../../src/AtomUI.City.Core/AtomUI.City.Core.csproj" />
     <ProjectReference Include="../../src/AtomUI.City.Generators/AtomUI.City.Generators.csproj" />
+    <ProjectReference Include="../../src/AtomUI.City.Routing/AtomUI.City.Routing.csproj" />
   </ItemGroup>
 
 </Project>

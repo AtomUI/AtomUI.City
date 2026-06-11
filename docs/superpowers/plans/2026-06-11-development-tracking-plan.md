@@ -83,7 +83,7 @@
 - [x] Module metadata 生成能力
 - [x] Module dependency graph 生成能力
 - [x] Service registration manifest 生成能力
-- [ ] Route manifest 生成能力
+- [x] Route manifest 生成能力
 - [ ] Localization manifest 生成能力
 - [ ] Plugin manifest 辅助生成能力
 - [ ] 生成器测试覆盖
