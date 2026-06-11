@@ -202,18 +202,18 @@
 
 目标：实现运行时可安装、加载、卸载的插件体系，并与 Host / Module / EventBus 生命周期一致。
 
-- [ ] Plugin manifest
-- [ ] Plugin assembly loading
-- [ ] Plugin module model
-- [ ] Plugin install directory 规范
-- [ ] Plugin package layout
-- [ ] Plugin NuGet packaging
-- [ ] Plugin MSBuild properties
-- [ ] Plugin MSBuild tasks
-- [ ] Plugin unload lifecycle
-- [ ] Plugin dependency validation
-- [ ] Plugin tests
-- [ ] Phase 10 验收
+- [x] Plugin manifest
+- [x] Plugin assembly loading
+- [x] Plugin module model
+- [x] Plugin install directory 规范
+- [x] Plugin package layout
+- [x] Plugin NuGet packaging
+- [x] Plugin MSBuild properties
+- [x] Plugin MSBuild tasks
+- [x] Plugin unload lifecycle
+- [x] Plugin dependency validation
+- [x] Plugin tests
+- [x] Phase 10 验收
 
 ## Phase 11: Data Access
 

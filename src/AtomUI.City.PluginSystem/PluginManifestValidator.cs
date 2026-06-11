@@ -1,0 +1,47 @@
+namespace AtomUI.City.PluginSystem;
+
+public static class PluginManifestValidator
+{
+    public static PluginValidationResult Validate(PluginManifest manifest)
+    {
+        ArgumentNullException.ThrowIfNull(manifest);
+
+        var diagnostics = new List<PluginDiagnostic>();
+
+        if (string.IsNullOrWhiteSpace(manifest.PluginId))
+        {
+            diagnostics.Add(new PluginDiagnostic(
+                PluginDiagnosticIds.MissingPluginId,
+                "Plugin manifest field 'pluginId' is required.",
+                Field: "pluginId"));
+        }
+
+        if (!manifest.SchemaVersion.StartsWith("1.", StringComparison.Ordinal))
+        {
+            diagnostics.Add(new PluginDiagnostic(
+                PluginDiagnosticIds.UnsupportedManifestSchema,
+                $"Plugin manifest schema version '{manifest.SchemaVersion}' is not supported.",
+                manifest.PluginId,
+                "schemaVersion"));
+        }
+
+        if (IsInvalidMainAssembly(manifest.MainAssembly))
+        {
+            diagnostics.Add(new PluginDiagnostic(
+                PluginDiagnosticIds.InvalidMainAssembly,
+                $"Plugin main assembly '{manifest.MainAssembly}' must be a file name.",
+                manifest.PluginId,
+                "mainAssembly"));
+        }
+
+        return new PluginValidationResult(diagnostics);
+    }
+
+    internal static bool IsInvalidMainAssembly(string mainAssembly)
+    {
+        return string.IsNullOrWhiteSpace(mainAssembly) ||
+            mainAssembly.Contains('/') ||
+            mainAssembly.Contains('\\') ||
+            Path.GetFileName(mainAssembly) != mainAssembly;
+    }
+}
