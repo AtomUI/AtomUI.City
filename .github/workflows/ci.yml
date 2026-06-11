@@ -30,6 +30,9 @@ jobs:
       - name: Build
         run: dotnet build AtomUICity.slnx --no-restore
 
+      - name: Public API
+        run: bash eng/check-public-api.sh
+
       - name: Test
         run: bash eng/test-ci.sh
 
@@ -41,3 +44,9 @@ jobs:
 
       - name: Documentation
         run: bash eng/check-docs.sh
+
+      - name: Release Notes
+        run: bash eng/generate-release-notes.sh
+
+      - name: Pack
+        run: bash eng/pack.sh --no-build

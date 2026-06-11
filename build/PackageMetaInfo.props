@@ -12,11 +12,26 @@
     <Copyright>Copyright (c) 2018-2026, Qinware Technologies Co.,Ltd., All Rights Reserved.</Copyright>
     <PackageLicenseExpression>LGPL-3.0-only</PackageLicenseExpression>
     <Version>$(AtomUICityVersion)</Version>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <DebugType>portable</DebugType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <RepositoryType>git</RepositoryType>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+    <PackageReadmeFile>README.nuget.md</PackageReadmeFile>
+    <PackageReleaseNotes>See RELEASE_NOTES.md for release notes.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)../LICENSE" Visible="False" Pack="True" PackagePath="/" Condition="Exists('$(MSBuildThisFileDirectory)../LICENSE')" />
     <None Include="$(MSBuildThisFileDirectory)../README.nuget.md" Visible="False" Pack="True" PackagePath="/" Condition="Exists('$(MSBuildThisFileDirectory)../README.nuget.md')" />
+    <None Include="$(MSBuildThisFileDirectory)../RELEASE_NOTES.md" Visible="False" Pack="True" PackagePath="/" Condition="Exists('$(MSBuildThisFileDirectory)../RELEASE_NOTES.md')" />
     <None Include="$(MSBuildThisFileDirectory)../resources/logo.png" Visible="False" Pack="True" PackagePath="/" Condition="Exists('$(MSBuildThisFileDirectory)../resources/logo.png')" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(IsTestProject)' != 'true'">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="all" />
   </ItemGroup>
 </Project>

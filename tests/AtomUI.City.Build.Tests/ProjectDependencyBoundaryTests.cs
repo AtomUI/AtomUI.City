@@ -7,7 +7,7 @@ public sealed class ProjectDependencyBoundaryTests
     private static readonly IReadOnlyDictionary<string, string[]> AllowedSourceProjectReferences = new Dictionary<string, string[]>(StringComparer.Ordinal)
     {
         ["AtomUI.City.Build"] = [],
-        ["AtomUI.City.Cli"] = ["AtomUI.City.Build", "AtomUI.City.Core"],
+        ["AtomUI.City.Cli"] = ["AtomUI.City.Build", "AtomUI.City.Core", "AtomUI.City.Templates"],
         ["AtomUI.City.Core"] = [],
         ["AtomUI.City.Data"] = ["AtomUI.City.Core", "AtomUI.City.Security", "AtomUI.City.State"],
         ["AtomUI.City.EventBus"] = ["AtomUI.City.Core"],

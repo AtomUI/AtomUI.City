@@ -11,6 +11,24 @@ public sealed class TemplatePackageLayoutTests
         Assert.True(Directory.Exists(templateRoot), $"Expected template root directory at {templateRoot}.");
     }
 
+    [Theory]
+    [InlineData("atomui-city-app")]
+    [InlineData("atomui-city-plugin")]
+    public void TemplateMetadataExists(string templateName)
+    {
+        var repositoryRoot = FindRepositoryRoot();
+        var templateJson = Path.Combine(
+            repositoryRoot.FullName,
+            "src",
+            "AtomUI.City.Templates",
+            "templates",
+            templateName,
+            ".template.config",
+            "template.json");
+
+        Assert.True(File.Exists(templateJson), $"Expected template metadata at {templateJson}.");
+    }
+
     private static DirectoryInfo FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);

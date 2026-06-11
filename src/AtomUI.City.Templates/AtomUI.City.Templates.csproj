@@ -10,6 +10,7 @@
     <Version>$(AtomUICityTemplatesVersion)</Version>
     <IncludeContentInPack>true</IncludeContentInPack>
     <IncludeBuildOutput>false</IncludeBuildOutput>
+    <IncludeSymbols>false</IncludeSymbols>
     <ContentTargetFolders>content</ContentTargetFolders>
     <NoDefaultExcludes>true</NoDefaultExcludes>
     <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
@@ -17,7 +18,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="**/*.cs" />
+    <Compile Remove="templates/**/*.cs" />
     <Content Include="templates/**/*" Exclude="templates/**/bin/**;templates/**/obj/**" />
   </ItemGroup>
 

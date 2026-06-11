@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="../AtomUI.City.Build/AtomUI.City.Build.csproj" />
     <ProjectReference Include="../AtomUI.City.Core/AtomUI.City.Core.csproj" />
+    <ProjectReference Include="../AtomUI.City.Templates/AtomUI.City.Templates.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -248,31 +248,31 @@
 
 目标：提供 `atomui city ...` 命令体系，支撑创建、开发、插件、模板、诊断和 AI 友好工作流。
 
-- [ ] CLI command architecture
-- [ ] `atomui city new`
-- [ ] `atomui city build`
-- [ ] `atomui city test`
-- [ ] `atomui city plugin`
-- [ ] `atomui city doctor`
-- [ ] AI-friendly project inspection output
-- [ ] Templates package
-- [ ] CLI tests
-- [ ] Phase 13 验收
+- [x] CLI command architecture
+- [x] `atomui city new`
+- [x] `atomui city build`
+- [x] `atomui city test`
+- [x] `atomui city plugin`
+- [x] `atomui city doctor`
+- [x] AI-friendly project inspection output
+- [x] Templates package
+- [x] CLI tests
+- [x] Phase 13 验收
 
 ## Phase 14: Packaging / Release
 
 目标：形成可发布、可验证、可维护的第一版包体系。
 
-- [ ] Package dependency review
-- [ ] Public API review
-- [ ] XML docs / API docs check
-- [ ] NuGet package generation
-- [ ] Symbols package
-- [ ] SourceLink
-- [ ] License verification
-- [ ] Release notes generation
-- [ ] Versioning policy
-- [ ] Phase 14 验收
+- [x] Package dependency review
+- [x] Public API review
+- [x] XML docs / API docs check
+- [x] NuGet package generation
+- [x] Symbols package
+- [x] SourceLink
+- [x] License verification
+- [x] Release notes generation
+- [x] Versioning policy
+- [x] Phase 14 验收
 
 ## 推荐立即执行顺序
 

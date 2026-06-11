@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "AtomUI.City",
+  "classifications": [ "AtomUI.City", "Avalonia", "Application" ],
+  "identity": "AtomUI.City.Templates.Application",
+  "name": "AtomUI.City Application",
+  "shortName": "atomui-city-app",
+  "sourceName": "AtomUICityApplication",
+  "preferNameDirectory": true,
+  "symbols": {
+    "RootNamespace": {
+      "type": "parameter",
+      "datatype": "text",
+      "defaultValue": "AtomUICityApplication"
+    }
+  }
+}
