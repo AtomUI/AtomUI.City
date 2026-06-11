@@ -5,8 +5,8 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`0bd4636 feat(Localization): add localizable message metadata`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，373 tests passed
+- 当前提交：`945692a feat(Localization): add culture-aware text handles`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，377 tests passed
 - 当前状态：已进入 Security / Data / Localization 基础集成实现阶段
 
 **最新实现检查点：**
@@ -26,6 +26,9 @@
 - [x] Localization culture-aware text handle
 - [x] Localization text refresh on culture switch
 - [x] Localization text refresh diagnostics
+- [x] Presentation localized text target binding
+- [x] Presentation localized text refresh through UI dispatcher
+- [x] Presentation localized text binding disposal through ActivationScope
 
 ## 状态定义
 
