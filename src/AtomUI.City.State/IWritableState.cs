@@ -1,10 +1,12 @@
 namespace AtomUI.City.State;
 
-public interface IWritableState<T> : IStateValue<T>
+public interface IWritableState<T> : IReadOnlyState<T>
 {
     event EventHandler<StateChangedEventArgs<T>>? Changed;
 
-    void Set(T value);
+    bool SetValue(T value);
 
-    void Update(Func<T, T> updater);
+    bool Update(Func<T, T> updater);
+
+    void Set(T value);
 }

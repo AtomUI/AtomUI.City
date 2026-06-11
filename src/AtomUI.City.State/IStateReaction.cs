@@ -1,3 +1,3 @@
 namespace AtomUI.City.State;
 
-public interface IStateReaction : IDisposable;
+public interface IStateReaction : IStateSubscription;

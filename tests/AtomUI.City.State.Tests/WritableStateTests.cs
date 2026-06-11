@@ -36,4 +36,31 @@ public sealed class WritableStateTests
 
         Assert.Equal(5, state.Value);
     }
+
+    [Fact]
+    public void SetValueReturnsFalseForEqualValueAndDoesNotNotify()
+    {
+        var state = new WritableState<string>("ready");
+        var changeCount = 0;
+
+        state.Changed += (_, _) => changeCount++;
+
+        var changed = state.SetValue("ready");
+
+        Assert.False(changed);
+        Assert.Equal(0, state.Version);
+        Assert.Equal(0, changeCount);
+    }
+
+    [Fact]
+    public void UpdateKeepsCurrentValueWhenUpdaterThrows()
+    {
+        var state = new WritableState<int>(3);
+
+        Assert.Throws<InvalidOperationException>(
+            () => state.Update(_ => throw new InvalidOperationException("bad update")));
+
+        Assert.Equal(3, state.Value);
+        Assert.Equal(0, state.Version);
+    }
 }

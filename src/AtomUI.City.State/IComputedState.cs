@@ -1,3 +1,3 @@
 namespace AtomUI.City.State;
 
-public interface IComputedState<out T> : IStateValue<T>;
+public interface IComputedState<T> : IReadOnlyState<T>;
