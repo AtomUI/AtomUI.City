@@ -84,72 +84,72 @@
 - [x] Module dependency graph 生成能力
 - [x] Service registration manifest 生成能力
 - [x] Route manifest 生成能力
-- [ ] Localization manifest 生成能力
-- [ ] Plugin manifest 辅助生成能力
-- [ ] 生成器测试覆盖
-- [ ] Phase 2 验收
+- [x] Localization manifest 生成能力
+- [x] Plugin manifest 辅助生成能力
+- [x] 生成器测试覆盖
+- [x] Phase 2 验收
 
 ## Phase 3: Core Host / Lifecycle
 
 目标：确定应用框架最核心的启动、运行、停止、异常和生命周期扩展模型。
 
-- [ ] Host builder contract
-- [ ] Application host runtime
-- [ ] Lifecycle stage model
-- [ ] Lifecycle middleware pipeline
-- [ ] Application / Module / Plugin / Navigation 生命周期关系
-- [ ] UI dispatcher 抽象接入点
-- [ ] Host options 与配置入口
-- [ ] Host diagnostics
-- [ ] Host integration tests
-- [ ] Phase 3 验收
+- [x] Host builder contract
+- [x] Application host runtime
+- [x] Lifecycle stage model
+- [x] Lifecycle middleware pipeline
+- [x] Application / Module / Plugin / Navigation 生命周期关系
+- [x] UI dispatcher 抽象接入点
+- [x] Host options 与配置入口
+- [x] Host diagnostics
+- [x] Host integration tests
+- [x] Phase 3 验收
 
 ## Phase 4: Modularity
 
 目标：实现模块声明、模块依赖、模块初始化顺序和模块服务注册。
 
-- [ ] `IModule` / `ModuleBase` 接口完善
-- [ ] Module attribute 设计落地
-- [ ] 默认模块名规则：未指定时使用模块类型全名
-- [ ] 模块依赖声明
-- [ ] SG 生成模块依赖图
-- [ ] 循环依赖诊断
-- [ ] 模块初始化阶段：PreConfigure / Configure / PostConfigure
-- [ ] 异步初始化阶段
-- [ ] 模块服务注册
-- [ ] 模块生命周期测试
-- [ ] Phase 4 验收
+- [x] `IModule` / `ModuleBase` 接口完善
+- [x] Module attribute 设计落地
+- [x] 默认模块名规则：未指定时使用模块类型全名
+- [x] 模块依赖声明
+- [x] SG 生成模块依赖图
+- [x] 循环依赖诊断
+- [x] 模块初始化阶段：PreConfigure / Configure / PostConfigure
+- [x] 异步初始化阶段
+- [x] 模块服务注册
+- [x] 模块生命周期测试
+- [x] Phase 4 验收
 
 ## Phase 5: Routing
 
 目标：实现 Route -> ViewModel Target 的稳定链路，并保证路由表 AOT 友好。
 
-- [ ] 路由语法实现
-- [ ] 路由模板解析
-- [ ] 路由参数绑定
-- [ ] Route target model
-- [ ] Route manifest SG
-- [ ] Route matcher
-- [ ] Navigation context
-- [ ] Route guard / filter
-- [ ] Navigation error model
-- [ ] Routing tests
-- [ ] Phase 5 验收
+- [x] 路由语法实现
+- [x] 路由模板解析
+- [x] 路由参数绑定
+- [x] Route target model
+- [x] Route manifest SG
+- [x] Route matcher
+- [x] Navigation context
+- [x] Route guard / filter
+- [x] Navigation error model
+- [x] Routing tests
+- [x] Phase 5 验收
 
 ## Phase 6: Presentation
 
 目标：打通 ViewModel -> View -> Outlet -> VisualTree，并定义 UI 状态回流机制。
 
-- [ ] View locator contract
-- [ ] View registration model
-- [ ] ViewModel to View resolution
-- [ ] Route outlet contract
-- [ ] Outlet commit pipeline
-- [ ] UI dispatcher integration
-- [ ] VisualTree 变化通知
-- [ ] UI element state 到 ViewModel 的反馈规范
-- [ ] Presentation tests
-- [ ] Phase 6 验收
+- [x] View locator contract
+- [x] View registration model
+- [x] ViewModel to View resolution
+- [x] Route outlet contract
+- [x] Outlet commit pipeline
+- [x] UI dispatcher integration
+- [x] VisualTree 变化通知
+- [x] UI element state 到 ViewModel 的反馈规范
+- [x] Presentation tests
+- [x] Phase 6 验收
 
 ## Phase 7: MVVM
 

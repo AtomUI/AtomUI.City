@@ -2,11 +2,35 @@ namespace AtomUI.City.Modularity;
 
 public interface IModule
 {
-    ValueTask PreConfigureAsync(ModuleContext context);
+    ValueTask PreConfigureServicesAsync(
+        ServiceConfigurationContext context,
+        CancellationToken cancellationToken = default);
 
-    ValueTask ConfigureAsync(ModuleContext context);
+    ValueTask ConfigureServicesAsync(
+        ServiceConfigurationContext context,
+        CancellationToken cancellationToken = default);
 
-    ValueTask InitializeAsync(ModuleContext context);
+    ValueTask PostConfigureServicesAsync(
+        ServiceConfigurationContext context,
+        CancellationToken cancellationToken = default);
 
-    ValueTask ShutdownAsync(ModuleContext context);
+    ValueTask ConfigureContributionsAsync(
+        ContributionConfigurationContext context,
+        CancellationToken cancellationToken = default);
+
+    ValueTask OnPreApplicationInitializationAsync(
+        ApplicationInitializationContext context,
+        CancellationToken cancellationToken = default);
+
+    ValueTask OnApplicationInitializationAsync(
+        ApplicationInitializationContext context,
+        CancellationToken cancellationToken = default);
+
+    ValueTask OnPostApplicationInitializationAsync(
+        ApplicationInitializationContext context,
+        CancellationToken cancellationToken = default);
+
+    ValueTask OnApplicationShutdownAsync(
+        ApplicationShutdownContext context,
+        CancellationToken cancellationToken = default);
 }

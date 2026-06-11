@@ -19,12 +19,20 @@ public sealed class ModuleTestHostTests
 
         Assert.Equal(
             [
-                "First:PreConfigure",
-                "Second:PreConfigure",
-                "First:Configure",
-                "Second:Configure",
-                "First:Initialize",
-                "Second:Initialize",
+                "First:PreConfigureServices",
+                "Second:PreConfigureServices",
+                "First:ConfigureServices",
+                "Second:ConfigureServices",
+                "First:PostConfigureServices",
+                "Second:PostConfigureServices",
+                "First:ConfigureContributions",
+                "Second:ConfigureContributions",
+                "First:OnPreApplicationInitialization",
+                "Second:OnPreApplicationInitialization",
+                "First:OnApplicationInitialization",
+                "Second:OnApplicationInitialization",
+                "First:OnPostApplicationInitialization",
+                "Second:OnPostApplicationInitialization",
             ],
             calls);
     }
@@ -44,8 +52,8 @@ public sealed class ModuleTestHostTests
 
         Assert.Equal(
             [
-                "Second:Shutdown",
-                "First:Shutdown",
+                "Second:OnApplicationShutdown",
+                "First:OnApplicationShutdown",
             ],
             calls.TakeLast(2));
     }
@@ -75,32 +83,44 @@ public sealed class ModuleTestHostTests
             _calls = calls;
         }
 
-        public override ValueTask PreConfigureAsync(ModuleContext context)
+        public override void PreConfigureServices(ServiceConfigurationContext context)
         {
-            _calls.Add($"{_name}:PreConfigure");
-
-            return ValueTask.CompletedTask;
+            _calls.Add($"{_name}:PreConfigureServices");
         }
 
-        public override ValueTask ConfigureAsync(ModuleContext context)
+        public override void ConfigureServices(ServiceConfigurationContext context)
         {
-            _calls.Add($"{_name}:Configure");
-
-            return ValueTask.CompletedTask;
+            _calls.Add($"{_name}:ConfigureServices");
         }
 
-        public override ValueTask InitializeAsync(ModuleContext context)
+        public override void PostConfigureServices(ServiceConfigurationContext context)
         {
-            _calls.Add($"{_name}:Initialize");
-
-            return ValueTask.CompletedTask;
+            _calls.Add($"{_name}:PostConfigureServices");
         }
 
-        public override ValueTask ShutdownAsync(ModuleContext context)
+        public override void ConfigureContributions(ContributionConfigurationContext context)
         {
-            _calls.Add($"{_name}:Shutdown");
+            _calls.Add($"{_name}:ConfigureContributions");
+        }
 
-            return ValueTask.CompletedTask;
+        public override void OnPreApplicationInitialization(ApplicationInitializationContext context)
+        {
+            _calls.Add($"{_name}:OnPreApplicationInitialization");
+        }
+
+        public override void OnApplicationInitialization(ApplicationInitializationContext context)
+        {
+            _calls.Add($"{_name}:OnApplicationInitialization");
+        }
+
+        public override void OnPostApplicationInitialization(ApplicationInitializationContext context)
+        {
+            _calls.Add($"{_name}:OnPostApplicationInitialization");
+        }
+
+        public override void OnApplicationShutdown(ApplicationShutdownContext context)
+        {
+            _calls.Add($"{_name}:OnApplicationShutdown");
         }
     }
 }

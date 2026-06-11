@@ -1,10 +1,13 @@
 using AtomUI.City.Modularity;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AtomUI.City.Testing;
 
 public sealed class ModuleTestHost : IDisposable, IAsyncDisposable
 {
     private readonly TestHost _host;
+    private readonly ServiceCollection _services = [];
+    private ServiceProvider? _serviceProvider;
     private bool _disposed;
     private bool _initialized;
     private bool _shutdown;
@@ -33,17 +36,39 @@ public sealed class ModuleTestHost : IDisposable, IAsyncDisposable
 
         foreach (var module in Modules)
         {
-            await module.Module.PreConfigureAsync(CreateContext(module)).ConfigureAwait(false);
+            await module.Module.PreConfigureServicesAsync(CreateServiceConfigurationContext()).ConfigureAwait(false);
         }
 
         foreach (var module in Modules)
         {
-            await module.Module.ConfigureAsync(CreateContext(module)).ConfigureAwait(false);
+            await module.Module.ConfigureServicesAsync(CreateServiceConfigurationContext()).ConfigureAwait(false);
         }
 
         foreach (var module in Modules)
         {
-            await module.Module.InitializeAsync(CreateContext(module)).ConfigureAwait(false);
+            await module.Module.PostConfigureServicesAsync(CreateServiceConfigurationContext()).ConfigureAwait(false);
+        }
+
+        _serviceProvider = _services.BuildServiceProvider();
+
+        foreach (var module in Modules)
+        {
+            await module.Module.ConfigureContributionsAsync(CreateContributionConfigurationContext()).ConfigureAwait(false);
+        }
+
+        foreach (var module in Modules)
+        {
+            await module.Module.OnPreApplicationInitializationAsync(CreateApplicationInitializationContext()).ConfigureAwait(false);
+        }
+
+        foreach (var module in Modules)
+        {
+            await module.Module.OnApplicationInitializationAsync(CreateApplicationInitializationContext()).ConfigureAwait(false);
+        }
+
+        foreach (var module in Modules)
+        {
+            await module.Module.OnPostApplicationInitializationAsync(CreateApplicationInitializationContext()).ConfigureAwait(false);
         }
 
         _initialized = true;
@@ -58,12 +83,16 @@ public sealed class ModuleTestHost : IDisposable, IAsyncDisposable
 
         _shutdown = true;
 
-        for (var index = Modules.Count - 1; index >= 0; index--)
+        if (_initialized)
         {
-            await Modules[index].Module.ShutdownAsync(CreateContext(Modules[index])).ConfigureAwait(false);
+            for (var index = Modules.Count - 1; index >= 0; index--)
+            {
+                await Modules[index].Module.OnApplicationShutdownAsync(CreateApplicationShutdownContext()).ConfigureAwait(false);
+            }
         }
 
         await _host.StopAsync().ConfigureAwait(false);
+        await DisposeServiceProviderAsync().ConfigureAwait(false);
     }
 
     public void Dispose()
@@ -90,8 +119,39 @@ public sealed class ModuleTestHost : IDisposable, IAsyncDisposable
         await _host.DisposeAsync().ConfigureAwait(false);
     }
 
-    private ModuleContext CreateContext(ModuleTestRecord module)
+    private ServiceConfigurationContext CreateServiceConfigurationContext()
     {
-        return new ModuleContext(module.Name, _host.ApplicationContext);
+        return new ServiceConfigurationContext(_host.ApplicationContext, _services);
+    }
+
+    private ContributionConfigurationContext CreateContributionConfigurationContext()
+    {
+        return new ContributionConfigurationContext(_host.ApplicationContext, GetServiceProvider());
+    }
+
+    private ApplicationInitializationContext CreateApplicationInitializationContext()
+    {
+        return new ApplicationInitializationContext(_host.ApplicationContext, GetServiceProvider());
+    }
+
+    private ApplicationShutdownContext CreateApplicationShutdownContext()
+    {
+        return new ApplicationShutdownContext(_host.ApplicationContext, GetServiceProvider());
+    }
+
+    private IServiceProvider GetServiceProvider()
+    {
+        return _serviceProvider ?? throw new InvalidOperationException("Module test host has not been initialized.");
+    }
+
+    private async ValueTask DisposeServiceProviderAsync()
+    {
+        if (_serviceProvider is null)
+        {
+            return;
+        }
+
+        await _serviceProvider.DisposeAsync().ConfigureAwait(false);
+        _serviceProvider = null;
     }
 }
