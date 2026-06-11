@@ -5,8 +5,8 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`945692a feat(Localization): add culture-aware text handles`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，377 tests passed
+- 当前提交：`e1fd1a8 feat(Presentation): add localized text binding`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，383 tests passed
 - 当前状态：已进入 Security / Data / Localization 基础集成实现阶段
 
 **最新实现检查点：**
@@ -29,6 +29,12 @@
 - [x] Presentation localized text target binding
 - [x] Presentation localized text refresh through UI dispatcher
 - [x] Presentation localized text binding disposal through ActivationScope
+- [x] Presentation command text descriptor
+- [x] Presentation command text localization binding
+- [x] Presentation command text culture refresh
+- [x] Presentation interaction text descriptor
+- [x] Presentation interaction text localization binding
+- [x] Presentation interaction text culture refresh
 
 ## 状态定义
 
