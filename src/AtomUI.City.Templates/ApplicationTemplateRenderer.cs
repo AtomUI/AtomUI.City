@@ -2,6 +2,11 @@ namespace AtomUI.City.Templates;
 
 public sealed class ApplicationTemplateRenderer
 {
+    private const string AtomUICityPackageVersion = "0.1.0";
+    private const string MicrosoftNetTestSdkVersion = "17.14.1";
+    private const string XUnitVersion = "2.9.3";
+    private const string XUnitRunnerVisualStudioVersion = "3.1.4";
+
     public TemplatePlan CreatePlan(ApplicationTemplateOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
@@ -40,6 +45,7 @@ public sealed class ApplicationTemplateRenderer
 
         if (options.IncludeTests)
         {
+            WriteFile(options, $"tests/{options.AppName}.Tests/{options.AppName}.Tests.csproj", CreateTestProject(options));
             WriteFile(options, $"tests/{options.AppName}.Tests/FeatureTestMatrix.md", CreateFeatureTestMatrix(options));
             WriteFile(options, $"tests/{options.AppName}.Tests/ApplicationSmokeTests.cs", CreateApplicationSmokeTests(options));
         }
@@ -61,6 +67,7 @@ public sealed class ApplicationTemplateRenderer
 
         if (options.IncludeTests)
         {
+            yield return TemplateChange.Create($"tests/{options.AppName}.Tests/{options.AppName}.Tests.csproj");
             yield return TemplateChange.Create($"tests/{options.AppName}.Tests/FeatureTestMatrix.md");
             yield return TemplateChange.Create($"tests/{options.AppName}.Tests/ApplicationSmokeTests.cs");
         }
@@ -80,7 +87,7 @@ public sealed class ApplicationTemplateRenderer
     {
         var dynamicPlugins = options.UseDynamicPlugins
             ? """
-                <PackageReference Include="AtomUI.City.PluginSystem" />
+                <PackageReference Include="AtomUI.City.PluginSystem" Version="0.1.0" />
             """
             : string.Empty;
 
@@ -91,17 +98,19 @@ public sealed class ApplicationTemplateRenderer
                 <OutputType>WinExe</OutputType>
                 <TargetFramework>{{options.TargetFramework}}</TargetFramework>
                 <RootNamespace>{{options.RootNamespace}}</RootNamespace>
+                <ImplicitUsings>enable</ImplicitUsings>
+                <Nullable>enable</Nullable>
                 <AtomUICityManifestGeneration>true</AtomUICityManifestGeneration>
                 <AtomUICityAotFriendly>{{options.UseAot.ToString().ToLowerInvariant()}}</AtomUICityAotFriendly>
               </PropertyGroup>
 
               <ItemGroup>
-                <PackageReference Include="AtomUI.City.Build" PrivateAssets="all" />
-                <PackageReference Include="AtomUI.City.Core" />
-                <PackageReference Include="AtomUI.City.Mvvm" />
-                <PackageReference Include="AtomUI.City.Routing" />
-                <PackageReference Include="AtomUI.City.Presentation" />
-                <PackageReference Include="AtomUI.City.Localization" />
+                <PackageReference Include="AtomUI.City.Build" Version="{{AtomUICityPackageVersion}}" PrivateAssets="all" />
+                <PackageReference Include="AtomUI.City.Core" Version="{{AtomUICityPackageVersion}}" />
+                <PackageReference Include="AtomUI.City.Mvvm" Version="{{AtomUICityPackageVersion}}" />
+                <PackageReference Include="AtomUI.City.Routing" Version="{{AtomUICityPackageVersion}}" />
+                <PackageReference Include="AtomUI.City.Presentation" Version="{{AtomUICityPackageVersion}}" />
+                <PackageReference Include="AtomUI.City.Localization" Version="{{AtomUICityPackageVersion}}" />
             {{dynamicPlugins}}
               </ItemGroup>
 
@@ -120,7 +129,7 @@ public sealed class ApplicationTemplateRenderer
             {
                 public static async Task<int> Main(string[] args)
                 {
-                    var host = CityApplication.CreateBuilder(args)
+                    var host = ApplicationHost.CreateBuilder(args)
                         .Build();
 
                     await host.RunAsync();
@@ -128,6 +137,37 @@ public sealed class ApplicationTemplateRenderer
                     return 0;
                 }
             }
+            """;
+    }
+
+    private static string CreateTestProject(ApplicationTemplateOptions options)
+    {
+        return $$"""
+            <Project Sdk="Microsoft.NET.Sdk">
+
+              <PropertyGroup>
+                <TargetFramework>{{options.TargetFramework}}</TargetFramework>
+                <RootNamespace>{{options.RootNamespace}}.Tests</RootNamespace>
+                <ImplicitUsings>enable</ImplicitUsings>
+                <Nullable>enable</Nullable>
+                <IsPackable>false</IsPackable>
+              </PropertyGroup>
+
+              <ItemGroup>
+                <PackageReference Include="Microsoft.NET.Test.Sdk" Version="{{MicrosoftNetTestSdkVersion}}" />
+                <PackageReference Include="xunit" Version="{{XUnitVersion}}" />
+                <PackageReference Include="xunit.runner.visualstudio" Version="{{XUnitRunnerVisualStudioVersion}}" PrivateAssets="all" />
+              </ItemGroup>
+
+              <ItemGroup>
+                <ProjectReference Include="../../src/{{options.AppName}}/{{options.AppName}}.csproj" />
+              </ItemGroup>
+
+              <ItemGroup>
+                <Using Include="Xunit" />
+              </ItemGroup>
+
+            </Project>
             """;
     }
 

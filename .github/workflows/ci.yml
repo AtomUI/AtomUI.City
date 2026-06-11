@@ -50,3 +50,9 @@ jobs:
 
       - name: Pack
         run: bash eng/pack.sh --no-build
+
+      - name: Package Validation
+        run: bash eng/validate-packages.sh
+
+      - name: Template Smoke
+        run: bash eng/check-template-smoke.sh

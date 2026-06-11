@@ -93,10 +93,14 @@ public sealed class PackagingReleaseGateTests
     {
         var repositoryRoot = RepositoryPaths.FindRepositoryRoot();
         var packScriptPath = Path.Combine(repositoryRoot, "eng", "pack.sh");
+        var validatePackagesScriptPath = Path.Combine(repositoryRoot, "eng", "validate-packages.sh");
+        var templateSmokeScriptPath = Path.Combine(repositoryRoot, "eng", "check-template-smoke.sh");
         var releaseNotesScriptPath = Path.Combine(repositoryRoot, "eng", "generate-release-notes.sh");
         var publicApiScriptPath = Path.Combine(repositoryRoot, "eng", "check-public-api.sh");
 
         Assert.True(File.Exists(packScriptPath), "Expected package generation script at eng/pack.sh.");
+        Assert.True(File.Exists(validatePackagesScriptPath), "Expected package validation script at eng/validate-packages.sh.");
+        Assert.True(File.Exists(templateSmokeScriptPath), "Expected template smoke script at eng/check-template-smoke.sh.");
         Assert.True(File.Exists(releaseNotesScriptPath), "Expected release notes script at eng/generate-release-notes.sh.");
         Assert.True(File.Exists(publicApiScriptPath), "Expected public API review script at eng/check-public-api.sh.");
 
@@ -105,6 +109,24 @@ public sealed class PackagingReleaseGateTests
         Assert.Contains("src/AtomUI.City.", packScript, StringComparison.Ordinal);
         Assert.Contains("output/NuGet", packScript, StringComparison.Ordinal);
         Assert.DoesNotContain("tests/", packScript, StringComparison.Ordinal);
+
+        var validatePackagesScript = File.ReadAllText(validatePackagesScriptPath);
+        Assert.Contains("output/NuGet", validatePackagesScript, StringComparison.Ordinal);
+        Assert.Contains(".nupkg", validatePackagesScript, StringComparison.Ordinal);
+        Assert.Contains(".snupkg", validatePackagesScript, StringComparison.Ordinal);
+        Assert.Contains("LICENSE", validatePackagesScript, StringComparison.Ordinal);
+        Assert.Contains("README.nuget.md", validatePackagesScript, StringComparison.Ordinal);
+        Assert.Contains("RELEASE_NOTES.md", validatePackagesScript, StringComparison.Ordinal);
+        Assert.Contains("analyzers/dotnet/cs", validatePackagesScript, StringComparison.Ordinal);
+        Assert.Contains("templates/atomui-city-app/.template.config/template.json", validatePackagesScript, StringComparison.Ordinal);
+
+        var templateSmokeScript = File.ReadAllText(templateSmokeScriptPath);
+        Assert.Contains("atomui city new app", templateSmokeScript, StringComparison.Ordinal);
+        Assert.Contains("NuGet.Config", templateSmokeScript, StringComparison.Ordinal);
+        Assert.Contains("output/NuGet", templateSmokeScript, StringComparison.Ordinal);
+        Assert.Contains("dotnet restore", templateSmokeScript, StringComparison.Ordinal);
+        Assert.Contains("dotnet build", templateSmokeScript, StringComparison.Ordinal);
+        Assert.Contains("dotnet test", templateSmokeScript, StringComparison.Ordinal);
 
         var releaseNotesScript = File.ReadAllText(releaseNotesScriptPath);
         Assert.Contains("output/release-notes", releaseNotesScript, StringComparison.Ordinal);
@@ -171,6 +193,8 @@ public sealed class PackagingReleaseGateTests
 
         Assert.Contains("bash eng/check-public-api.sh", workflow, StringComparison.Ordinal);
         Assert.Contains("bash eng/pack.sh --no-build", workflow, StringComparison.Ordinal);
+        Assert.Contains("bash eng/validate-packages.sh", workflow, StringComparison.Ordinal);
+        Assert.Contains("bash eng/check-template-smoke.sh", workflow, StringComparison.Ordinal);
         Assert.Contains("bash eng/generate-release-notes.sh", workflow, StringComparison.Ordinal);
     }
 
