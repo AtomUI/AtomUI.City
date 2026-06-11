@@ -1,7 +1,7 @@
 # AtomUI.City.State Detailed Design
 
 版本：v0.1
-状态：初版草案
+状态：正式初版
 适用范围：状态值、可写状态、计算状态、状态订阅、应用级共享状态、StateScope、Snapshot、集合状态、调度、插件隔离、AOT/source generator 约束。
 
 ## 1. 定位
@@ -20,6 +20,22 @@ State 模块要解决：
 - 派生状态如何缓存和失效。
 - 状态副作用如何绑定生命周期。
 - 状态快照如何持久化、恢复和测试断言。
+
+## 1.1 拆分文档
+
+State 的细节按职责拆分维护：
+
+| 文档 | 内容 |
+|---|---|
+| [state-values.md](state-values.md) | 状态值、可写状态、版本、比较和状态定义。 |
+| [application-state.md](application-state.md) | 应用级共享状态、DI 访问和写入策略。 |
+| [computed-state.md](computed-state.md) | 计算状态、依赖、缓存和失效。 |
+| [subscriptions.md](subscriptions.md) | 状态订阅、Reaction、生命周期绑定和释放。 |
+| [snapshots.md](snapshots.md) | StateSnapshot、持久化、恢复和版本兼容。 |
+| [collection-state.md](collection-state.md) | 集合状态、集合变更和 item 版本。 |
+| [threading-and-dispatch.md](threading-and-dispatch.md) | 状态线程模型、调度和 UI Dispatcher 边界。 |
+| [plugin-integration.md](plugin-integration.md) | 插件状态隔离、授权、撤销和卸载。 |
+| [diagnostics-and-testing.md](diagnostics-and-testing.md) | 诊断、测试工具和测试矩阵。 |
 
 ## 2. 非目标
 

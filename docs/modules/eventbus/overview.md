@@ -1,7 +1,7 @@
 # AtomUI.City.EventBus
 
 版本：v0.1
-状态：初版草案
+状态：正式初版
 
 ## 职责
 

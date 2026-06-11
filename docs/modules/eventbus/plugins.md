@@ -1,7 +1,7 @@
 # AtomUI.City.EventBus Plugin Integration 设计
 
 版本：v0.1
-状态：初版草案
+状态：正式初版
 适用范围：插件事件平面、事件 Contract 校验、Capability、Handler Contribution、插件启用停用、事件 drain、AssemblyLoadContext 卸载和错误隔离设计。
 
 ## 1. 定位

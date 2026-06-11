@@ -1,7 +1,7 @@
 # AtomUI.City.Mvvm Activation 设计
 
 版本：v0.1
-状态：初版草案
+状态：正式初版
 适用范围：ViewModel 创建、激活、停用、active 状态、ActivationScope、资源释放、State/EventBus 订阅绑定。
 
 ## 1. 定位
@@ -53,7 +53,7 @@ Constructed
 规则：
 
 - `Constructed` 阶段不允许创建长期订阅。
-- `Activating` 阶段创建 ActivationScope。
+- `Activating` 阶段创建 ActivationScope。导航场景中它可以先作为候选 ActivationScope 存在，用于注册 Presentation binding 和 UI 订阅释放边界。
 - `Active` 阶段允许执行命令、订阅状态、发起交互。
 - `Deactivating` 阶段先取消 OperationScope，再释放 ActivationScope。
 - `Disposed` 是终态，不允许再次激活。
@@ -82,6 +82,12 @@ Stop accepting new operations
 ```
 
 ActivationScope 释放必须幂等。
+
+导航场景中的 ActivationScope 状态约束：
+
+- Presentation commit 前，ActivationScope 可以收集可释放资源，但 ViewModel 不能被视为 active。
+- Presentation commit 成功后，ActivationScope 进入 running，ViewModel 进入 active。
+- Presentation commit 失败时，候选 ActivationScope 必须释放，ViewModel 不触发 active 生命周期。
 
 ## 6. Active 状态
 

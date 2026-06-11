@@ -1,7 +1,7 @@
 # AtomUI.City.Routing Guards 设计
 
 版本：v0.1
-状态：初版草案
+状态：正式初版
 适用范围：Match Policy、Enter Guard、Leave Guard、离开确认、重定向、权限集成、线程和诊断。
 
 ## 1. 定位

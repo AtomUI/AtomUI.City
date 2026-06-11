@@ -1,7 +1,7 @@
 # AtomUI.City.Core Hosting 设计
 
 版本：v0.1
-状态：初版草案
+状态：正式初版
 适用范围：`AtomUI.City.Core` 中 Host、Application 构建、GenericHost 集成、启动/停止流程、Host 扩展方法 DSL
 
 ## 1. 目标

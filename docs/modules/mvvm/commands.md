@@ -1,7 +1,7 @@
 # AtomUI.City.Mvvm Commands 设计
 
 版本：v0.1
-状态：初版草案
+状态：正式初版
 适用范围：Command、Async Command、OperationScope、执行状态、错误策略、权限联动、组合命令和测试支持。
 
 ## 1. 定位

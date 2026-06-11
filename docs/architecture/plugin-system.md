@@ -1,7 +1,7 @@
 # AtomUI.City 插件系统架构规范
 
 版本：v0.1
-状态：初版草案
+状态：正式初版
 适用范围：插件系统的架构级边界、可扩展范围、推荐规范和 Host 交互模型
 
 ## 1. 定位
@@ -278,11 +278,45 @@ PluginSystem 应提供：
 
 安全策略由 Host 统一执行，插件不能自行绕过。
 
-## 9. 推荐规范
+## 9. 插件包和安装位置
+
+框架下载的插件不安装到应用安装目录，也不直接从 NuGet 全局缓存加载。
+
+架构级规则：
+
+- 插件优先发布为一个独立 NuGet 包。
+- 一个插件包第一版只包含一个主业务程序集。
+- 一个插件主业务程序集可以包含多个模块。
+- 框架下载的插件进入用户级应用数据目录。
+- 插件包缓存和插件运行时安装目录必须分离。
+- 插件安装必须先进入 staging，验证通过后再进入 installed。
+- 插件文件不能原地覆盖。
+- 同一个插件可以安装多个版本，但同一 profile 只能启用一个版本。
+- 运行时无法安全切换时，更新进入 pending。
+- `UnloadPending` 插件目录不能删除或覆盖。
+
+插件目录必须按应用和插件兼容 profile 隔离：
+
+```text
+<UserData>/AtomUI.City/Apps/<AppId>/<PluginProfile>/plugins/
+```
+
+`PluginProfile` 由 Host 插件 API 兼容版本和渠道组成，例如：
+
+```text
+1.0-stable
+1.0-dev
+```
+
+具体目录结构、安装、更新和回滚规则由 PluginSystem 模块文档定义。
+
+## 10. 推荐规范
 
 插件开发推荐遵循：
 
 - 一个插件有明确插件元数据。
+- 一个插件优先发布为一个独立 NuGet 包。
+- 一个插件包第一版只包含一个主业务程序集。
 - 一个插件可以包含多个模块，但模块依赖必须显式。
 - 插件所有贡献必须通过 Host contract。
 - 插件所有长期任务必须绑定插件生命周期。
@@ -293,7 +327,7 @@ PluginSystem 应提供：
 - 插件不得在静态字段保存 Host、Scope、ServiceProvider、ViewModel 或插件类型实例。
 - 插件卸载失败必须可以诊断。
 
-## 10. 后续模块文档
+## 11. 后续模块文档
 
 本文件只定义架构级规范。
 
@@ -302,5 +336,21 @@ PluginSystem 模块级设计已拆分到：
 - [Host 集成设计](../modules/plugins/host-integration.md)
 - [贡献模型设计](../modules/plugins/contributions.md)
 - [生命周期设计](../modules/plugins/lifecycle.md)
-
-后续可继续补充发现、加载、元数据、卸载和安全策略细节文档。
+- [元数据设计](../modules/plugins/metadata.md)
+- [清单 Schema 设计](../modules/plugins/manifest-schema.md)
+- [包布局设计](../modules/plugins/package-layout.md)
+- [MSBuild 集成设计](../modules/plugins/msbuild-integration.md)
+- [发现设计](../modules/plugins/discovery.md)
+- [兼容性设计](../modules/plugins/compatibility.md)
+- [能力授权设计](../modules/plugins/capabilities.md)
+- [贡献索引设计](../modules/plugins/contribution-index.md)
+- [依赖解析设计](../modules/plugins/dependency-resolution.md)
+- [加载设计](../modules/plugins/loading.md)
+- [卸载设计](../modules/plugins/unloading.md)
+- [包安装设计](../modules/plugins/package-installation.md)
+- [更新和回滚设计](../modules/plugins/update-and-rollback.md)
+- [设置和状态迁移设计](../modules/plugins/settings-and-state-migration.md)
+- [AOT 和静态插件设计](../modules/plugins/aot-and-static-plugins.md)
+- [安全设计](../modules/plugins/security.md)
+- [签名和信任设计](../modules/plugins/signing-and-trust.md)
+- [诊断和测试设计](../modules/plugins/diagnostics-and-testing.md)

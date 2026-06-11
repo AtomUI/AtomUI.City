@@ -1,7 +1,7 @@
 # AtomUI.City.Core Configuration 设计
 
 版本：v0.1
-状态：初版草案
+状态：正式初版
 适用范围：`AtomUI.City.Core` 中配置源、Options、PreConfigure、配置验证、热更新、插件配置隔离、AOT/source generator 约束。
 
 ## 1. 定位

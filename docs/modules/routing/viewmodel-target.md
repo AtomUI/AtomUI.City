@@ -1,7 +1,7 @@
 # AtomUI.City.Routing ViewModel Target 设计
 
 版本：v0.1
-状态：初版草案
+状态：正式初版
 适用范围：Route 到 ViewModel Target 的映射、ViewModel 创建、参数和解析数据注入、Mvvm Activation、Presentation 边界。
 
 ## 1. 定位
@@ -93,15 +93,26 @@ Resolver 结果可以作为 ViewModel 初始化输入。
 
 ## 7. Activation 集成
 
-Mvvm 负责 ViewModel Activation。
+Mvvm 负责 ViewModel Activation。Routing 负责把 Activation 放进导航事务中，确保 UI commit 成功后才把候选 ViewModel 标记为 active。
 
-Routing 在提交后驱动：
+Routing 在准备阶段可以创建候选 ActivationScope，用于给 Presentation binding、UI 事件订阅和 Interaction handler 提供释放边界：
 
 ```text
-Create ActivationScope
+Create provisional RouteScope
+-> Create provisional ActivationScope
+-> Create ViewModel
+-> Presentation prepare binding
+```
+
+Routing 在提交成功后驱动：
+
+```text
+Mark ActivationScope running
 -> Activate ViewModel
 -> Bind State/EventBus/Interactions
 ```
+
+如果 Presentation commit 失败，候选 ActivationScope 和 RouteScope 必须释放，ViewModel 不进入 active 状态。
 
 离开路由时：
 

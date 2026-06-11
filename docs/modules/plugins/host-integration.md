@@ -1,7 +1,7 @@
 # PluginSystem Host 集成设计
 
 版本：v0.1
-状态：初版草案
+状态：正式初版
 适用范围：`AtomUI.City.PluginSystem` 与 Host、ModuleSystem、Lifecycle、DI、Registry 的交互方式
 
 ## 1. 目标

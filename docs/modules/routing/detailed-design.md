@@ -1,7 +1,7 @@
 # AtomUI.City.Routing Detailed Design
 
 版本：v0.1
-状态：初版草案
+状态：正式初版
 适用范围：路由图、导航事务、NavigationScope、RouteScope、Guard、Resolver、Journal、插件路由、线程模型、诊断和测试。
 
 ## 1. 定位
@@ -145,7 +145,7 @@ Accept request
 -> Run enter guards
 -> Confirm leaving routes
 -> Resolve data
--> Create ViewModels
+-> Create ViewModels and provisional ActivationScopes
 -> Prepare Presentation change
 -> Commit on UI thread
 -> Update NavigationSnapshot and Journal
@@ -157,6 +157,7 @@ Accept request
 
 - 目标路由准备完成前，当前路由树保持可用。
 - 候选 RouteScope 在提交前处于 provisional 状态。
+- 候选 ActivationScope 可以在 Presentation binding 前创建，用于注册 binding 和 UI 订阅释放边界，但只有 Commit 成功后才进入 running / active 状态。
 - 任意准备阶段失败时，释放候选分支并保留当前页面。
 - Commit 是不可抢占边界。
 - Commit 失败必须尝试恢复原 Outlet 状态。
@@ -220,8 +221,9 @@ Routing 只输出 ViewModel Target。
 RouteDescriptor
 -> ViewModelTargetDescriptor
 -> ViewModel instance
--> Mvvm Activation
 -> Presentation View binding
+-> Commit
+-> Mvvm Activation
 ```
 
 ViewModel Target 描述：

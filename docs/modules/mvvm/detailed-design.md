@@ -1,7 +1,7 @@
 # AtomUI.City.Mvvm Detailed Design
 
 版本：v0.1
-状态：初版草案
+状态：正式初版
 适用范围：ViewModel、Activation、Command、Interaction、Validation，以及 MVVM 与 Lifecycle、State、Routing、Security、EventBus、Presentation 的集成边界。
 
 ## 0. 拆分文档
@@ -93,7 +93,9 @@ ActivationScope
 -> Dispose in reverse order on deactivation
 ```
 
-Route 进入时创建 ActivationScope。Route 离开时先取消 OperationScope，再停用 ViewModel，最后释放 ActivationScope。
+Route 进入时可以先创建候选 ActivationScope，给 Presentation binding、UI 事件订阅和 Interaction handler 提供释放边界。只有 Presentation commit 成功后，ActivationScope 才进入 running 状态，ViewModel 才进入 active 状态。
+
+Route 离开时先取消 OperationScope，再停用 ViewModel，最后释放 ActivationScope。
 
 ## 6. Active 状态
 

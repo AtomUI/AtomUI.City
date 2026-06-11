@@ -1,7 +1,7 @@
 # AtomUI.City.Routing Route Definition Syntax
 
 版本：v0.1
-状态：初版草案
+状态：正式初版
 适用范围：路由声明语法、路径模板、参数绑定、RouteReference、Source Generator 契约和诊断规则。
 
 ## 1. 定位

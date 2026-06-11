@@ -1,7 +1,7 @@
 # AtomUI.City 生命周期
 
 版本：v0.2
-状态：初版草案
+状态：正式初版
 适用范围：Application、Module、Plugin、Route、ViewModel、State、EventBus、Command 生命周期设计
 
 ## 1. 目标

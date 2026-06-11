@@ -1,7 +1,7 @@
 # AtomUI.City.Mvvm Validation 设计
 
 版本：v0.1
-状态：初版草案
+状态：正式初版
 适用范围：ViewModel 验证、验证状态、Command 联动、Presentation 集成、错误策略和测试支持。
 
 ## 1. 定位

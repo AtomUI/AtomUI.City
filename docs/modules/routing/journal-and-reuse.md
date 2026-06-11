@@ -1,7 +1,7 @@
 # AtomUI.City.Routing Journal and Reuse 设计
 
 版本：v0.1
-状态：初版草案
+状态：正式初版
 适用范围：NavigationJournal、Back/Forward、Replace/Reset、路由状态恢复、RouteReusePolicy、KeepAlive 和插件路由清理。
 
 ## 1. 定位

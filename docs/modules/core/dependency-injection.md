@@ -1,7 +1,7 @@
 # AtomUI.City.Core Dependency Injection 设计
 
 版本：v0.1
-状态：初版草案
+状态：正式初版
 适用范围：`AtomUI.City.Core` 中服务注册、服务作用域、模块服务注册、插件服务隔离、自动服务注册、AOT/source generator 约束。
 
 ## 1. 定位

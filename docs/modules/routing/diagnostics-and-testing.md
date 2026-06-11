@@ -1,7 +1,7 @@
 # AtomUI.City.Routing Diagnostics and Testing 设计
 
 版本：v0.1
-状态：初版草案
+状态：正式初版
 适用范围：Routing 诊断事件、日志、错误模型、测试工具、断言能力和无 UI 测试策略。
 
 ## 1. 定位

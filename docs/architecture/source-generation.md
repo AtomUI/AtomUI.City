@@ -1,7 +1,7 @@
 # AtomUI.City Source Generator 设计规范
 
 版本：v0.1
-状态：初版草案
+状态：正式初版
 适用范围：AtomUI.City 框架级 Source Generator、Analyzer、Manifest、AOT/trimming 设计约束
 
 ## 1. 定位

@@ -1,7 +1,7 @@
 # AtomUI.City.Routing Navigation 设计
 
 版本：v0.1
-状态：初版草案
+状态：正式初版
 适用范围：IRouter、NavigationScope、NavigationTarget、NavigationTransaction、NavigationResult、并发策略、提交和回滚。
 
 ## 1. 定位
@@ -162,6 +162,8 @@ NavigationPlan 由当前路由树和目标路由树 diff 得出。
 - Provisional RouteScope 可以创建服务作用域。
 - Provisional RouteScope 可以运行 Resolver。
 - Provisional RouteScope 可以创建候选 ViewModel。
+- Provisional RouteScope 可以创建候选 ActivationScope，用于注册 Presentation binding、UI 事件订阅和 Interaction handler 的释放边界。
+- 候选 ActivationScope 只有在 Presentation commit 成功后才进入 running / active 状态。
 - Commit 失败或准备失败时必须释放。
 
 这样可以保证当前页面在候选页面准备完成前仍保持活动。
@@ -177,6 +179,7 @@ Stop accepting current route operations that will leave
 -> Apply Presentation outlet changes
 -> Switch current NavigationSnapshot atomically
 -> Mark candidate RouteScopes active
+-> Mark candidate ActivationScopes running
 -> Activate added ViewModels
 -> Deactivate removed ViewModels
 -> Update Journal

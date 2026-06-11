@@ -1,7 +1,7 @@
 # AtomUI.City.Mvvm Interactions 设计
 
 版本：v0.1
-状态：初版草案
+状态：正式初版
 适用范围：ViewModel 到 Presentation 的交互请求、Interaction handler、结果模型、ActivationScope 绑定和测试支持。
 
 ## 1. 定位

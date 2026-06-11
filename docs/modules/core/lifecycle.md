@@ -1,7 +1,7 @@
 # AtomUI.City.Core 生命周期详细设计
 
 版本：v0.1
-状态：初版草案
+状态：正式初版
 适用范围：`AtomUI.City.Core` 中 Lifecycle Kernel、Scope、Pipeline、Lease、错误策略和诊断设计
 
 ## 1. 目标

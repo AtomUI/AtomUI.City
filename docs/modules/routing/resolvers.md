@@ -1,7 +1,7 @@
 # AtomUI.City.Routing Resolvers 设计
 
 版本：v0.1
-状态：初版草案
+状态：正式初版
 适用范围：路由数据解析、Resolver 生命周期、取消、错误、缓存、与 Data/State/Mvvm 的集成。
 
 ## 1. 定位

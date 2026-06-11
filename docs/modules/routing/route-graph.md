@@ -1,7 +1,7 @@
 # AtomUI.City.Routing Route Graph 设计
 
 版本：v0.1
-状态：初版草案
+状态：正式初版
 适用范围：RouteDescriptor、RouteRegistry、RouteGraphSnapshot、路由贡献、优先级、冲突检测和插件动态变更。
 
 ## 1. 定位

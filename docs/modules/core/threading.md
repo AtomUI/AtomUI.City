@@ -1,7 +1,7 @@
 # AtomUI.City.Core Threading 设计
 
 版本：v0.1
-状态：初版草案
+状态：正式初版
 适用范围：`AtomUI.City.Core` 中线程模型、UI Dispatcher 抽象、后台任务调度、Operation 执行、调度策略、插件线程约束、诊断和测试设计。
 
 ## 1. 定位

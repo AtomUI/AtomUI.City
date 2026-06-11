@@ -1,7 +1,7 @@
 # AtomUI.City.EventBus Event Contracts 设计
 
 版本：v0.1
-状态：初版草案
+状态：正式初版
 适用范围：事件契约身份、共享 Contract 程序集、AssemblyLoadContext、插件跨边界事件、版本兼容、对象图约束、manifest 和卸载设计。
 
 ## 1. 定位

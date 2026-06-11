@@ -1,7 +1,7 @@
 # AtomUI.City.EventBus Detailed Design
 
 版本：v0.1
-状态：初版草案
+状态：正式初版
 适用范围：进程内系统级事件总线、事件发布、事件通道、顺序与并发、背压、生命周期、插件集成、AOT/source generator、诊断和测试设计。
 
 ## 1. 定位

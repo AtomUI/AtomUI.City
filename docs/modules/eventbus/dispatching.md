@@ -1,7 +1,7 @@
 # AtomUI.City.EventBus Dispatching 设计
 
 版本：v0.1
-状态：初版草案
+状态：正式初版
 适用范围：事件发布完成语义、Core Threading 集成、channel 队列、顺序保证、并发、背压、取消、递归发布和性能设计。
 
 ## 1. 定位

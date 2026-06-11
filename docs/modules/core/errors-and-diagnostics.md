@@ -1,7 +1,7 @@
 # AtomUI.City.Core Errors and Diagnostics 设计
 
 版本：v0.1
-状态：初版草案
+状态：正式初版
 适用范围：`AtomUI.City.Core` 中错误分类、错误策略、诊断上下文、日志事件、错误聚合、插件错误隔离和现场排查能力。
 
 ## 1. 定位
