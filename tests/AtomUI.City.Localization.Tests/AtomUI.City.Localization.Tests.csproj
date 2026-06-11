@@ -20,4 +20,8 @@
     <ProjectReference Include="../../src/AtomUI.City.Localization/AtomUI.City.Localization.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="Fixtures/Host.en-US.locpack.json" />
+  </ItemGroup>
+
 </Project>

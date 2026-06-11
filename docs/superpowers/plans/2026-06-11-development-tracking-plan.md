@@ -234,15 +234,15 @@
 
 目标：实现强大的桌面端多语言能力，支持按语言包懒加载和 assembly 动态加载。
 
-- [ ] Localization contract
-- [ ] Resource provider
-- [ ] Culture switching
-- [ ] Per-language lazy loading
-- [ ] Assembly language package loading
-- [ ] AtomUI integration point
-- [ ] Missing resource diagnostics
-- [ ] Localization tests
-- [ ] Phase 12 验收
+- [x] Localization contract
+- [x] Resource provider
+- [x] Culture switching
+- [x] Per-language lazy loading
+- [x] Assembly language package loading
+- [x] AtomUI integration point
+- [x] Missing resource diagnostics
+- [x] Localization tests
+- [x] Phase 12 验收
 
 ## Phase 13: CLI / Templates
 
