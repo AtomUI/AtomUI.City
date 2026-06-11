@@ -9,6 +9,7 @@ public enum LocalizationErrorKind
     PresentationApplyFailed,
     ResourceMissing,
     FormatFailed,
+    RefreshFailed,
     Cancelled,
     Unknown,
 }

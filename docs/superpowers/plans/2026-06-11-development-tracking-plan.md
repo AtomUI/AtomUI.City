@@ -5,8 +5,8 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`16feaa2 feat(Security): add command authorization and data credential bridge`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，370 tests passed
+- 当前提交：`0bd4636 feat(Localization): add localizable message metadata`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，373 tests passed
 - 当前状态：已进入 Security / Data / Localization 基础集成实现阶段
 
 **最新实现检查点：**
@@ -23,6 +23,9 @@
 - [x] Data error localizable message metadata
 - [x] Security authorization localizable message metadata
 - [x] MVVM validation localizable message metadata
+- [x] Localization culture-aware text handle
+- [x] Localization text refresh on culture switch
+- [x] Localization text refresh diagnostics
 
 ## 状态定义
 

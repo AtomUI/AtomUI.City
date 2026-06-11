@@ -199,6 +199,82 @@ public sealed class LocalizationServiceTests
                 && record.ErrorKind == LocalizationErrorKind.FormatFailed);
     }
 
+    [Fact]
+    public async Task LocalizedTextRefreshesWhenCultureChanges()
+    {
+        var zh = Package("Host.zh-CN", "zh-CN", ("Settings.Title", "设置"));
+        var en = Package("Host.en-US", "en-US", ("Settings.Title", "Settings"));
+        var service = new LocalizationService(
+            [zh.Descriptor, en.Descriptor],
+            [new RecordingLanguagePackageProvider(zh, en)],
+            bridge: new RecordingPresentationLocalizationBridge());
+
+        await service.SetCultureAsync("zh-CN");
+        using var text = await service.CreateTextAsync("Settings.Title");
+        var changes = new List<string>();
+        text.Changed += (_, args) => changes.Add(args.Value);
+
+        await service.SetCultureAsync("en-US");
+
+        Assert.Equal("Settings", text.Value);
+        Assert.Equal("en-US", text.Culture.Name);
+        Assert.Equal(2, text.Revision);
+        Assert.Equal(["Settings"], changes);
+    }
+
+    [Fact]
+    public async Task DisposedLocalizedTextDoesNotRefreshAfterCultureChanges()
+    {
+        var zh = Package("Host.zh-CN", "zh-CN", ("Settings.Title", "设置"));
+        var en = Package("Host.en-US", "en-US", ("Settings.Title", "Settings"));
+        var service = new LocalizationService(
+            [zh.Descriptor, en.Descriptor],
+            [new RecordingLanguagePackageProvider(zh, en)],
+            bridge: new RecordingPresentationLocalizationBridge());
+
+        await service.SetCultureAsync("zh-CN");
+        var text = await service.CreateTextAsync("Settings.Title");
+        var changed = false;
+        text.Changed += (_, _) => changed = true;
+
+        text.Dispose();
+        await service.SetCultureAsync("en-US");
+
+        Assert.False(changed);
+        Assert.Equal("设置", text.Value);
+        Assert.Equal(1, text.Revision);
+    }
+
+    [Fact]
+    public async Task LocalizedTextRefreshFailureIsDiagnosticAndDoesNotStopOtherSubscribers()
+    {
+        var zh = Package("Host.zh-CN", "zh-CN", ("Settings.Title", "设置"));
+        var en = Package("Host.en-US", "en-US", ("Settings.Title", "Settings"));
+        var diagnostics = new InMemoryLocalizationDiagnostics();
+        var service = new LocalizationService(
+            [zh.Descriptor, en.Descriptor],
+            [new RecordingLanguagePackageProvider(zh, en)],
+            bridge: new RecordingPresentationLocalizationBridge(),
+            diagnostics: diagnostics);
+
+        await service.SetCultureAsync("zh-CN");
+        using var throwingText = await service.CreateTextAsync("Settings.Title");
+        using var secondText = await service.CreateTextAsync("Settings.Title");
+        var secondChanged = false;
+        throwingText.Changed += (_, _) => throw new InvalidOperationException("refresh failed");
+        secondText.Changed += (_, _) => secondChanged = true;
+
+        var result = await service.SetCultureAsync("en-US");
+
+        Assert.True(result.Succeeded);
+        Assert.True(secondChanged);
+        Assert.Contains(
+            diagnostics.Records,
+            record => record.Code == LocalizationDiagnosticIds.TextRefreshFailed
+                && record.ResourceKey == "Settings.Title"
+                && record.ErrorKind == LocalizationErrorKind.RefreshFailed);
+    }
+
     private static LanguagePackage Package(
         string packageId,
         string cultureName,

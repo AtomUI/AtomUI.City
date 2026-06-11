@@ -9,6 +9,8 @@ public sealed class LocalizationService : ILocalizationService
     private readonly IPresentationLocalizationBridge _bridge;
     private readonly ILocalizationDiagnostics? _diagnostics;
     private readonly Dictionary<string, LanguagePackage> _loadedPackages = [];
+    private readonly List<LocalizedText> _localizedTexts = [];
+    private readonly object _localizedTextGate = new();
     private readonly SemaphoreSlim _switchLock = new(1, 1);
 
     public LocalizationService(
@@ -98,6 +100,7 @@ public sealed class LocalizationService : ILocalizationService
             }
 
             State = nextState;
+            await RefreshLocalizedTextsAsync(cancellationToken).ConfigureAwait(false);
 
             return LocalizationResult.Success();
         }
@@ -182,6 +185,65 @@ public sealed class LocalizationService : ILocalizationService
                 errorKind: LocalizationErrorKind.FormatFailed);
 
             return LocalizedMessage.FromString(template, template.Value, isFormatFailed: true);
+        }
+    }
+
+    public async ValueTask<ILocalizedText> CreateTextAsync(
+        string key,
+        CancellationToken cancellationToken = default)
+    {
+        var text = await LocalizedText.CreateAsync(this, key, cancellationToken).ConfigureAwait(false);
+        RegisterLocalizedText(text);
+
+        return text;
+    }
+
+    internal void UnregisterLocalizedText(LocalizedText text)
+    {
+        lock (_localizedTextGate)
+        {
+            _localizedTexts.Remove(text);
+        }
+    }
+
+    internal void WriteTextRefreshFailed(string key, Exception exception)
+    {
+        WriteDiagnostic(
+            LocalizationDiagnosticIds.TextRefreshFailed,
+            exception.Message,
+            LocalizationDiagnosticSeverity.Error,
+            cultureName: CurrentCulture.Name,
+            resourceKey: key,
+            errorKind: LocalizationErrorKind.RefreshFailed);
+    }
+
+    private void RegisterLocalizedText(LocalizedText text)
+    {
+        lock (_localizedTextGate)
+        {
+            _localizedTexts.Add(text);
+        }
+    }
+
+    private async ValueTask RefreshLocalizedTextsAsync(CancellationToken cancellationToken)
+    {
+        LocalizedText[] localizedTexts;
+
+        lock (_localizedTextGate)
+        {
+            localizedTexts = _localizedTexts.ToArray();
+        }
+
+        foreach (var localizedText in localizedTexts)
+        {
+            try
+            {
+                await localizedText.RefreshAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception exception)
+            {
+                WriteTextRefreshFailed(localizedText.Key, exception);
+            }
         }
     }
 

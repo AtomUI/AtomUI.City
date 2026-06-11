@@ -20,4 +20,8 @@ public interface ILocalizationService
         string key,
         IReadOnlyList<object?> arguments,
         CancellationToken cancellationToken = default);
+
+    ValueTask<ILocalizedText> CreateTextAsync(
+        string key,
+        CancellationToken cancellationToken = default);
 }
