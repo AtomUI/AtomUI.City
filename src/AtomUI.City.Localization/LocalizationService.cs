@@ -150,6 +150,41 @@ public sealed class LocalizationService : ILocalizationService
         return LocalizedString.Missing(key, CurrentCulture);
     }
 
+    public async ValueTask<LocalizedMessage> GetMessageAsync(
+        string key,
+        IReadOnlyList<object?> arguments,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(key);
+        ArgumentNullException.ThrowIfNull(arguments);
+
+        var template = await GetStringAsync(key, cancellationToken).ConfigureAwait(false);
+
+        if (template.IsMissing || arguments.Count == 0)
+        {
+            return LocalizedMessage.FromString(template, template.Value);
+        }
+
+        try
+        {
+            return LocalizedMessage.FromString(
+                template,
+                string.Format(template.Culture, template.Value, arguments.ToArray()));
+        }
+        catch (FormatException exception)
+        {
+            WriteDiagnostic(
+                LocalizationDiagnosticIds.MessageFormatFailed,
+                exception.Message,
+                LocalizationDiagnosticSeverity.Error,
+                cultureName: template.Culture.Name,
+                resourceKey: key,
+                errorKind: LocalizationErrorKind.FormatFailed);
+
+            return LocalizedMessage.FromString(template, template.Value, isFormatFailed: true);
+        }
+    }
+
     private async ValueTask<LanguagePackageLoadResult> LoadPackageAsync(
         LanguagePackageDescriptor descriptor,
         bool cache,

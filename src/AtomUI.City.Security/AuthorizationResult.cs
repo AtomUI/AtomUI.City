@@ -7,12 +7,16 @@ public sealed class AuthorizationResult
         SecurityFailureKind failureKind,
         string? failedRequirement,
         string? message,
+        string? messageKey,
+        IReadOnlyList<object?>? messageArguments,
         Exception? exception)
     {
         Status = status;
         FailureKind = failureKind;
         FailedRequirement = failedRequirement;
         Message = message;
+        MessageKey = messageKey;
+        MessageArguments = messageArguments;
         Exception = exception;
     }
 
@@ -23,6 +27,10 @@ public sealed class AuthorizationResult
     public string? FailedRequirement { get; }
 
     public string? Message { get; }
+
+    public string? MessageKey { get; }
+
+    public IReadOnlyList<object?>? MessageArguments { get; }
 
     public Exception? Exception { get; }
 
@@ -35,22 +43,31 @@ public sealed class AuthorizationResult
             SecurityFailureKind.None,
             failedRequirement: null,
             message: null,
+            messageKey: null,
+            messageArguments: null,
             exception: null);
     }
 
-    public static AuthorizationResult Challenge(string? message = null)
+    public static AuthorizationResult Challenge(
+        string? message = null,
+        string? messageKey = "Errors.AuthenticationRequired",
+        IReadOnlyList<object?>? messageArguments = null)
     {
         return new AuthorizationResult(
             AuthorizationResultStatus.Challenge,
             SecurityFailureKind.AuthenticationRequired,
             failedRequirement: "authenticated",
             message,
+            messageKey,
+            messageArguments,
             exception: null);
     }
 
     public static AuthorizationResult Forbidden(
         string failedRequirement,
-        string? message = null)
+        string? message = null,
+        string? messageKey = "Errors.AuthorizationForbidden",
+        IReadOnlyList<object?>? messageArguments = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(failedRequirement);
 
@@ -59,6 +76,8 @@ public sealed class AuthorizationResult
             SecurityFailureKind.RequirementFailed,
             failedRequirement,
             message,
+            messageKey,
+            messageArguments ?? [failedRequirement],
             exception: null);
     }
 
@@ -66,6 +85,8 @@ public sealed class AuthorizationResult
         SecurityFailureKind failureKind,
         string? failedRequirement = null,
         string? message = null,
+        string? messageKey = null,
+        IReadOnlyList<object?>? messageArguments = null,
         Exception? exception = null)
     {
         return new AuthorizationResult(
@@ -73,16 +94,23 @@ public sealed class AuthorizationResult
             failureKind,
             failedRequirement,
             message,
+            messageKey,
+            messageArguments,
             exception);
     }
 
-    public static AuthorizationResult Cancelled(string? message = null)
+    public static AuthorizationResult Cancelled(
+        string? message = null,
+        string? messageKey = "Errors.Cancelled",
+        IReadOnlyList<object?>? messageArguments = null)
     {
         return new AuthorizationResult(
             AuthorizationResultStatus.Cancelled,
             SecurityFailureKind.Cancelled,
             failedRequirement: null,
             message,
+            messageKey,
+            messageArguments,
             exception: null);
     }
 }

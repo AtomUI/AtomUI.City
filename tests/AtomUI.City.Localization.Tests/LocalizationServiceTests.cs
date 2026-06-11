@@ -140,6 +140,65 @@ public sealed class LocalizationServiceTests
         Assert.Equal(1, service.CultureRevision);
     }
 
+    [Fact]
+    public async Task GetMessageAsyncFormatsMessageWithCurrentCulture()
+    {
+        var zh = Package("Host.zh-CN", "zh-CN", ("Errors.Upload.Size", "文件大小不能超过 {0:N1} MB"));
+        var service = new LocalizationService(
+            [zh.Descriptor],
+            [new RecordingLanguagePackageProvider(zh)],
+            bridge: new RecordingPresentationLocalizationBridge());
+
+        await service.SetCultureAsync("zh-CN");
+        var message = await service.GetMessageAsync("Errors.Upload.Size", [12.345]);
+
+        Assert.Equal("文件大小不能超过 12.3 MB", message.Value);
+        Assert.Equal("Errors.Upload.Size", message.Key);
+        Assert.Equal("zh-CN", message.Culture.Name);
+        Assert.False(message.IsMissing);
+        Assert.False(message.IsFormatFailed);
+    }
+
+    [Fact]
+    public async Task GetMessageAsyncReturnsMissingMarkerWhenMessageKeyIsMissing()
+    {
+        var zh = Package("Host.zh-CN", "zh-CN");
+        var service = new LocalizationService(
+            [zh.Descriptor],
+            [new RecordingLanguagePackageProvider(zh)],
+            bridge: new RecordingPresentationLocalizationBridge());
+
+        await service.SetCultureAsync("zh-CN");
+        var message = await service.GetMessageAsync("Errors.Missing", ["value"]);
+
+        Assert.Equal("!Errors.Missing!", message.Value);
+        Assert.True(message.IsMissing);
+        Assert.False(message.IsFormatFailed);
+    }
+
+    [Fact]
+    public async Task GetMessageAsyncReturnsTemplateAndDiagnosticWhenFormatFails()
+    {
+        var zh = Package("Host.zh-CN", "zh-CN", ("Errors.Range", "Value must be between {0} and {1}."));
+        var diagnostics = new InMemoryLocalizationDiagnostics();
+        var service = new LocalizationService(
+            [zh.Descriptor],
+            [new RecordingLanguagePackageProvider(zh)],
+            bridge: new RecordingPresentationLocalizationBridge(),
+            diagnostics: diagnostics);
+
+        await service.SetCultureAsync("zh-CN");
+        var message = await service.GetMessageAsync("Errors.Range", [1]);
+
+        Assert.Equal("Value must be between {0} and {1}.", message.Value);
+        Assert.True(message.IsFormatFailed);
+        Assert.Contains(
+            diagnostics.Records,
+            record => record.Code == LocalizationDiagnosticIds.MessageFormatFailed
+                && record.ResourceKey == "Errors.Range"
+                && record.ErrorKind == LocalizationErrorKind.FormatFailed);
+    }
+
     private static LanguagePackage Package(
         string packageId,
         string cultureName,

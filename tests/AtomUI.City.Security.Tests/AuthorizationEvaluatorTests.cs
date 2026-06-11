@@ -17,6 +17,7 @@ public sealed class AuthorizationEvaluatorTests
 
         Assert.Equal(AuthorizationResultStatus.Challenge, result.Status);
         Assert.Equal(SecurityFailureKind.AuthenticationRequired, result.FailureKind);
+        Assert.Equal("Errors.AuthenticationRequired", result.MessageKey);
     }
 
     [Fact]
@@ -53,6 +54,8 @@ public sealed class AuthorizationEvaluatorTests
         Assert.Equal(AuthorizationResultStatus.Forbidden, result.Status);
         Assert.Equal(SecurityFailureKind.RequirementFailed, result.FailureKind);
         Assert.Equal("settings.write", result.FailedRequirement);
+        Assert.Equal("Errors.AuthorizationForbidden", result.MessageKey);
+        Assert.Equal(["settings.write"], result.MessageArguments);
     }
 
     [Fact]

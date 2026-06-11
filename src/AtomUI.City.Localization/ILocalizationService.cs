@@ -15,4 +15,9 @@ public interface ILocalizationService
     ValueTask<LocalizedString> GetStringAsync(
         string key,
         CancellationToken cancellationToken = default);
+
+    ValueTask<LocalizedMessage> GetMessageAsync(
+        string key,
+        IReadOnlyList<object?> arguments,
+        CancellationToken cancellationToken = default);
 }

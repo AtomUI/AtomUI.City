@@ -21,7 +21,8 @@ public static class DataErrorMapper
         return new DataError(
             kind,
             $"HTTP request failed with status code {(int)statusCode}.",
-            ((int)statusCode).ToString());
+            ((int)statusCode).ToString(),
+            GetHttpMessageKey(kind));
     }
 
     public static DataError FromGrpcStatus(GrpcStatusCode statusCode, string? detail = null)
@@ -42,6 +43,34 @@ public static class DataErrorMapper
         return new DataError(
             kind,
             detail ?? $"gRPC call failed with status '{statusCode}'.",
-            statusCode.ToString());
+            statusCode.ToString(),
+            GetGrpcMessageKey(kind));
+    }
+
+    private static string? GetHttpMessageKey(DataErrorKind kind)
+    {
+        return kind switch
+        {
+            DataErrorKind.AuthenticationRequired => "Errors.AuthenticationRequired",
+            DataErrorKind.AuthorizationForbidden => "Errors.AuthorizationForbidden",
+            DataErrorKind.NotFound => "Errors.NotFound",
+            DataErrorKind.Timeout => "Errors.Timeout",
+            DataErrorKind.ServerError => "Errors.ServerError",
+            _ => null,
+        };
+    }
+
+    private static string? GetGrpcMessageKey(DataErrorKind kind)
+    {
+        return kind switch
+        {
+            DataErrorKind.AuthenticationRequired => "Errors.AuthenticationRequired",
+            DataErrorKind.AuthorizationForbidden => "Errors.AuthorizationForbidden",
+            DataErrorKind.NotFound => "Errors.NotFound",
+            DataErrorKind.DeadlineExceeded => "Errors.Timeout",
+            DataErrorKind.ServiceUnavailable => "Errors.ServiceUnavailable",
+            DataErrorKind.ServerError => "Errors.ServerError",
+            _ => null,
+        };
     }
 }

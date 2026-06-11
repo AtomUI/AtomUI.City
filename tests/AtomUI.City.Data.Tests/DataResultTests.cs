@@ -1,3 +1,4 @@
+using System.Net;
 using AtomUI.City.Data;
 
 namespace AtomUI.City.Data.Tests;
@@ -25,6 +26,30 @@ public sealed class DataResultTests
         Assert.False(result.Succeeded);
         Assert.Equal(DataResultStatus.Failed, result.Status);
         Assert.Equal(DataErrorKind.NotFound, result.Error?.Kind);
+    }
+
+    [Fact]
+    public void DataErrorCarriesLocalizableMessageMetadata()
+    {
+        var error = new DataError(
+            DataErrorKind.AuthorizationForbidden,
+            "Permission 'settings.write' is required.",
+            MessageKey: "Errors.AuthorizationForbidden",
+            MessageArguments: ["settings.write"]);
+
+        var result = DataResult<string>.Failed(error);
+
+        Assert.Equal("Errors.AuthorizationForbidden", result.Error?.MessageKey);
+        Assert.Equal(["settings.write"], result.Error?.MessageArguments);
+    }
+
+    [Fact]
+    public void HttpStatusMappingIncludesLocalizableMessageKey()
+    {
+        var error = DataErrorMapper.FromHttpStatusCode(HttpStatusCode.Forbidden);
+
+        Assert.Equal(DataErrorKind.AuthorizationForbidden, error.Kind);
+        Assert.Equal("Errors.AuthorizationForbidden", error.MessageKey);
     }
 
     [Fact]

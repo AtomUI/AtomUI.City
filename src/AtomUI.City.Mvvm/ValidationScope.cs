@@ -3,10 +3,13 @@ namespace AtomUI.City.Mvvm;
 public sealed class ValidationScope
 {
     private readonly Dictionary<string, IReadOnlyList<string>> _errors = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, IReadOnlyList<ValidationMessage>> _messages = new(StringComparer.Ordinal);
 
     public ValidationStatus Status { get; private set; } = ValidationStatus.Valid;
 
     public IReadOnlyDictionary<string, IReadOnlyList<string>> Errors => _errors;
+
+    public IReadOnlyDictionary<string, IReadOnlyList<ValidationMessage>> Messages => _messages;
 
     public Exception? Exception { get; private set; }
 
@@ -17,13 +20,25 @@ public sealed class ValidationScope
         activationScope.Add(new DelegateDisposable(Cancel));
     }
 
-    public void SetInvalid(string key, string message)
+    public void SetInvalid(
+        string key,
+        string message,
+        string? messageKey = null,
+        IReadOnlyList<object?>? messageArguments = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
         ArgumentException.ThrowIfNullOrWhiteSpace(message);
 
         Exception = null;
         _errors[key] = [message];
+        _messages[key] =
+        [
+            new ValidationMessage(
+                key,
+                message,
+                messageKey,
+                messageArguments),
+        ];
         Status = ValidationStatus.Invalid;
     }
 
@@ -38,6 +53,7 @@ public sealed class ValidationScope
         ArgumentNullException.ThrowIfNull(exception);
 
         _errors.Clear();
+        _messages.Clear();
         Exception = exception;
         Status = ValidationStatus.Failed;
     }
