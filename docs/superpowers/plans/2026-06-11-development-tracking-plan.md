@@ -219,16 +219,16 @@
 
 目标：提供统一的数据访问抽象，首批支持 HttpClient、gRPC、SignalR。
 
-- [ ] Data client contract
-- [ ] HttpClient integration
-- [ ] gRPC integration
-- [ ] SignalR integration
-- [ ] Connection lifecycle
-- [ ] Retry / timeout / cancellation
-- [ ] Authentication integration point
-- [ ] Threading policy
-- [ ] Data access tests
-- [ ] Phase 11 验收
+- [x] Data client contract
+- [x] HttpClient integration
+- [x] gRPC integration
+- [x] SignalR integration
+- [x] Connection lifecycle
+- [x] Retry / timeout / cancellation
+- [x] Authentication integration point
+- [x] Threading policy
+- [x] Data access tests
+- [x] Phase 11 验收
 
 ## Phase 12: Localization
 
