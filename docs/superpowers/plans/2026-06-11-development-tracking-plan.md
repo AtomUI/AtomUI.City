@@ -5,9 +5,18 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`2b36485 docs: complete architecture design documentation`
-- 当前测试：`dotnet test AtomUICity.slnx` 通过，21 tests passed
-- 当前状态：设计文档初版完成，进入实现前的工程基线与核心机制落地阶段
+- 当前提交：`35719a7 feat(Security): implement core security features including authorization policies, access token management, and authentication state handling`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，363 tests passed
+- 当前状态：已进入 Security / Data 基础集成实现阶段
+
+**最新实现检查点：**
+
+- [x] Security command authorization source
+- [x] Security command authorization refresh on authentication / permission / descriptor changes
+- [x] Security command authorization cancellation does not allow execution
+- [x] Data access token credential provider
+- [x] Data credential provider DI registration
+- [x] Data bearer request fails gracefully when full Security registration is absent
 
 ## 状态定义
 

@@ -25,6 +25,16 @@ public static class SecurityServiceCollectionExtensions
             serviceProvider => new PermissionChecker(
                 serviceProvider.GetRequiredService<IAuthorizationEvaluator>(),
                 serviceProvider.GetRequiredService<ICurrentPrincipalAccessor>()));
+        services.TryAddSingleton<InMemoryCommandAuthorizationDescriptorProvider>();
+        services.TryAddSingleton<ICommandAuthorizationDescriptorProvider>(
+            serviceProvider => serviceProvider.GetRequiredService<InMemoryCommandAuthorizationDescriptorProvider>());
+        services.TryAddSingleton<ICommandAuthorizationSource>(
+            serviceProvider => new CommandAuthorizationSource(
+                serviceProvider.GetRequiredService<IAuthorizationEvaluator>(),
+                serviceProvider.GetRequiredService<ICurrentPrincipalAccessor>(),
+                serviceProvider.GetRequiredService<ICommandAuthorizationDescriptorProvider>(),
+                serviceProvider.GetRequiredService<IAuthenticationStateProvider>(),
+                serviceProvider.GetRequiredService<IPermissionRegistry>()));
         services.TryAddSingleton<IAccessTokenProvider, UnavailableAccessTokenProvider>();
         services.TryAddSingleton<InMemoryRouteAuthorizationPolicyProvider>();
         services.TryAddSingleton<IRouteAuthorizationPolicyProvider>(

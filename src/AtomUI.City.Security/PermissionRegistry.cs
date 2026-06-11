@@ -8,6 +8,8 @@ public sealed class PermissionRegistry : IPermissionRegistry
     private readonly object _syncRoot = new();
     private long _revision;
 
+    public event EventHandler<PermissionRegistryChangedEventArgs>? Changed;
+
     public long Revision
     {
         get
@@ -33,6 +35,7 @@ public sealed class PermissionRegistry : IPermissionRegistry
     public bool Add(PermissionDescriptor descriptor)
     {
         ArgumentNullException.ThrowIfNull(descriptor);
+        long revision;
 
         lock (_syncRoot)
         {
@@ -42,32 +45,51 @@ public sealed class PermissionRegistry : IPermissionRegistry
             }
 
             _permissions.Add(descriptor.Name, descriptor);
-            _revision++;
-
-            return true;
+            revision = ++_revision;
         }
+
+        Changed?.Invoke(
+            this,
+            new PermissionRegistryChangedEventArgs(
+                revision,
+                descriptor.Name,
+                descriptor.ContributionId));
+
+        return true;
     }
 
     public bool Remove(string name)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        long revision;
+        PermissionDescriptor removed;
 
         lock (_syncRoot)
         {
-            if (!_permissions.Remove(name))
+            if (!_permissions.Remove(name, out var descriptor))
             {
                 return false;
             }
 
-            _revision++;
-
-            return true;
+            removed = descriptor;
+            revision = ++_revision;
         }
+
+        Changed?.Invoke(
+            this,
+            new PermissionRegistryChangedEventArgs(
+                revision,
+                removed.Name,
+                removed.ContributionId));
+
+        return true;
     }
 
     public int RemoveByContribution(string contributionId)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(contributionId);
+        long revision;
+        int removedCount;
 
         lock (_syncRoot)
         {
@@ -83,11 +105,24 @@ public sealed class PermissionRegistry : IPermissionRegistry
 
             if (names.Length > 0)
             {
-                _revision++;
+                revision = ++_revision;
+            }
+            else
+            {
+                return 0;
             }
 
-            return names.Length;
+            removedCount = names.Length;
         }
+
+        Changed?.Invoke(
+            this,
+            new PermissionRegistryChangedEventArgs(
+                revision,
+                permissionName: null,
+                contributionId));
+
+        return removedCount;
     }
 
     public bool Contains(string name)

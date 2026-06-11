@@ -19,6 +19,8 @@ public sealed class SecurityRegistrationTests
         var policyProvider = serviceProvider.GetRequiredService<IAuthorizationPolicyProvider>();
         var permissionChecker = serviceProvider.GetRequiredService<IPermissionChecker>();
         var evaluator = serviceProvider.GetRequiredService<IAuthorizationEvaluator>();
+        var commandDescriptorProvider = serviceProvider.GetRequiredService<ICommandAuthorizationDescriptorProvider>();
+        var commandAuthorizationSource = serviceProvider.GetRequiredService<ICommandAuthorizationSource>();
         var tokenProvider = serviceProvider.GetRequiredService<IAccessTokenProvider>();
 
         Assert.Same(stateProvider, principalAccessor);
@@ -26,6 +28,8 @@ public sealed class SecurityRegistrationTests
         Assert.IsType<InMemoryAuthorizationPolicyProvider>(policyProvider);
         Assert.IsType<PermissionChecker>(permissionChecker);
         Assert.IsType<AuthorizationEvaluator>(evaluator);
+        Assert.IsType<InMemoryCommandAuthorizationDescriptorProvider>(commandDescriptorProvider);
+        Assert.IsType<CommandAuthorizationSource>(commandAuthorizationSource);
         Assert.IsType<UnavailableAccessTokenProvider>(tokenProvider);
     }
 }

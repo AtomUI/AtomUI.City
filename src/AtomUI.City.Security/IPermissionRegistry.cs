@@ -4,6 +4,8 @@ namespace AtomUI.City.Security;
 
 public interface IPermissionRegistry
 {
+    event EventHandler<PermissionRegistryChangedEventArgs>? Changed;
+
     long Revision { get; }
 
     IReadOnlyCollection<PermissionDescriptor> Permissions { get; }
