@@ -186,17 +186,17 @@
 
 目标：提供模块和插件之间低耦合、高性能、线程模型清晰的系统级事件机制。
 
-- [ ] 事件 contract 规范
-- [ ] 进程内事件总线
-- [ ] 同步 / 异步 handler
-- [ ] UI dispatcher 投递策略
-- [ ] 后台线程投递策略
-- [ ] 事件订阅生命周期
-- [ ] 跨插件边界 contract assembly 规范
-- [ ] 弱引用或显式释放策略
-- [ ] 事件诊断能力
-- [ ] EventBus tests
-- [ ] Phase 9 验收
+- [x] 事件 contract 规范
+- [x] 进程内事件总线
+- [x] 同步 / 异步 handler
+- [x] UI dispatcher 投递策略
+- [x] 后台线程投递策略
+- [x] 事件订阅生命周期
+- [x] 跨插件边界 contract assembly 规范
+- [x] 弱引用或显式释放策略
+- [x] 事件诊断能力
+- [x] EventBus tests
+- [x] Phase 9 验收
 
 ## Phase 10: PluginSystem
 
