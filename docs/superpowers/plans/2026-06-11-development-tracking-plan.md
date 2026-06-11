@@ -155,16 +155,16 @@
 
 目标：提供框架自己的 MVVM 编程模型，但不重复底层 UI 框架职责。
 
-- [ ] ViewModel activation
-- [ ] Activation scope
-- [ ] Command contract
-- [ ] Async command contract
-- [ ] Interaction contract
-- [ ] Validation contract
-- [ ] Observable / notification 基础约束
-- [ ] 与 Presentation 生命周期对齐
-- [ ] MVVM tests
-- [ ] Phase 7 验收
+- [x] ViewModel activation
+- [x] Activation scope
+- [x] Command contract
+- [x] Async command contract
+- [x] Interaction contract
+- [x] Validation contract
+- [x] Observable / notification 基础约束
+- [x] 与 Presentation 生命周期对齐
+- [x] MVVM tests
+- [x] Phase 7 验收
 
 ## Phase 8: State
 
