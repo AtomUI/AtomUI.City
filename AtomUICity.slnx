@@ -5,6 +5,7 @@
     <Project Path="src/AtomUI.City.Core/AtomUI.City.Core.csproj" />
     <Project Path="src/AtomUI.City.Data/AtomUI.City.Data.csproj" />
     <Project Path="src/AtomUI.City.EventBus/AtomUI.City.EventBus.csproj" />
+    <Project Path="src/AtomUI.City.Generators/AtomUI.City.Generators.csproj" />
     <Project Path="src/AtomUI.City.Localization/AtomUI.City.Localization.csproj" />
     <Project Path="src/AtomUI.City.Mvvm/AtomUI.City.Mvvm.csproj" />
     <Project Path="src/AtomUI.City.PluginSystem/AtomUI.City.PluginSystem.csproj" />
@@ -21,6 +22,7 @@
     <Project Path="tests/AtomUI.City.Core.Tests/AtomUI.City.Core.Tests.csproj" />
     <Project Path="tests/AtomUI.City.Data.Tests/AtomUI.City.Data.Tests.csproj" />
     <Project Path="tests/AtomUI.City.EventBus.Tests/AtomUI.City.EventBus.Tests.csproj" />
+    <Project Path="tests/AtomUI.City.Generators.Tests/AtomUI.City.Generators.Tests.csproj" />
     <Project Path="tests/AtomUI.City.Localization.Tests/AtomUI.City.Localization.Tests.csproj" />
     <Project Path="tests/AtomUI.City.Mvvm.Tests/AtomUI.City.Mvvm.Tests.csproj" />
     <Project Path="tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj" />

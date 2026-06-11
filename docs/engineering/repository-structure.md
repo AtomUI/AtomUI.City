@@ -37,6 +37,7 @@
 - `AtomUI.City.Localization`
 - `AtomUI.City.PluginSystem`
 - `AtomUI.City.Build`
+- `AtomUI.City.Generators`
 - `AtomUI.City.Cli`
 - `AtomUI.City.Templates`
 - `AtomUI.City.Testing`
@@ -53,6 +54,15 @@
 src/AtomUI.City.<Module>/
 tests/AtomUI.City.<Module>.Tests/
 ```
+
+Source Generator 测试项目命名规则：
+
+```text
+src/AtomUI.City.Generators/
+tests/AtomUI.City.Generators.Tests/
+```
+
+`AtomUI.City.Generators.Tests` 用于 generator、analyzer、diagnostic、snapshot 和 manifest 输出测试。
 
 测试项目不进入生产依赖链。
 
@@ -96,3 +106,5 @@ AtomUI.City 统一输出根为 `output/`。
 | 生产/测试分离 | Unit/Build | 测试包不被生产项目引用。 |
 | 引用项目隔离 | Build | `.referenceprojects/` 不进入 solution。 |
 | output 目录 | Build | 构建规则输出到 `output/`。 |
+| Source Generator 项目边界 | Build/Test | `AtomUI.City.Generators` 独立存在，运行时项目不引用它。 |
+| Generator 测试项目 | Test | `AtomUI.City.Generators.Tests` 覆盖 generator/analyzer 基础设施。 |

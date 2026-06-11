@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\AtomUI.City.Core\AtomUI.City.Core.csproj" />
+    <ProjectReference Include="../AtomUI.City.Core/AtomUI.City.Core.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\AtomUI.City.Build\AtomUI.City.Build.csproj" />
+    <ProjectReference Include="../../src/AtomUI.City.Build/AtomUI.City.Build.csproj" />
   </ItemGroup>
 
 </Project>

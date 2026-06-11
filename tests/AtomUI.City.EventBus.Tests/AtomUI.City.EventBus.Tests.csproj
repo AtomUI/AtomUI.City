@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\AtomUI.City.EventBus\AtomUI.City.EventBus.csproj" />
+    <ProjectReference Include="../../src/AtomUI.City.EventBus/AtomUI.City.EventBus.csproj" />
   </ItemGroup>
 
 </Project>

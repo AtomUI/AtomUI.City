@@ -31,6 +31,7 @@
 | `AtomUI.City.Presentation` | AtomUI/Avalonia 集成、ViewLocator、UI Dispatcher、Activation 接入、Interaction Handler。 |
 | `AtomUI.City.PluginSystem` | 插件发现、插件元数据、插件加载、插件模块注册、插件生命周期。 |
 | `AtomUI.City.Build` | 构建约定、资源生成、模块清单、路由清单、输出组织。 |
+| `AtomUI.City.Generators` | Source Generator 和 Analyzer 实现，生成模块、路由、Presentation、权限、本地化、插件和事件相关 manifest 与 registrar。 |
 | `AtomUI.City.Cli` | 项目创建、模块生成、路由生成、构建命令、模板调用。 |
 | `AtomUI.City.Templates` | 应用模板、模块模板、页面模板、插件模板、测试模板。 |
 | `AtomUI.City.Testing` | 测试 Host、测试 Dispatcher、生命周期驱动、状态/路由/EventBus 测试工具。 |
@@ -51,7 +52,8 @@ Application
 
 ```text
 Cli -> Templates / Build
-Build -> Core metadata / manifests / generators
+Build -> Generators / manifest output / MSBuild integration
+Generators -> Roslyn / compile-time metadata
 Testing -> Core and selected framework packages
 ```
 
@@ -76,6 +78,13 @@ Core 不应依赖：
 - Microsoft.CodeAnalysis
 - Spectre.Console
 - 任何具体 HTTP client proxy 框架
+
+Generator 边界：
+
+- `AtomUI.City.Generators` 可以依赖 `Microsoft.CodeAnalysis`。
+- `AtomUI.City.Generators` 不被运行时包引用。
+- Runtime packages 只能定义 attribute、descriptor、registrar contract 和运行时消费 API。
+- Source Generator 输出的运行时代码必须走强类型 registrar，不依赖运行时程序集扫描。
 
 ## 5. 拆包规则
 

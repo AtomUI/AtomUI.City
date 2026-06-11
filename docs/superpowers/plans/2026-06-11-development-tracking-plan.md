@@ -34,7 +34,7 @@
 - [x] Testing 设计文档完成
 - [x] CLI / Templates 设计文档完成
 - [x] Roadmap 文档完成
-- [ ] 开发计划文档确认并落盘
+- [x] 开发计划文档确认并落盘
 
 ## Phase 0: 工程基线
 
@@ -45,44 +45,44 @@
 - [x] 测试项目骨架创建完成
 - [x] 输出目录统一到 `output`
 - [x] 基础测试可运行
-- [ ] 项目清单测试：验证 solution 中必须包含的项目
-- [ ] 项目依赖边界测试：验证禁止的反向依赖
-- [ ] 输出目录测试：验证构建产物进入 `output`
-- [ ] CI 工作流：restore / build / test / format / docs check
-- [ ] format 检查：统一 `.editorconfig` 与格式化命令
-- [ ] license header 检查：LGPL v3 头部或集中式许可证策略
-- [ ] NuGet metadata 检查：license、repository、package id、description
-- [ ] Phase 0 验收
+- [x] 项目清单测试：验证 solution 中必须包含的项目
+- [x] 项目依赖边界测试：验证禁止的反向依赖
+- [x] 输出目录测试：验证构建产物进入 `output`
+- [x] CI 工作流：restore / build / test / format / docs check
+- [x] format 检查：统一 `.editorconfig` 与格式化命令
+- [x] license header 检查：LGPL v3 头部或集中式许可证策略
+- [x] NuGet metadata 检查：license、repository、package id、description
+- [x] Phase 0 验收
 
 ## Phase 1: Testing Platform
 
 目标：提前建立测试基础设施，后续每个功能点都必须能被单元测试和必要的集成测试覆盖。
 
-- [ ] 测试分层规范落地：unit / integration / analyzer / generator / runtime
-- [ ] 测试命名规范落地
-- [ ] 测试基类与 shared test utilities
-- [ ] Host 测试夹具
-- [ ] Module 测试夹具
-- [ ] Routing 测试夹具
-- [ ] UI dispatcher 测试夹具
-- [ ] Plugin runtime 测试夹具
-- [ ] Source Generator snapshot / compilation test 基础设施
-- [ ] AOT 友好检查测试入口
-- [ ] CI 中接入测试分类
-- [ ] Phase 1 验收
+- [x] 测试分层规范落地：unit / integration / analyzer / generator / runtime
+- [x] 测试命名规范落地
+- [x] 测试基类与 shared test utilities
+- [x] Host 测试夹具
+- [x] Module 测试夹具
+- [x] Routing 测试夹具
+- [x] UI dispatcher 测试夹具
+- [x] Plugin runtime 测试夹具
+- [x] Source Generator snapshot / compilation test 基础设施
+- [x] AOT 友好检查测试入口
+- [x] CI 中接入测试分类
+- [x] Phase 1 验收
 
 ## Phase 2: Source Generator Platform
 
 目标：在 Module / Routing 前完成 SG 总体框架，避免后续依赖反射扫描。
 
-- [ ] SG 项目结构确认
-- [ ] Analyzer / Generator 命名规范
-- [ ] 增量生成器基础设施
-- [ ] 诊断 ID 规划
-- [ ] 生成代码命名规范
-- [ ] Module metadata 生成能力
-- [ ] Module dependency graph 生成能力
-- [ ] Service registration manifest 生成能力
+- [x] SG 项目结构确认
+- [x] Analyzer / Generator 命名规范
+- [x] 增量生成器基础设施
+- [x] 诊断 ID 规划
+- [x] 生成代码命名规范
+- [x] Module metadata 生成能力
+- [x] Module dependency graph 生成能力
+- [x] Service registration manifest 生成能力
 - [ ] Route manifest 生成能力
 - [ ] Localization manifest 生成能力
 - [ ] Plugin manifest 辅助生成能力
