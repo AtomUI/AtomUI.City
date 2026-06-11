@@ -1,0 +1,283 @@
+# AtomUI.City Development Tracking Plan
+
+**目标：** 用可精确跟踪的阶段计划推进 AtomUI.City 从当前骨架到可发布的第一版框架内核。
+
+**当前基线：**
+
+- 分支：`develop`
+- 当前提交：`2b36485 docs: complete architecture design documentation`
+- 当前测试：`dotnet test AtomUICity.slnx` 通过，21 tests passed
+- 当前状态：设计文档初版完成，进入实现前的工程基线与核心机制落地阶段
+
+## 状态定义
+
+- `[x]` 已完成
+- `[ ]` 未完成
+- `Blocked` 表示被外部条件阻塞
+- `Review` 表示需要文档或设计 review 后才能继续
+- `Parallel` 表示可以与其他 phase 并行推进
+
+## 文档门禁
+
+- [x] 全局架构文档完成
+- [x] Lifecycle 设计文档完成
+- [x] Hosting 设计文档完成
+- [x] Module 设计文档完成
+- [x] Routing 设计文档完成
+- [x] Presentation 设计文档完成
+- [x] MVVM 设计文档完成
+- [x] State 设计文档完成
+- [x] EventBus 设计文档完成
+- [x] PluginSystem 设计文档完成
+- [x] Data Access 设计文档完成
+- [x] Localization 设计文档完成
+- [x] Testing 设计文档完成
+- [x] CLI / Templates 设计文档完成
+- [x] Roadmap 文档完成
+- [ ] 开发计划文档确认并落盘
+
+## Phase 0: 工程基线
+
+目标：先把工程约束固定住，避免后续代码风格、许可证、构建产物、测试约束返工。
+
+- [x] `AtomUICity.slnx` 创建完成
+- [x] 核心项目骨架创建完成
+- [x] 测试项目骨架创建完成
+- [x] 输出目录统一到 `output`
+- [x] 基础测试可运行
+- [ ] 项目清单测试：验证 solution 中必须包含的项目
+- [ ] 项目依赖边界测试：验证禁止的反向依赖
+- [ ] 输出目录测试：验证构建产物进入 `output`
+- [ ] CI 工作流：restore / build / test / format / docs check
+- [ ] format 检查：统一 `.editorconfig` 与格式化命令
+- [ ] license header 检查：LGPL v3 头部或集中式许可证策略
+- [ ] NuGet metadata 检查：license、repository、package id、description
+- [ ] Phase 0 验收
+
+## Phase 1: Testing Platform
+
+目标：提前建立测试基础设施，后续每个功能点都必须能被单元测试和必要的集成测试覆盖。
+
+- [ ] 测试分层规范落地：unit / integration / analyzer / generator / runtime
+- [ ] 测试命名规范落地
+- [ ] 测试基类与 shared test utilities
+- [ ] Host 测试夹具
+- [ ] Module 测试夹具
+- [ ] Routing 测试夹具
+- [ ] UI dispatcher 测试夹具
+- [ ] Plugin runtime 测试夹具
+- [ ] Source Generator snapshot / compilation test 基础设施
+- [ ] AOT 友好检查测试入口
+- [ ] CI 中接入测试分类
+- [ ] Phase 1 验收
+
+## Phase 2: Source Generator Platform
+
+目标：在 Module / Routing 前完成 SG 总体框架，避免后续依赖反射扫描。
+
+- [ ] SG 项目结构确认
+- [ ] Analyzer / Generator 命名规范
+- [ ] 增量生成器基础设施
+- [ ] 诊断 ID 规划
+- [ ] 生成代码命名规范
+- [ ] Module metadata 生成能力
+- [ ] Module dependency graph 生成能力
+- [ ] Service registration manifest 生成能力
+- [ ] Route manifest 生成能力
+- [ ] Localization manifest 生成能力
+- [ ] Plugin manifest 辅助生成能力
+- [ ] 生成器测试覆盖
+- [ ] Phase 2 验收
+
+## Phase 3: Core Host / Lifecycle
+
+目标：确定应用框架最核心的启动、运行、停止、异常和生命周期扩展模型。
+
+- [ ] Host builder contract
+- [ ] Application host runtime
+- [ ] Lifecycle stage model
+- [ ] Lifecycle middleware pipeline
+- [ ] Application / Module / Plugin / Navigation 生命周期关系
+- [ ] UI dispatcher 抽象接入点
+- [ ] Host options 与配置入口
+- [ ] Host diagnostics
+- [ ] Host integration tests
+- [ ] Phase 3 验收
+
+## Phase 4: Modularity
+
+目标：实现模块声明、模块依赖、模块初始化顺序和模块服务注册。
+
+- [ ] `IModule` / `ModuleBase` 接口完善
+- [ ] Module attribute 设计落地
+- [ ] 默认模块名规则：未指定时使用模块类型全名
+- [ ] 模块依赖声明
+- [ ] SG 生成模块依赖图
+- [ ] 循环依赖诊断
+- [ ] 模块初始化阶段：PreConfigure / Configure / PostConfigure
+- [ ] 异步初始化阶段
+- [ ] 模块服务注册
+- [ ] 模块生命周期测试
+- [ ] Phase 4 验收
+
+## Phase 5: Routing
+
+目标：实现 Route -> ViewModel Target 的稳定链路，并保证路由表 AOT 友好。
+
+- [ ] 路由语法实现
+- [ ] 路由模板解析
+- [ ] 路由参数绑定
+- [ ] Route target model
+- [ ] Route manifest SG
+- [ ] Route matcher
+- [ ] Navigation context
+- [ ] Route guard / filter
+- [ ] Navigation error model
+- [ ] Routing tests
+- [ ] Phase 5 验收
+
+## Phase 6: Presentation
+
+目标：打通 ViewModel -> View -> Outlet -> VisualTree，并定义 UI 状态回流机制。
+
+- [ ] View locator contract
+- [ ] View registration model
+- [ ] ViewModel to View resolution
+- [ ] Route outlet contract
+- [ ] Outlet commit pipeline
+- [ ] UI dispatcher integration
+- [ ] VisualTree 变化通知
+- [ ] UI element state 到 ViewModel 的反馈规范
+- [ ] Presentation tests
+- [ ] Phase 6 验收
+
+## Phase 7: MVVM
+
+目标：提供框架自己的 MVVM 编程模型，但不重复底层 UI 框架职责。
+
+- [ ] ViewModel activation
+- [ ] Activation scope
+- [ ] Command contract
+- [ ] Async command contract
+- [ ] Interaction contract
+- [ ] Validation contract
+- [ ] Observable / notification 基础约束
+- [ ] 与 Presentation 生命周期对齐
+- [ ] MVVM tests
+- [ ] Phase 7 验收
+
+## Phase 8: State
+
+目标：提供桌面应用可注入、可监听、线程安全、AOT 友好的状态管理能力。
+
+- [ ] 全局状态 contract
+- [ ] 局部状态 contract
+- [ ] 状态容器生命周期
+- [ ] 状态监听机制
+- [ ] UI 线程调度约束
+- [ ] 后台线程写入约束
+- [ ] 派生状态
+- [ ] 状态快照
+- [ ] 状态恢复
+- [ ] State tests
+- [ ] Phase 8 验收
+
+## Phase 9: EventBus
+
+目标：提供模块和插件之间低耦合、高性能、线程模型清晰的系统级事件机制。
+
+- [ ] 事件 contract 规范
+- [ ] 进程内事件总线
+- [ ] 同步 / 异步 handler
+- [ ] UI dispatcher 投递策略
+- [ ] 后台线程投递策略
+- [ ] 事件订阅生命周期
+- [ ] 跨插件边界 contract assembly 规范
+- [ ] 弱引用或显式释放策略
+- [ ] 事件诊断能力
+- [ ] EventBus tests
+- [ ] Phase 9 验收
+
+## Phase 10: PluginSystem
+
+目标：实现运行时可安装、加载、卸载的插件体系，并与 Host / Module / EventBus 生命周期一致。
+
+- [ ] Plugin manifest
+- [ ] Plugin assembly loading
+- [ ] Plugin module model
+- [ ] Plugin install directory 规范
+- [ ] Plugin package layout
+- [ ] Plugin NuGet packaging
+- [ ] Plugin MSBuild properties
+- [ ] Plugin MSBuild tasks
+- [ ] Plugin unload lifecycle
+- [ ] Plugin dependency validation
+- [ ] Plugin tests
+- [ ] Phase 10 验收
+
+## Phase 11: Data Access
+
+目标：提供统一的数据访问抽象，首批支持 HttpClient、gRPC、SignalR。
+
+- [ ] Data client contract
+- [ ] HttpClient integration
+- [ ] gRPC integration
+- [ ] SignalR integration
+- [ ] Connection lifecycle
+- [ ] Retry / timeout / cancellation
+- [ ] Authentication integration point
+- [ ] Threading policy
+- [ ] Data access tests
+- [ ] Phase 11 验收
+
+## Phase 12: Localization
+
+目标：实现强大的桌面端多语言能力，支持按语言包懒加载和 assembly 动态加载。
+
+- [ ] Localization contract
+- [ ] Resource provider
+- [ ] Culture switching
+- [ ] Per-language lazy loading
+- [ ] Assembly language package loading
+- [ ] AtomUI integration point
+- [ ] Missing resource diagnostics
+- [ ] Localization tests
+- [ ] Phase 12 验收
+
+## Phase 13: CLI / Templates
+
+目标：提供 `atomui city ...` 命令体系，支撑创建、开发、插件、模板、诊断和 AI 友好工作流。
+
+- [ ] CLI command architecture
+- [ ] `atomui city new`
+- [ ] `atomui city build`
+- [ ] `atomui city test`
+- [ ] `atomui city plugin`
+- [ ] `atomui city doctor`
+- [ ] AI-friendly project inspection output
+- [ ] Templates package
+- [ ] CLI tests
+- [ ] Phase 13 验收
+
+## Phase 14: Packaging / Release
+
+目标：形成可发布、可验证、可维护的第一版包体系。
+
+- [ ] Package dependency review
+- [ ] Public API review
+- [ ] XML docs / API docs check
+- [ ] NuGet package generation
+- [ ] Symbols package
+- [ ] SourceLink
+- [ ] License verification
+- [ ] Release notes generation
+- [ ] Versioning policy
+- [ ] Phase 14 验收
+
+## 推荐立即执行顺序
+
+1. 完成 `Phase 0` 剩余工程基线，特别是 CI、format、license header。
+2. 并行启动 `Phase 1 Testing Platform`，先把测试夹具定下来。
+3. 开始 `Phase 2 Source Generator Platform`，优先 Module metadata、dependency graph、Route manifest。
+4. 再进入 `Phase 3 Host / Lifecycle`。
+5. 随后依次推进 `Modularity`、`Routing`、`Presentation`，保证主链路闭环。
