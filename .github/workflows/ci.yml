@@ -31,28 +31,28 @@ jobs:
         run: dotnet build AtomUICity.slnx --no-restore
 
       - name: Public API
-        run: bash eng/check-public-api.sh
+        run: bash engineering/check-public-api.sh
 
       - name: Test
-        run: bash eng/test-ci.sh
+        run: bash engineering/test-ci.sh
 
       - name: Format
         run: dotnet format AtomUICity.slnx --verify-no-changes --no-restore
 
       - name: License Headers
-        run: bash eng/check-license.sh
+        run: bash engineering/check-license.sh
 
       - name: Documentation
-        run: bash eng/check-docs.sh
+        run: bash engineering/check-docs.sh
 
       - name: Release Notes
-        run: bash eng/generate-release-notes.sh
+        run: bash engineering/generate-release-notes.sh
 
       - name: Pack
-        run: bash eng/pack.sh --no-build
+        run: bash engineering/pack.sh --no-build
 
       - name: Package Validation
-        run: bash eng/validate-packages.sh
+        run: bash engineering/validate-packages.sh
 
       - name: Template Smoke
-        run: bash eng/check-template-smoke.sh
+        run: bash engineering/check-template-smoke.sh

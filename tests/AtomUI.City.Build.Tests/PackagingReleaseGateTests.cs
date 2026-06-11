@@ -4,6 +4,8 @@ namespace AtomUI.City.Build.Tests;
 
 public sealed class PackagingReleaseGateTests
 {
+    private const string EngineeringScriptsDirectoryName = "engineering";
+
     [Fact]
     public void PackageMetadataDefinesReleaseReadyNuGetProperties()
     {
@@ -92,17 +94,17 @@ public sealed class PackagingReleaseGateTests
     public void PackagingScriptsExistAndUseRepositoryOutputLayout()
     {
         var repositoryRoot = RepositoryPaths.FindRepositoryRoot();
-        var packScriptPath = Path.Combine(repositoryRoot, "eng", "pack.sh");
-        var validatePackagesScriptPath = Path.Combine(repositoryRoot, "eng", "validate-packages.sh");
-        var templateSmokeScriptPath = Path.Combine(repositoryRoot, "eng", "check-template-smoke.sh");
-        var releaseNotesScriptPath = Path.Combine(repositoryRoot, "eng", "generate-release-notes.sh");
-        var publicApiScriptPath = Path.Combine(repositoryRoot, "eng", "check-public-api.sh");
+        var packScriptPath = Path.Combine(repositoryRoot, EngineeringScriptsDirectoryName, "pack.sh");
+        var validatePackagesScriptPath = Path.Combine(repositoryRoot, EngineeringScriptsDirectoryName, "validate-packages.sh");
+        var templateSmokeScriptPath = Path.Combine(repositoryRoot, EngineeringScriptsDirectoryName, "check-template-smoke.sh");
+        var releaseNotesScriptPath = Path.Combine(repositoryRoot, EngineeringScriptsDirectoryName, "generate-release-notes.sh");
+        var publicApiScriptPath = Path.Combine(repositoryRoot, EngineeringScriptsDirectoryName, "check-public-api.sh");
 
-        Assert.True(File.Exists(packScriptPath), "Expected package generation script at eng/pack.sh.");
-        Assert.True(File.Exists(validatePackagesScriptPath), "Expected package validation script at eng/validate-packages.sh.");
-        Assert.True(File.Exists(templateSmokeScriptPath), "Expected template smoke script at eng/check-template-smoke.sh.");
-        Assert.True(File.Exists(releaseNotesScriptPath), "Expected release notes script at eng/generate-release-notes.sh.");
-        Assert.True(File.Exists(publicApiScriptPath), "Expected public API review script at eng/check-public-api.sh.");
+        Assert.True(File.Exists(packScriptPath), "Expected package generation script at engineering/pack.sh.");
+        Assert.True(File.Exists(validatePackagesScriptPath), "Expected package validation script at engineering/validate-packages.sh.");
+        Assert.True(File.Exists(templateSmokeScriptPath), "Expected template smoke script at engineering/check-template-smoke.sh.");
+        Assert.True(File.Exists(releaseNotesScriptPath), "Expected release notes script at engineering/generate-release-notes.sh.");
+        Assert.True(File.Exists(publicApiScriptPath), "Expected public API review script at engineering/check-public-api.sh.");
 
         var packScript = File.ReadAllText(packScriptPath);
         Assert.Contains("dotnet pack", packScript, StringComparison.Ordinal);
@@ -191,11 +193,11 @@ public sealed class PackagingReleaseGateTests
         var repositoryRoot = RepositoryPaths.FindRepositoryRoot();
         var workflow = File.ReadAllText(Path.Combine(repositoryRoot, ".github", "workflows", "ci.yml"));
 
-        Assert.Contains("bash eng/check-public-api.sh", workflow, StringComparison.Ordinal);
-        Assert.Contains("bash eng/pack.sh --no-build", workflow, StringComparison.Ordinal);
-        Assert.Contains("bash eng/validate-packages.sh", workflow, StringComparison.Ordinal);
-        Assert.Contains("bash eng/check-template-smoke.sh", workflow, StringComparison.Ordinal);
-        Assert.Contains("bash eng/generate-release-notes.sh", workflow, StringComparison.Ordinal);
+        Assert.Contains("bash engineering/check-public-api.sh", workflow, StringComparison.Ordinal);
+        Assert.Contains("bash engineering/pack.sh --no-build", workflow, StringComparison.Ordinal);
+        Assert.Contains("bash engineering/validate-packages.sh", workflow, StringComparison.Ordinal);
+        Assert.Contains("bash engineering/check-template-smoke.sh", workflow, StringComparison.Ordinal);
+        Assert.Contains("bash engineering/generate-release-notes.sh", workflow, StringComparison.Ordinal);
     }
 
     private static IReadOnlyDictionary<string, string> ReadProperties(XDocument document)

@@ -4,6 +4,8 @@ namespace AtomUI.City.Build.Tests;
 
 public sealed class EngineeringGateTests
 {
+    private const string EngineeringScriptsDirectoryName = "engineering";
+
     [Fact]
     public void EditorConfigDefinesRepositoryFormattingPolicy()
     {
@@ -33,19 +35,30 @@ public sealed class EngineeringGateTests
 
         Assert.Contains("dotnet restore AtomUICity.slnx", workflow, StringComparison.Ordinal);
         Assert.Contains("dotnet build AtomUICity.slnx --no-restore", workflow, StringComparison.Ordinal);
-        Assert.Contains("bash eng/test-ci.sh", workflow, StringComparison.Ordinal);
+        Assert.Contains("bash engineering/test-ci.sh", workflow, StringComparison.Ordinal);
         Assert.Contains("dotnet format AtomUICity.slnx --verify-no-changes --no-restore", workflow, StringComparison.Ordinal);
-        Assert.Contains("bash eng/check-license.sh", workflow, StringComparison.Ordinal);
-        Assert.Contains("bash eng/check-docs.sh", workflow, StringComparison.Ordinal);
+        Assert.Contains("bash engineering/check-license.sh", workflow, StringComparison.Ordinal);
+        Assert.Contains("bash engineering/check-docs.sh", workflow, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void RepositoryUsesDescriptiveEngineeringScriptDirectoryName()
+    {
+        var repositoryRoot = RepositoryPaths.FindRepositoryRoot();
+        var abbreviatedDirectoryPath = Path.Combine(repositoryRoot, "e" + "ng");
+        var engineeringDirectoryPath = Path.Combine(repositoryRoot, EngineeringScriptsDirectoryName);
+
+        Assert.False(Directory.Exists(abbreviatedDirectoryPath), "Use engineering/ instead of the abbreviated engineering/ directory.");
+        Assert.True(Directory.Exists(engineeringDirectoryPath), "Expected engineering scripts at engineering/.");
     }
 
     [Fact]
     public void ContinuousIntegrationTestScriptAppliesTestCategoryPolicy()
     {
         var repositoryRoot = RepositoryPaths.FindRepositoryRoot();
-        var scriptPath = Path.Combine(repositoryRoot, "eng", "test-ci.sh");
+        var scriptPath = Path.Combine(repositoryRoot, EngineeringScriptsDirectoryName, "test-ci.sh");
 
-        Assert.True(File.Exists(scriptPath), "Expected CI test script at eng/test-ci.sh.");
+        Assert.True(File.Exists(scriptPath), "Expected CI test script at engineering/test-ci.sh.");
 
         var script = File.ReadAllText(scriptPath);
 
@@ -57,9 +70,9 @@ public sealed class EngineeringGateTests
     public void CentralizedLicenseCheckScriptExists()
     {
         var repositoryRoot = RepositoryPaths.FindRepositoryRoot();
-        var scriptPath = Path.Combine(repositoryRoot, "eng", "check-license.sh");
+        var scriptPath = Path.Combine(repositoryRoot, EngineeringScriptsDirectoryName, "check-license.sh");
 
-        Assert.True(File.Exists(scriptPath), "Expected centralized license check script at eng/check-license.sh.");
+        Assert.True(File.Exists(scriptPath), "Expected centralized license check script at engineering/check-license.sh.");
 
         var script = File.ReadAllText(scriptPath);
 
@@ -72,9 +85,9 @@ public sealed class EngineeringGateTests
     public void DocumentationCheckScriptExists()
     {
         var repositoryRoot = RepositoryPaths.FindRepositoryRoot();
-        var scriptPath = Path.Combine(repositoryRoot, "eng", "check-docs.sh");
+        var scriptPath = Path.Combine(repositoryRoot, EngineeringScriptsDirectoryName, "check-docs.sh");
 
-        Assert.True(File.Exists(scriptPath), "Expected documentation check script at eng/check-docs.sh.");
+        Assert.True(File.Exists(scriptPath), "Expected documentation check script at engineering/check-docs.sh.");
 
         var script = File.ReadAllText(scriptPath);
 
