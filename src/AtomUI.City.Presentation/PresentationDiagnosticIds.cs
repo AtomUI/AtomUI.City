@@ -10,4 +10,6 @@ public static class PresentationDiagnosticIds
     public const string ViewLocatorFailed = "AUCPRS006";
     public const string ViewCreated = "AUCPRS007";
     public const string ViewCreationFailed = "AUCPRS008";
+    public const string ViewBound = "AUCPRS009";
+    public const string ViewBindingFailed = "AUCPRS010";
 }

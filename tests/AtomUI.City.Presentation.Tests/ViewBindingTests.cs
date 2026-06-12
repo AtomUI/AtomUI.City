@@ -125,6 +125,52 @@ public sealed class ViewBindingTests
         Assert.Equal(PresentationError.BindingFailed, exception.Error);
     }
 
+    [Fact]
+    public void ViewBinderRecordsBindingDiagnostics()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var binder = new ViewBinder(diagnostics);
+        var descriptor = new ViewDescriptor(
+            typeof(SettingsViewModel),
+            typeof(SettingsView),
+            viewKey: null,
+            _ => new SettingsView());
+        var view = new SettingsView();
+        var viewModel = new SettingsViewModel();
+
+        binder.Bind(descriptor, view, viewModel);
+
+        Assert.Contains(
+            diagnostics.Records,
+            record =>
+                record.Code == PresentationDiagnosticIds.ViewBound &&
+                record.Severity == HostDiagnosticSeverity.Info &&
+                record.Message.Contains(typeof(SettingsViewModel).FullName!, StringComparison.Ordinal) &&
+                record.Message.Contains(typeof(SettingsView).FullName!, StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void ViewBinderRecordsBindingFailureDiagnostics()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var binder = new ViewBinder(diagnostics);
+        var descriptor = new ViewDescriptor(
+            typeof(SettingsViewModel),
+            typeof(object),
+            viewKey: null,
+            _ => new object());
+
+        Assert.Throws<PresentationException>(
+            () => binder.Bind(descriptor, new object(), new SettingsViewModel()));
+
+        Assert.Contains(
+            diagnostics.Records,
+            record =>
+                record.Code == PresentationDiagnosticIds.ViewBindingFailed &&
+                record.Severity == HostDiagnosticSeverity.Error &&
+                record.Message.Contains(typeof(SettingsViewModel).FullName!, StringComparison.Ordinal));
+    }
+
     private sealed class RecordingDispatcher : IUiDispatcher
     {
         public int InvokeCount { get; private set; }
