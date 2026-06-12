@@ -7,18 +7,34 @@ namespace AtomUI.City.Presentation;
 public sealed class ViewFactory
 {
     private readonly IUiDispatcher _dispatcher;
+    private readonly IServiceProvider _services;
     private readonly IHostDiagnostics? _diagnostics;
 
     public ViewFactory(IUiDispatcher dispatcher)
-        : this(dispatcher, diagnostics: null)
+        : this(dispatcher, EmptyServiceProvider.Instance, diagnostics: null)
+    {
+    }
+
+    public ViewFactory(IUiDispatcher dispatcher, IServiceProvider services)
+        : this(dispatcher, services, diagnostics: null)
     {
     }
 
     public ViewFactory(IUiDispatcher dispatcher, IHostDiagnostics? diagnostics)
+        : this(dispatcher, EmptyServiceProvider.Instance, diagnostics)
+    {
+    }
+
+    public ViewFactory(
+        IUiDispatcher dispatcher,
+        IServiceProvider services,
+        IHostDiagnostics? diagnostics)
     {
         ArgumentNullException.ThrowIfNull(dispatcher);
+        ArgumentNullException.ThrowIfNull(services);
 
         _dispatcher = dispatcher;
+        _services = services;
         _diagnostics = diagnostics;
     }
 
@@ -33,7 +49,7 @@ public sealed class ViewFactory
         try
         {
             var view = await _dispatcher.InvokeAsync(
-                () => descriptor.CreateView(new ViewFactoryContext()),
+                () => descriptor.CreateView(new ViewFactoryContext(_services)),
                 cancellationToken);
             stopwatch.Stop();
             WriteCreatedDiagnostic(descriptor, stopwatch.Elapsed);
@@ -66,5 +82,15 @@ public sealed class ViewFactory
             PresentationDiagnosticIds.ViewCreationFailed,
             $"View factory failed to create view '{descriptor.ViewType.FullName}' for view model '{descriptor.ViewModelType.FullName}' in {elapsed.TotalMilliseconds:0.###} ms: {exception.Message}",
             HostDiagnosticSeverity.Error));
+    }
+
+    private sealed class EmptyServiceProvider : IServiceProvider
+    {
+        public static EmptyServiceProvider Instance { get; } = new();
+
+        public object? GetService(Type serviceType)
+        {
+            return null;
+        }
     }
 }

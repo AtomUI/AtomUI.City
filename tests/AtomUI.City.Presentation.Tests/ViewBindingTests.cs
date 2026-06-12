@@ -88,6 +88,26 @@ public sealed class ViewBindingTests
     }
 
     [Fact]
+    public async Task ViewFactoryPassesServiceProviderToViewFactoryContext()
+    {
+        var dependency = new ViewDependency();
+        var serviceProvider = new FixedServiceProvider(dependency);
+        var dispatcher = new RecordingDispatcher();
+        var descriptor = new ViewDescriptor(
+            typeof(SettingsViewModel),
+            typeof(SettingsViewWithDependency),
+            viewKey: null,
+            context => new SettingsViewWithDependency(
+                (ViewDependency)context.Services.GetService(typeof(ViewDependency))!));
+        var factory = new ViewFactory(dispatcher, serviceProvider);
+
+        var view = await factory.CreateAsync(descriptor);
+
+        var typedView = Assert.IsType<SettingsViewWithDependency>(view);
+        Assert.Same(dependency, typedView.Dependency);
+    }
+
+    [Fact]
     public void ViewBinderSetsDataContextAndClearsItOnDispose()
     {
         var binder = new ViewBinder();
@@ -205,5 +225,20 @@ public sealed class ViewBindingTests
     private sealed class SettingsView : IViewDataContextAware
     {
         public object? DataContext { get; set; }
+    }
+
+    private sealed class SettingsViewWithDependency(ViewDependency dependency)
+    {
+        public ViewDependency Dependency { get; } = dependency;
+    }
+
+    private sealed class ViewDependency;
+
+    private sealed class FixedServiceProvider(object service) : IServiceProvider
+    {
+        public object? GetService(Type serviceType)
+        {
+            return serviceType == service.GetType() ? service : null;
+        }
     }
 }
