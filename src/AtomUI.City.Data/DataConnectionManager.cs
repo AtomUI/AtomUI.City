@@ -71,7 +71,20 @@ public sealed class DataConnectionManager
         IDataConnection connection,
         CancellationToken cancellationToken)
     {
-        await connection.StopAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            await connection.StopAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
+        {
+            _diagnostics?.Write(new DataDiagnosticRecord(
+                DataDiagnosticIds.ConnectionStopFailed,
+                $"Data connection '{connection.ConnectionId}' stop failed.",
+                DataDiagnosticSeverity.Error,
+                ErrorKind: DataErrorKind.ConnectionFailed));
+
+            throw;
+        }
 
         _diagnostics?.Write(new DataDiagnosticRecord(
             DataDiagnosticIds.ConnectionStopped,

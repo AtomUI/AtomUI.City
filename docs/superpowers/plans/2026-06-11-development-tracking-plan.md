@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`2ea9959 fix(Data): map HTTP service unavailable`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，564 tests passed
-- 当前状态：已完成 Data HTTP rate limit mapping
+- 当前提交：`2c4381f fix(Data): map HTTP rate limiting`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，565 tests passed
+- 当前状态：已完成 Data connection stop failure diagnostic
 
 **最新实现检查点：**
 
@@ -227,6 +227,7 @@
 - [x] Data missing client diagnostic
 - [x] Data HTTP 503 service unavailable mapping
 - [x] Data HTTP 429 rate limit mapping
+- [x] Data connection stop failure diagnostic
 
 ## 状态定义
 

@@ -69,6 +69,30 @@ public sealed class DataConnectionLifecycleTests
         Assert.Contains("sales-hub", record.Message, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public async Task ConnectionManagerWritesStopFailureDiagnosticAndPropagatesFailure()
+    {
+        var diagnostics = new InMemoryDataDiagnostics();
+        var owner = new DataConnectionOwner(DataConnectionOwnerKind.Plugin, "sales-plugin");
+        var connection = new RecordingConnection("sales-hub", owner)
+        {
+            StopFailure = new InvalidOperationException("stop failed"),
+        };
+        var manager = new DataConnectionManager(diagnostics);
+        manager.Register(connection);
+
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+            () => manager.StopOwnerAsync(owner).AsTask());
+
+        Assert.Equal("stop failed", exception.Message);
+        var record = Assert.Single(
+            diagnostics.Records,
+            record => record.Code == DataDiagnosticIds.ConnectionStopFailed);
+        Assert.Equal(DataDiagnosticSeverity.Error, record.Severity);
+        Assert.Equal(DataErrorKind.ConnectionFailed, record.ErrorKind);
+        Assert.Contains("sales-hub", record.Message, StringComparison.Ordinal);
+    }
+
     private sealed class RecordingConnection : IDataConnection
     {
         public RecordingConnection(string connectionId, DataConnectionOwner owner)
@@ -87,6 +111,8 @@ public sealed class DataConnectionLifecycleTests
 
         public int StopCount { get; private set; }
 
+        public Exception? StopFailure { get; init; }
+
         public ValueTask StartAsync(CancellationToken cancellationToken = default)
         {
             StartCount++;
@@ -98,6 +124,11 @@ public sealed class DataConnectionLifecycleTests
         public ValueTask StopAsync(CancellationToken cancellationToken = default)
         {
             StopCount++;
+            if (StopFailure is not null)
+            {
+                throw StopFailure;
+            }
+
             State = DataConnectionState.Stopped;
 
             return ValueTask.CompletedTask;
