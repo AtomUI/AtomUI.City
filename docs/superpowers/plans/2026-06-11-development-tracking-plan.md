@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`e00a845 fix(Data): map HTTP transport timeouts`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，585 tests passed
-- 当前状态：已完成 Data SignalR invoke timeout mapping
+- 当前提交：`0663456 fix(Data): map SignalR invoke timeouts`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，586 tests passed
+- 当前状态：已完成 Data pipeline timeout cancellation result mapping
 
 **最新实现检查点：**
 
@@ -246,6 +246,7 @@
 - [x] Data gRPC cancelled status mapping
 - [x] Data HTTP transport timeout mapping
 - [x] Data SignalR invoke timeout mapping
+- [x] Data pipeline timeout cancellation result mapping
 
 ## 状态定义
 

@@ -567,6 +567,37 @@ public sealed class DataPipelineTests
     }
 
     [Fact]
+    public async Task PipelineMapsTransportCancellationCausedByOperationTimeout()
+    {
+        var transport = new RecordingTransport(async context =>
+        {
+            try
+            {
+                await Task.Delay(TimeSpan.FromSeconds(5), context.CancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                return DataResult<string>.Cancelled();
+            }
+
+            return DataResult<string>.Success("late");
+        });
+        var pipeline = new DataRequestPipeline(transport);
+        var request = new DataRequest<string>(
+            "catalog",
+            "get-items",
+            DataTransportKind.Http)
+        {
+            Resilience = new DataResilienceOptions { Timeout = TimeSpan.FromMilliseconds(10) },
+        };
+
+        var result = await pipeline.SendAsync(request);
+
+        Assert.Equal(DataResultStatus.Failed, result.Status);
+        Assert.Equal(DataErrorKind.Timeout, result.Error?.Kind);
+    }
+
+    [Fact]
     public async Task PipelineSuppressesResultWhenParentScopeStops()
     {
         var parent = LifecycleScope.CreateRoot(LifecycleScopeKind.Route, "route:/items");

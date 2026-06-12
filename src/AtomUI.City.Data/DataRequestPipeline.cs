@@ -113,6 +113,17 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
                     return suppressedResult;
                 }
 
+                if (result.Status == DataResultStatus.Cancelled
+                    && timeoutCancellation.IsCancellationRequested
+                    && !cancellationToken.IsCancellationRequested)
+                {
+                    var timeoutResult = DataResult<TResponse>.Failed(
+                        new DataError(DataErrorKind.Timeout, "Data operation timed out."));
+                    WriteRequestResultDiagnostic(context, timeoutResult);
+
+                    return timeoutResult;
+                }
+
                 if (result.Succeeded || !ShouldRetry(request, result, attempt, maxAttempts))
                 {
                     await WriteCacheAsync(cacheKey, result, context, operationToken).ConfigureAwait(false);
