@@ -96,6 +96,34 @@ public sealed class DataPipelineTests
     }
 
     [Fact]
+    public async Task PipelineWritesCacheHitDiagnosticWhenCacheHits()
+    {
+        var diagnostics = new InMemoryDataDiagnostics();
+        var cache = new RecordingRequestCache();
+        var transport = new RecordingTransport(_ => DataResult<string>.Success("transport"));
+        var pipeline = new DataRequestPipeline(transport, diagnostics: diagnostics, cache: cache);
+        var request = new DataRequest<string>(
+            "catalog",
+            "get-items",
+            DataTransportKind.Http)
+        {
+            Cache = DataCacheOptions.Enabled("items:v1"),
+        };
+        cache.Store(DataCacheKey.Create(request, "Anonymous"), "cached");
+
+        await pipeline.SendAsync(request);
+
+        var record = Assert.Single(
+            diagnostics.Records,
+            record => record.Code == DataDiagnosticIds.CacheHit);
+        Assert.Equal("catalog", record.ClientId);
+        Assert.Equal("get-items", record.OperationName);
+        Assert.Equal(DataTransportKind.Http, record.TransportKind);
+        Assert.Equal(0, record.Attempt);
+        Assert.NotEqual(Guid.Empty, record.OperationId);
+    }
+
+    [Fact]
     public async Task PipelineWritesSuccessfulQueryResultToCacheWhenCacheMisses()
     {
         var cache = new RecordingRequestCache();
@@ -118,6 +146,33 @@ public sealed class DataPipelineTests
         Assert.Equal(1, cache.Reads);
         Assert.Equal(1, cache.Writes);
         Assert.Equal("transport", cache.Get<string>(key));
+    }
+
+    [Fact]
+    public async Task PipelineWritesCacheMissDiagnosticWhenCacheMisses()
+    {
+        var diagnostics = new InMemoryDataDiagnostics();
+        var cache = new RecordingRequestCache();
+        var transport = new RecordingTransport(_ => DataResult<string>.Success("transport"));
+        var pipeline = new DataRequestPipeline(transport, diagnostics: diagnostics, cache: cache);
+        var request = new DataRequest<string>(
+            "catalog",
+            "get-items",
+            DataTransportKind.Http)
+        {
+            Cache = DataCacheOptions.Enabled("items:v1"),
+        };
+
+        await pipeline.SendAsync(request);
+
+        var record = Assert.Single(
+            diagnostics.Records,
+            record => record.Code == DataDiagnosticIds.CacheMiss);
+        Assert.Equal("catalog", record.ClientId);
+        Assert.Equal("get-items", record.OperationName);
+        Assert.Equal(DataTransportKind.Http, record.TransportKind);
+        Assert.Equal(0, record.Attempt);
+        Assert.NotEqual(Guid.Empty, record.OperationId);
     }
 
     [Fact]

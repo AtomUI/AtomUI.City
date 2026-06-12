@@ -9,6 +9,8 @@ public static class DataDiagnosticIds
     public const string RequestFailed = "AUCDATA005";
     public const string CacheReadFailed = "AUCDATA006";
     public const string CacheWriteFailed = "AUCDATA007";
+    public const string CacheHit = "AUCDATA008";
+    public const string CacheMiss = "AUCDATA009";
 }
 
 public sealed record DataDiagnosticRecord(

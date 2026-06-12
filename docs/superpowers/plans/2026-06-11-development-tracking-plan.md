@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`1f59bcc feat(Data): add cache failure diagnostics`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，553 tests passed
-- 当前状态：已完成 Data in-memory request cache
+- 当前提交：`771a157 feat(Data): add in-memory request cache`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，555 tests passed
+- 当前状态：已完成 Data cache hit/miss diagnostics
 
 **最新实现检查点：**
 
@@ -215,6 +215,8 @@
 - [x] Data cache write failure diagnostic
 - [x] Data in-memory request cache
 - [x] Data request cache DI registration
+- [x] Data cache hit diagnostic
+- [x] Data cache miss diagnostic
 
 ## 状态定义
 

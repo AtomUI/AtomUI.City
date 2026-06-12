@@ -316,7 +316,22 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
                 .TryGetAsync<TResponse>(cacheKey, cancellationToken)
                 .ConfigureAwait(false);
 
-            return lookup.IsHit ? DataResult<TResponse>.Success(lookup.Value!) : null;
+            if (!lookup.IsHit)
+            {
+                WriteCacheDiagnostic(
+                    DataDiagnosticIds.CacheMiss,
+                    $"Data operation '{context.OperationName}' cache miss.",
+                    context);
+
+                return null;
+            }
+
+            WriteCacheDiagnostic(
+                DataDiagnosticIds.CacheHit,
+                $"Data operation '{context.OperationName}' cache hit.",
+                context);
+
+            return DataResult<TResponse>.Success(lookup.Value!);
         }
         catch (OperationCanceledException)
         {
