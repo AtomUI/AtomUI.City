@@ -34,5 +34,13 @@ public sealed class GrpcDataTransport : IRequestResponseTransport
         {
             return DataResult<TResponse>.Cancelled();
         }
+        catch (Exception exception)
+        {
+            return DataResult<TResponse>.Failed(
+                new DataError(
+                    DataErrorKind.TransportError,
+                    exception.Message,
+                    Exception: exception));
+        }
     }
 }

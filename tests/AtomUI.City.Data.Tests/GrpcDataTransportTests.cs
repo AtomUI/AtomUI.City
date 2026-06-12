@@ -59,4 +59,23 @@ public sealed class GrpcDataTransportTests
         Assert.Equal(DataResultStatus.Cancelled, result.Status);
         Assert.Equal(DataErrorKind.Cancelled, result.Error?.Kind);
     }
+
+    [Fact]
+    public async Task GrpcTransportMapsInvokerFailureToTransportError()
+    {
+        var transport = new GrpcDataTransport();
+        var callException = new InvalidOperationException("channel unavailable");
+        var request = new GrpcDataRequest<string>(
+            "catalog",
+            "get-items",
+            (_, _) => throw callException);
+
+        var result = await transport.SendAsync(
+            request,
+            DataRequestContext.Create(request, CancellationToken.None));
+
+        Assert.False(result.Succeeded);
+        Assert.Equal(DataErrorKind.TransportError, result.Error?.Kind);
+        Assert.Same(callException, result.Error?.Exception);
+    }
 }
