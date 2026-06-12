@@ -5,8 +5,8 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`94f28fb feat(Presentation): add localized error message binding`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，399 tests passed
+- 当前提交：`c2edc47 feat(Routing): add localized route metadata binding`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，403 tests passed
 - 当前状态：已进入 Security / Data / Localization 基础集成实现阶段
 
 **最新实现检查点：**
@@ -52,6 +52,11 @@
 - [x] Presentation route text localization binding
 - [x] Presentation route title and breadcrumb culture refresh
 - [x] Presentation route text disposal through ActivationScope
+- [x] Presentation window text descriptor
+- [x] Presentation window title localization binding
+- [x] Presentation window title literal fallback
+- [x] Presentation window title culture refresh
+- [x] Presentation window title disposal through ActivationScope
 
 ## 状态定义
 
