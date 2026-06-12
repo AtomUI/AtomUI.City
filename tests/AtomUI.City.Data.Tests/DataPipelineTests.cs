@@ -256,6 +256,36 @@ public sealed class DataPipelineTests
     }
 
     [Fact]
+    public async Task PipelineMapsCacheHitAfterOperationTimeout()
+    {
+        var cache = new CallbackRequestCache(async cancellationToken =>
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                await Task.Delay(TimeSpan.FromMilliseconds(1));
+            }
+
+            return "cached";
+        });
+        var transport = new RecordingTransport(_ => DataResult<string>.Success("should-not-run"));
+        var pipeline = new DataRequestPipeline(transport, cache: cache);
+        var request = new DataRequest<string>(
+            "catalog",
+            "get-items",
+            DataTransportKind.Http)
+        {
+            Cache = DataCacheOptions.Enabled("items:v1"),
+            Resilience = new DataResilienceOptions { Timeout = TimeSpan.FromMilliseconds(10) },
+        };
+
+        var result = await pipeline.SendAsync(request);
+
+        Assert.Equal(DataResultStatus.Failed, result.Status);
+        Assert.Equal(DataErrorKind.Timeout, result.Error?.Kind);
+        Assert.Equal(0, transport.Attempts);
+    }
+
+    [Fact]
     public async Task PipelineWritesCacheWriteFailureDiagnosticAndReturnsTransportResult()
     {
         var diagnostics = new InMemoryDataDiagnostics();
