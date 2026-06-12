@@ -17,6 +17,12 @@ public sealed class DataConnectionManager
 
         if (connection.Owner == DataConnectionOwner.None)
         {
+            _diagnostics?.Write(new DataDiagnosticRecord(
+                DataDiagnosticIds.ConnectionRegistrationRejected,
+                $"Data connection '{connection.ConnectionId}' registration rejected because it has no owner.",
+                DataDiagnosticSeverity.Warning,
+                ErrorKind: DataErrorKind.PolicyRejected));
+
             return DataResult<DataConnectionRegistration>.Failed(
                 new DataError(
                     DataErrorKind.PolicyRejected,

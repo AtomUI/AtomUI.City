@@ -55,6 +55,25 @@ public sealed class DataConnectionLifecycleTests
     }
 
     [Fact]
+    public void ConnectionManagerWritesRejectedRegistrationDiagnostic()
+    {
+        var diagnostics = new InMemoryDataDiagnostics();
+        var connection = new RecordingConnection(
+            "manual-hub",
+            DataConnectionOwner.None);
+        var manager = new DataConnectionManager(diagnostics);
+
+        manager.Register(connection);
+
+        var record = Assert.Single(
+            diagnostics.Records,
+            record => record.Code == DataDiagnosticIds.ConnectionRegistrationRejected);
+        Assert.Equal(DataDiagnosticSeverity.Warning, record.Severity);
+        Assert.Equal(DataErrorKind.PolicyRejected, record.ErrorKind);
+        Assert.Contains("manual-hub", record.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void ConnectionManagerWritesRegisteredDiagnostic()
     {
         var diagnostics = new InMemoryDataDiagnostics();
