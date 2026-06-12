@@ -5,8 +5,8 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`c0996da feat(Presentation): add presentation runtime`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，428 tests passed
+- 当前提交：`0db650a feat(Presentation): add runtime diagnostics`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，431 tests passed
 - 当前状态：已进入 Localization / Presentation culture bridge 集成实现阶段
 
 **最新实现检查点：**
@@ -84,6 +84,9 @@
 - [x] Presentation runtime ready diagnostics
 - [x] Presentation runtime stopping diagnostics
 - [x] Presentation runtime diagnostics DI integration
+- [x] Presentation dispatcher runtime not-ready gate
+- [x] Presentation dispatcher runtime stopping gate
+- [x] Presentation dispatcher runtime DI integration
 
 ## 状态定义
 

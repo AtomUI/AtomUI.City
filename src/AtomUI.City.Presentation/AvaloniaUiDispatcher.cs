@@ -6,17 +6,29 @@ namespace AtomUI.City.Presentation;
 public sealed class AvaloniaUiDispatcher : IUiDispatcher
 {
     private readonly Dispatcher _dispatcher;
+    private readonly IPresentationRuntime? _runtime;
 
     public AvaloniaUiDispatcher()
-        : this(Dispatcher.UIThread)
+        : this(Dispatcher.UIThread, runtime: null)
+    {
+    }
+
+    public AvaloniaUiDispatcher(IPresentationRuntime runtime)
+        : this(Dispatcher.UIThread, runtime)
     {
     }
 
     public AvaloniaUiDispatcher(Dispatcher dispatcher)
+        : this(dispatcher, runtime: null)
+    {
+    }
+
+    public AvaloniaUiDispatcher(Dispatcher dispatcher, IPresentationRuntime? runtime)
     {
         ArgumentNullException.ThrowIfNull(dispatcher);
 
         _dispatcher = dispatcher;
+        _runtime = runtime;
     }
 
     public bool CheckAccess()
@@ -31,6 +43,12 @@ public sealed class AvaloniaUiDispatcher : IUiDispatcher
         if (cancellationToken.IsCancellationRequested)
         {
             return ValueTask.FromCanceled(cancellationToken);
+        }
+
+        var runtimeException = CreateRuntimeException();
+        if (runtimeException is not null)
+        {
+            return ValueTask.FromException(runtimeException);
         }
 
         if (_dispatcher.CheckAccess())
@@ -61,6 +79,12 @@ public sealed class AvaloniaUiDispatcher : IUiDispatcher
             return ValueTask.FromCanceled<T>(cancellationToken);
         }
 
+        var runtimeException = CreateRuntimeException();
+        if (runtimeException is not null)
+        {
+            return ValueTask.FromException<T>(runtimeException);
+        }
+
         if (_dispatcher.CheckAccess())
         {
             try
@@ -87,6 +111,12 @@ public sealed class AvaloniaUiDispatcher : IUiDispatcher
         if (cancellationToken.IsCancellationRequested)
         {
             return ValueTask.FromCanceled(cancellationToken);
+        }
+
+        var runtimeException = CreateRuntimeException();
+        if (runtimeException is not null)
+        {
+            return ValueTask.FromException(runtimeException);
         }
 
         if (_dispatcher.CheckAccess())
@@ -147,5 +177,21 @@ public sealed class AvaloniaUiDispatcher : IUiDispatcher
         }
 
         return new ValueTask(taskCompletion.Task);
+    }
+
+    private PresentationException? CreateRuntimeException()
+    {
+        return _runtime?.State switch
+        {
+            PresentationRuntimeState.NotReady => new PresentationException(
+                PresentationError.RuntimeNotReady,
+                "Presentation runtime is not ready."),
+            PresentationRuntimeState.Stopping or
+                PresentationRuntimeState.Stopped or
+                PresentationRuntimeState.Faulted => new PresentationException(
+                    PresentationError.RuntimeStopping,
+                    "Presentation runtime is not accepting UI dispatcher operations."),
+            _ => null,
+        };
     }
 }

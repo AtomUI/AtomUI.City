@@ -1,3 +1,4 @@
+using AtomUI.City.Lifecycle;
 using AtomUI.City.Presentation;
 using AtomUI.City.Threading;
 using Avalonia.Threading;
@@ -32,6 +33,23 @@ public sealed class AvaloniaUiDispatcherTests
         using var provider = services.BuildServiceProvider();
 
         Assert.Same(existingDispatcher, provider.GetRequiredService<IUiDispatcher>());
+    }
+
+    [Fact]
+    public async Task ServiceCollectionDispatcherUsesRegisteredPresentationRuntime()
+    {
+        var services = new ServiceCollection();
+
+        services.AddPresentationRuntime();
+        services.AddAvaloniaUiDispatcher();
+
+        await using var provider = services.BuildServiceProvider();
+        var dispatcher = provider.GetRequiredService<IUiDispatcher>();
+
+        var exception = await Assert.ThrowsAsync<PresentationException>(
+            () => dispatcher.InvokeAsync(() => { }).AsTask());
+
+        Assert.Equal(PresentationError.RuntimeNotReady, exception.Error);
     }
 
     [Fact]
@@ -92,6 +110,59 @@ public sealed class AvaloniaUiDispatcherTests
                 },
                 cancellation.Token).AsTask());
 
+        Assert.False(wasCalled);
+    }
+
+    [Fact]
+    public async Task OperationsRejectWhenPresentationRuntimeIsNotReady()
+    {
+        var runtime = new PresentationRuntime();
+        var dispatcher = new AvaloniaUiDispatcher(Dispatcher.CurrentDispatcher, runtime);
+        var wasCalled = false;
+
+        var invokeException = await Assert.ThrowsAsync<PresentationException>(
+            () => dispatcher.InvokeAsync(() => wasCalled = true).AsTask());
+        var resultException = await Assert.ThrowsAsync<PresentationException>(
+            () => dispatcher.InvokeAsync(() => 42).AsTask());
+        var postException = await Assert.ThrowsAsync<PresentationException>(
+            () => dispatcher.PostAsync(
+                _ =>
+                {
+                    wasCalled = true;
+                    return ValueTask.CompletedTask;
+                }).AsTask());
+
+        Assert.Equal(PresentationError.RuntimeNotReady, invokeException.Error);
+        Assert.Equal(PresentationError.RuntimeNotReady, resultException.Error);
+        Assert.Equal(PresentationError.RuntimeNotReady, postException.Error);
+        Assert.False(wasCalled);
+    }
+
+    [Fact]
+    public async Task OperationsRejectWhenPresentationRuntimeIsStopped()
+    {
+        await using var application = LifecycleScope.CreateRoot(LifecycleScopeKind.Application, "application");
+        var runtime = new PresentationRuntime();
+        await runtime.StartAsync(application);
+        await runtime.StopAsync();
+        var dispatcher = new AvaloniaUiDispatcher(Dispatcher.CurrentDispatcher, runtime);
+        var wasCalled = false;
+
+        var invokeException = await Assert.ThrowsAsync<PresentationException>(
+            () => dispatcher.InvokeAsync(() => wasCalled = true).AsTask());
+        var resultException = await Assert.ThrowsAsync<PresentationException>(
+            () => dispatcher.InvokeAsync(() => 42).AsTask());
+        var postException = await Assert.ThrowsAsync<PresentationException>(
+            () => dispatcher.PostAsync(
+                _ =>
+                {
+                    wasCalled = true;
+                    return ValueTask.CompletedTask;
+                }).AsTask());
+
+        Assert.Equal(PresentationError.RuntimeStopping, invokeException.Error);
+        Assert.Equal(PresentationError.RuntimeStopping, resultException.Error);
+        Assert.Equal(PresentationError.RuntimeStopping, postException.Error);
         Assert.False(wasCalled);
     }
 
