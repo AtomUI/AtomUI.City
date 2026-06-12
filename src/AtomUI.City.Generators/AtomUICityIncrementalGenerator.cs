@@ -38,7 +38,7 @@ public sealed class AtomUICityIncrementalGenerator : IIncrementalGenerator
                 {
                     foreach (var diagnostic in result.Diagnostics)
                     {
-                        sourceContext.ReportDiagnostic(CreateDiagnostic(diagnostic));
+                        sourceContext.ReportDiagnostic(CreateDiagnostic(diagnostic, views));
                     }
 
                     return;
@@ -62,7 +62,9 @@ public sealed class AtomUICityIncrementalGenerator : IIncrementalGenerator
         return symbol is null ? [] : PresentationViewMetadataReader.Read(symbol);
     }
 
-    private static Diagnostic CreateDiagnostic(GeneratorDiagnostic diagnostic)
+    private static Diagnostic CreateDiagnostic(
+        GeneratorDiagnostic diagnostic,
+        IReadOnlyList<PresentationViewMetadata> views)
     {
         var descriptor = new DiagnosticDescriptor(
             diagnostic.Id,
@@ -72,7 +74,23 @@ public sealed class AtomUICityIncrementalGenerator : IIncrementalGenerator
             ToDiagnosticSeverity(diagnostic.Severity),
             isEnabledByDefault: true);
 
-        return Diagnostic.Create(descriptor, Location.None);
+        return Diagnostic.Create(descriptor, FindDiagnosticLocation(diagnostic, views) ?? Location.None);
+    }
+
+    private static Location? FindDiagnosticLocation(
+        GeneratorDiagnostic diagnostic,
+        IReadOnlyList<PresentationViewMetadata> views)
+    {
+        if (string.IsNullOrWhiteSpace(diagnostic.Target))
+        {
+            return null;
+        }
+
+        return views
+            .FirstOrDefault(view =>
+                string.Equals(view.ViewTypeName, diagnostic.Target, StringComparison.Ordinal) ||
+                string.Equals(view.ViewModelTypeName, diagnostic.Target, StringComparison.Ordinal))
+            ?.Location;
     }
 
     private static DiagnosticSeverity ToDiagnosticSeverity(GeneratorDiagnosticSeverity severity)

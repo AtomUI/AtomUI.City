@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`637d6c8 feat(Generator): report presentation manifest diagnostics`
+- 当前提交：`26bb240 test(Generator): verify presentation registrar compilation`
 - 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，499 tests passed
-- 当前状态：已完成 Generator Presentation generated registrar compile verification
+- 当前状态：已完成 Generator Presentation diagnostics source location
 
 **最新实现检查点：**
 
@@ -163,6 +163,7 @@
 - [x] Generator Presentation view registrar incremental output
 - [x] Generator Presentation manifest diagnostics reporting
 - [x] Generator Presentation generated registrar compile verification
+- [x] Generator Presentation diagnostics source location
 
 ## 状态定义
 

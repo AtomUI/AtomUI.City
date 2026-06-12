@@ -108,6 +108,7 @@ public sealed class AtomUICityIncrementalGeneratorPresentationTests
         Assert.Empty(generatorResult.GeneratedSources);
         Assert.Equal(GeneratorDiagnosticIds.DuplicatePresentationView, diagnostic.Id);
         Assert.Contains("Sample.App.SettingsViewModel", diagnostic.GetMessage(), StringComparison.Ordinal);
+        Assert.True(diagnostic.Location.IsInSource);
     }
 
     [Fact]

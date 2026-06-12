@@ -39,7 +39,8 @@ public static class PresentationViewMetadataReader
             viewModelTypeName!,
             ReadNamedString(attribute, "Key"),
             ReadNamedString(attribute, "PluginId"),
-            ReadNamedString(attribute, "ContributionId"));
+            ReadNamedString(attribute, "ContributionId"),
+            attribute.ApplicationSyntaxReference?.GetSyntax().GetLocation());
     }
 
     private static string? ReadConstructorTypeName(AttributeData attribute, int index)

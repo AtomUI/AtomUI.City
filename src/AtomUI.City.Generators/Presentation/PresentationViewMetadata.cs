@@ -1,3 +1,5 @@
+using Microsoft.CodeAnalysis;
+
 namespace AtomUI.City.Generators.Presentation;
 
 public sealed class PresentationViewMetadata
@@ -7,7 +9,8 @@ public sealed class PresentationViewMetadata
         string viewModelTypeName,
         string? viewKey,
         string? pluginId,
-        string? contributionId)
+        string? contributionId,
+        Location? location = null)
     {
         if (string.IsNullOrWhiteSpace(viewTypeName))
         {
@@ -24,6 +27,7 @@ public sealed class PresentationViewMetadata
         ViewKey = string.IsNullOrWhiteSpace(viewKey) ? null : viewKey;
         PluginId = string.IsNullOrWhiteSpace(pluginId) ? null : pluginId;
         ContributionId = string.IsNullOrWhiteSpace(contributionId) ? null : contributionId;
+        Location = location;
     }
 
     public string ViewTypeName { get; }
@@ -35,4 +39,6 @@ public sealed class PresentationViewMetadata
     public string? PluginId { get; }
 
     public string? ContributionId { get; }
+
+    public Location? Location { get; }
 }
