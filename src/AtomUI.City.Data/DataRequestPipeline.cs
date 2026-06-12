@@ -76,6 +76,14 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
             return credentialResult;
         }
 
+        if (IsOperationTimeout(timeoutCancellation, cancellationToken))
+        {
+            var timeoutResult = CreateTimeoutResult<TResponse>();
+            WriteRequestResultDiagnostic(context, timeoutResult);
+
+            return timeoutResult;
+        }
+
         if (cancellationToken.IsCancellationRequested)
         {
             var cancelledResult = DataResult<TResponse>.Cancelled();

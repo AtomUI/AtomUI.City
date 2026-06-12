@@ -446,6 +446,36 @@ public sealed class DataPipelineTests
     }
 
     [Fact]
+    public async Task PipelineMapsCredentialSuccessAfterOperationTimeout()
+    {
+        var credentials = new DelayingCredentialProvider(async cancellationToken =>
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                await Task.Delay(TimeSpan.FromMilliseconds(1));
+            }
+
+            return DataCredentialResult.Success(DataCredential.Bearer("access-token"));
+        });
+        var transport = new RecordingTransport(_ => DataResult<string>.Success("should-not-run"));
+        var pipeline = new DataRequestPipeline(transport, credentialProvider: credentials);
+        var request = new DataRequest<string>(
+            "catalog",
+            "secure-items",
+            DataTransportKind.Http)
+        {
+            Authentication = DataAuthenticationOptions.Bearer(),
+            Resilience = new DataResilienceOptions { Timeout = TimeSpan.FromMilliseconds(10) },
+        };
+
+        var result = await pipeline.SendAsync(request);
+
+        Assert.Equal(DataResultStatus.Failed, result.Status);
+        Assert.Equal(DataErrorKind.Timeout, result.Error?.Kind);
+        Assert.Equal(0, transport.Attempts);
+    }
+
+    [Fact]
     public async Task PipelineReturnsCancelledWhenRequestTokenIsCancelledDuringCredentialResolution()
     {
         var release = new TaskCompletionSource();
