@@ -30,6 +30,10 @@ public interface IEventSubscriber
         EventSubscriptionOptions? options = null);
 
     IEventSubscription Subscribe<TEvent>(
+        IEventHandler<TEvent> handler,
+        EventSubscriptionOptions? options = null);
+
+    IEventSubscription Subscribe<TEvent>(
         LifecycleScope owner,
         Func<EventContext<TEvent>, ValueTask> handler,
         EventSubscriptionOptions? options = null);
@@ -37,6 +41,11 @@ public interface IEventSubscriber
     IEventSubscription Subscribe<TEvent>(
         LifecycleScope owner,
         Action<EventContext<TEvent>> handler,
+        EventSubscriptionOptions? options = null);
+
+    IEventSubscription Subscribe<TEvent>(
+        LifecycleScope owner,
+        IEventHandler<TEvent> handler,
         EventSubscriptionOptions? options = null);
 
     IEventSubscription Subscribe<TEvent>(

@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`1101c98 feat(EventBus): add post diagnostics`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，540 tests passed
-- 当前状态：已完成 EventBus subscription in-flight drain
+- 当前提交：`9fdeb51 fix(EventBus): drain in-flight subscriptions`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，542 tests passed
+- 当前状态：已完成 EventBus typed handler subscription overloads
 
 **最新实现检查点：**
 
@@ -200,6 +200,8 @@
 - [x] EventBus PostAsync accepted diagnostic
 - [x] EventBus PostAsync rejected diagnostic
 - [x] EventBus subscription in-flight drain
+- [x] EventBus typed handler subscription overload
+- [x] EventBus owned typed handler subscription overload
 
 ## 状态定义
 

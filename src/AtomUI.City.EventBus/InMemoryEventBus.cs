@@ -45,6 +45,17 @@ public sealed class InMemoryEventBus : IEventBus
     }
 
     public IEventSubscription Subscribe<TEvent>(
+        IEventHandler<TEvent> handler,
+        EventSubscriptionOptions? options = null)
+    {
+        ArgumentNullException.ThrowIfNull(handler);
+
+        return Subscribe<TEvent>(
+            context => handler.HandleAsync(context),
+            options);
+    }
+
+    public IEventSubscription Subscribe<TEvent>(
         LifecycleScope owner,
         Func<EventContext<TEvent>, ValueTask> handler,
         EventSubscriptionOptions? options = null)
@@ -72,6 +83,19 @@ public sealed class InMemoryEventBus : IEventBus
 
                 return ValueTask.CompletedTask;
             },
+            options);
+    }
+
+    public IEventSubscription Subscribe<TEvent>(
+        LifecycleScope owner,
+        IEventHandler<TEvent> handler,
+        EventSubscriptionOptions? options = null)
+    {
+        ArgumentNullException.ThrowIfNull(handler);
+
+        return Subscribe<TEvent>(
+            owner,
+            context => handler.HandleAsync(context),
             options);
     }
 

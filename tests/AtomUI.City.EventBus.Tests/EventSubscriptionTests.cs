@@ -71,6 +71,38 @@ public sealed class EventSubscriptionTests
     }
 
     [Fact]
+    public async Task SubscribeAcceptsTypedEventHandlerInstance()
+    {
+        var eventBus = new InMemoryEventBus();
+        var handler = new RecordingEventHandler();
+
+        eventBus.Subscribe<TestEvent>(handler);
+
+        var result = await eventBus.PublishAsync(new TestEvent("handled"));
+
+        Assert.True(result.Succeeded);
+        Assert.Equal("handled", handler.Value);
+    }
+
+    [Fact]
+    public async Task SubscribeAcceptsOwnedTypedEventHandlerInstance()
+    {
+        var eventBus = new InMemoryEventBus();
+        var owner = LifecycleScope.CreateRoot(LifecycleScopeKind.Application, "app");
+        var handler = new RecordingEventHandler();
+
+        var subscription = eventBus.Subscribe(owner, handler);
+
+        await owner.StopAsync();
+        var result = await eventBus.PublishAsync(new TestEvent("ignored"));
+
+        Assert.Equal(EventSubscriptionState.Disposed, subscription.State);
+        Assert.True(result.Succeeded);
+        Assert.Equal(0, result.DeliveredCount);
+        Assert.Null(handler.Value);
+    }
+
+    [Fact]
     public async Task OwnerScopeCancellationDisposesSubscription()
     {
         var eventBus = new InMemoryEventBus();
@@ -92,4 +124,16 @@ public sealed class EventSubscriptionTests
     }
 
     private sealed record TestEvent(string Value);
+
+    private sealed class RecordingEventHandler : IEventHandler<TestEvent>
+    {
+        public string? Value { get; private set; }
+
+        public ValueTask HandleAsync(EventContext<TestEvent> context)
+        {
+            Value = context.Event.Value;
+
+            return ValueTask.CompletedTask;
+        }
+    }
 }
