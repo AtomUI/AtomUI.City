@@ -489,6 +489,60 @@ public sealed class DataPipelineTests
     }
 
     [Fact]
+    public async Task PipelineWritesCancelledDiagnosticWhenRequestTokenIsAlreadyCancelled()
+    {
+        var diagnostics = new InMemoryDataDiagnostics();
+        var transport = new RecordingTransport(_ => DataResult<string>.Success("should-not-run"));
+        var pipeline = new DataRequestPipeline(transport, diagnostics: diagnostics);
+        var request = new DataRequest<string>(
+            "catalog",
+            "get-items",
+            DataTransportKind.Http);
+        using var cancellation = new CancellationTokenSource();
+        await cancellation.CancelAsync();
+
+        var result = await pipeline.SendAsync(request, cancellation.Token);
+
+        var record = Assert.Single(
+            diagnostics.Records,
+            record => record.Code == DataDiagnosticIds.RequestCancelled);
+        Assert.Equal(DataResultStatus.Cancelled, result.Status);
+        Assert.Equal("catalog", record.ClientId);
+        Assert.Equal("get-items", record.OperationName);
+        Assert.Equal(DataTransportKind.Http, record.TransportKind);
+        Assert.Equal(0, record.Attempt);
+        Assert.Equal(DataErrorKind.Cancelled, record.ErrorKind);
+        Assert.NotEqual(Guid.Empty, record.OperationId);
+        Assert.Equal(0, transport.Attempts);
+    }
+
+    [Fact]
+    public async Task PipelineWritesCancelledDiagnosticWhenTransportCancels()
+    {
+        var diagnostics = new InMemoryDataDiagnostics();
+        var transport = new RecordingTransport(
+            new Func<DataRequestContext, DataResult<string>>(_ => throw new OperationCanceledException()));
+        var pipeline = new DataRequestPipeline(transport, diagnostics: diagnostics);
+        var request = new DataRequest<string>(
+            "catalog",
+            "get-items",
+            DataTransportKind.Http);
+
+        var result = await pipeline.SendAsync(request);
+
+        var record = Assert.Single(
+            diagnostics.Records,
+            record => record.Code == DataDiagnosticIds.RequestCancelled);
+        Assert.Equal(DataResultStatus.Cancelled, result.Status);
+        Assert.Equal("catalog", record.ClientId);
+        Assert.Equal("get-items", record.OperationName);
+        Assert.Equal(DataTransportKind.Http, record.TransportKind);
+        Assert.Equal(1, record.Attempt);
+        Assert.Equal(DataErrorKind.Cancelled, record.ErrorKind);
+        Assert.NotEqual(Guid.Empty, record.OperationId);
+    }
+
+    [Fact]
     public async Task PipelineMapsOperationTimeout()
     {
         var transport = new RecordingTransport(async context =>

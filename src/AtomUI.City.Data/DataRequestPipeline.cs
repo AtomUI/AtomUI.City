@@ -40,7 +40,11 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
 
         if (cancellationToken.IsCancellationRequested)
         {
-            return DataResult<TResponse>.Cancelled();
+            var earlyContext = DataRequestContext.Create(request, cancellationToken);
+            var cancelledResult = DataResult<TResponse>.Cancelled();
+            WriteRequestResultDiagnostic(earlyContext, cancelledResult);
+
+            return cancelledResult;
         }
 
         using var timeoutCancellation = CreateTimeoutCancellation(request.Resilience, cancellationToken);
@@ -420,14 +424,26 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
         DataRequestContext context,
         DataResult<TResponse> result)
     {
-        var succeeded = result.Succeeded;
+        var code = result.Status switch
+        {
+            DataResultStatus.Success => DataDiagnosticIds.RequestCompleted,
+            DataResultStatus.Cancelled => DataDiagnosticIds.RequestCancelled,
+            _ => DataDiagnosticIds.RequestFailed,
+        };
+        var severity = result.Status == DataResultStatus.Failed
+            ? DataDiagnosticSeverity.Warning
+            : DataDiagnosticSeverity.Trace;
+        var message = result.Status switch
+        {
+            DataResultStatus.Success => $"Data operation '{context.OperationName}' completed.",
+            DataResultStatus.Cancelled => $"Data operation '{context.OperationName}' was cancelled.",
+            _ => $"Data operation '{context.OperationName}' failed.",
+        };
 
         _diagnostics?.Write(new DataDiagnosticRecord(
-            succeeded ? DataDiagnosticIds.RequestCompleted : DataDiagnosticIds.RequestFailed,
-            succeeded
-                ? $"Data operation '{context.OperationName}' completed."
-                : $"Data operation '{context.OperationName}' failed.",
-            succeeded ? DataDiagnosticSeverity.Trace : DataDiagnosticSeverity.Warning,
+            code,
+            message,
+            severity,
             context.OperationId,
             context.ClientId,
             context.OperationName,
