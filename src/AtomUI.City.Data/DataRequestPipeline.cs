@@ -65,6 +65,12 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
         var credentialResult = await ResolveCredentialAsync(request, context, operationToken).ConfigureAwait(false);
         if (credentialResult is not null)
         {
+            if (credentialResult.Status == DataResultStatus.Cancelled
+                && IsOperationTimeout(timeoutCancellation, cancellationToken))
+            {
+                credentialResult = CreateTimeoutResult<TResponse>();
+            }
+
             WriteRequestResultDiagnostic(context, credentialResult);
 
             return credentialResult;
@@ -114,11 +120,9 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
                 }
 
                 if (result.Status == DataResultStatus.Cancelled
-                    && timeoutCancellation.IsCancellationRequested
-                    && !cancellationToken.IsCancellationRequested)
+                    && IsOperationTimeout(timeoutCancellation, cancellationToken))
                 {
-                    var timeoutResult = DataResult<TResponse>.Failed(
-                        new DataError(DataErrorKind.Timeout, "Data operation timed out."));
+                    var timeoutResult = CreateTimeoutResult<TResponse>();
                     WriteRequestResultDiagnostic(context, timeoutResult);
 
                     return timeoutResult;
@@ -140,8 +144,7 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
             }
             catch (OperationCanceledException) when (timeoutCancellation.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
             {
-                var timeoutResult = DataResult<TResponse>.Failed(
-                    new DataError(DataErrorKind.Timeout, "Data operation timed out."));
+                var timeoutResult = CreateTimeoutResult<TResponse>();
                 WriteRequestResultDiagnostic(context, timeoutResult);
 
                 return timeoutResult;
@@ -256,6 +259,19 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
         }
 
         return cancellation;
+    }
+
+    private static bool IsOperationTimeout(
+        CancellationTokenSource timeoutCancellation,
+        CancellationToken cancellationToken)
+    {
+        return timeoutCancellation.IsCancellationRequested && !cancellationToken.IsCancellationRequested;
+    }
+
+    private static DataResult<TResponse> CreateTimeoutResult<TResponse>()
+    {
+        return DataResult<TResponse>.Failed(
+            new DataError(DataErrorKind.Timeout, "Data operation timed out."));
     }
 
     private static bool CanUseParentScope(LifecycleScope? parentScope)

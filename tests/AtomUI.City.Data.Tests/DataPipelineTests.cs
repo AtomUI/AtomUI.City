@@ -367,6 +367,33 @@ public sealed class DataPipelineTests
     }
 
     [Fact]
+    public async Task PipelineMapsCredentialCancellationCausedByOperationTimeout()
+    {
+        var credentials = new DelayingCredentialProvider(async cancellationToken =>
+        {
+            await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
+
+            return DataCredentialResult.Success(DataCredential.Bearer("access-token"));
+        });
+        var transport = new RecordingTransport(_ => DataResult<string>.Success("should-not-run"));
+        var pipeline = new DataRequestPipeline(transport, credentialProvider: credentials);
+        var request = new DataRequest<string>(
+            "catalog",
+            "secure-items",
+            DataTransportKind.Http)
+        {
+            Authentication = DataAuthenticationOptions.Bearer(),
+            Resilience = new DataResilienceOptions { Timeout = TimeSpan.FromMilliseconds(10) },
+        };
+
+        var result = await pipeline.SendAsync(request);
+
+        Assert.Equal(DataResultStatus.Failed, result.Status);
+        Assert.Equal(DataErrorKind.Timeout, result.Error?.Kind);
+        Assert.Equal(0, transport.Attempts);
+    }
+
+    [Fact]
     public async Task PipelineRetriesQueryTransientFailures()
     {
         var transport = new RecordingTransport(context =>
@@ -777,6 +804,23 @@ public sealed class DataPipelineTests
             CancellationToken cancellationToken = default)
         {
             throw _exception;
+        }
+    }
+
+    private sealed class DelayingCredentialProvider : IDataCredentialProvider
+    {
+        private readonly Func<CancellationToken, ValueTask<DataCredentialResult>> _handler;
+
+        public DelayingCredentialProvider(Func<CancellationToken, ValueTask<DataCredentialResult>> handler)
+        {
+            _handler = handler;
+        }
+
+        public ValueTask<DataCredentialResult> GetCredentialAsync(
+            DataAuthenticationContext context,
+            CancellationToken cancellationToken = default)
+        {
+            return _handler(cancellationToken);
         }
     }
 
