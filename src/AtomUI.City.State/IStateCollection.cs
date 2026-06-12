@@ -11,6 +11,8 @@ public interface IStateCollection<TKey, TItem>
 
     bool Remove(TKey key);
 
+    bool Clear();
+
     IStateSubscription OnChange(Action<StateCollectionChangedEventArgs<TKey, TItem>> handler);
 
     IStateSubscription OnChange(

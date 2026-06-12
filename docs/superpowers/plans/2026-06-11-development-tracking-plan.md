@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`63dda76 feat(State): add collection add or update records`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，520 tests passed
-- 当前状态：已完成 State collection remove change records
+- 当前提交：`c4de0d6 feat(State): add collection remove records`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，521 tests passed
+- 当前状态：已完成 State collection clear change records
 
 **最新实现检查点：**
 
@@ -182,6 +182,7 @@
 - [x] State snapshot restore unchanged value guard
 - [x] State collection add or update change records
 - [x] State collection remove change records
+- [x] State collection clear change records
 
 ## 状态定义
 

@@ -135,6 +135,40 @@ public sealed class StateCollection<TKey, TItem> : IStateCollection<TKey, TItem>
         return true;
     }
 
+    public bool Clear()
+    {
+        StateCollectionChangedEventArgs<TKey, TItem> args;
+        StateSubscription[] subscriptions;
+
+        lock (_syncRoot)
+        {
+            if (_items.Count == 0)
+            {
+                return false;
+            }
+
+            Version++;
+            var changes = _items
+                .Select(item => new StateCollectionChange<TKey, TItem>(
+                    StateCollectionChangeKind.Cleared,
+                    item.Key,
+                    HasOldItem: true,
+                    item.Value.Value,
+                    HasNewItem: false,
+                    NewItem: default,
+                    Version,
+                    item.Value.Version + 1))
+                .ToArray();
+            _items.Clear();
+            args = new StateCollectionChangedEventArgs<TKey, TItem>(changes);
+            subscriptions = _subscriptions.ToArray();
+        }
+
+        Notify(args, subscriptions);
+
+        return true;
+    }
+
     public IStateSubscription OnChange(Action<StateCollectionChangedEventArgs<TKey, TItem>> handler)
     {
         return OnChange(handler, StateSubscriptionOptions.Immediate);
