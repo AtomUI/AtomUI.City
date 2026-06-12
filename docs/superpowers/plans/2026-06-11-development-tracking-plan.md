@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`0915125 feat(Generator): add presentation view manifest`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，490 tests passed
-- 当前状态：已完成 Presentation view plugin metadata and revoke 实现
+- 当前提交：`76b2b39 feat(Presentation): add plugin view metadata`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，492 tests passed
+- 当前状态：已完成 Generator Presentation plugin view metadata validation 实现
 
 **最新实现检查点：**
 
@@ -155,6 +155,7 @@
 - [x] Presentation ViewForAttribute PluginId metadata
 - [x] Presentation ViewRegistry revoke by PluginId
 - [x] Generator Presentation view PluginId metadata
+- [x] Generator Presentation plugin view requires PluginId and ContributionId pair
 
 ## 状态定义
 

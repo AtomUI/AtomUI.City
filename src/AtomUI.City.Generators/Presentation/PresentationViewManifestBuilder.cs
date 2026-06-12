@@ -16,6 +16,8 @@ public static class PresentationViewManifestBuilder
 
         foreach (var view in views)
         {
+            AddPluginContributionDiagnostics(view, diagnostics);
+
             var key = CreateViewModelKey(view.ViewModelTypeName, view.ViewKey);
             if (!viewsByViewModelAndKey.ContainsKey(key))
             {
@@ -47,6 +49,25 @@ public static class PresentationViewManifestBuilder
             .ToArray();
 
         return new PresentationViewManifestResult(new PresentationViewManifest(manifestViews), diagnostics);
+    }
+
+    private static void AddPluginContributionDiagnostics(
+        PresentationViewMetadata view,
+        ICollection<GeneratorDiagnostic> diagnostics)
+    {
+        var hasPluginId = !string.IsNullOrWhiteSpace(view.PluginId);
+        var hasContributionId = !string.IsNullOrWhiteSpace(view.ContributionId);
+
+        if (hasPluginId == hasContributionId)
+        {
+            return;
+        }
+
+        var missingField = hasPluginId ? "ContributionId" : "PluginId";
+        diagnostics.Add(new GeneratorDiagnostic(
+            GeneratorDiagnostics.InvalidManifestInput,
+            $"Presentation plugin view '{view.ViewTypeName}' must declare {missingField}.",
+            view.ViewTypeName));
     }
 
     private static string CreateViewModelKey(string viewModelTypeName, string? viewKey)

@@ -68,6 +68,42 @@ public sealed class PresentationViewManifestBuilderTests
         Assert.Equal("plugin.settings.view", view.ContributionId);
     }
 
+    [Fact]
+    public void BuildReportsPluginViewsWithoutContributionIds()
+    {
+        var result = PresentationViewManifestBuilder.Build(
+            [
+                View(
+                    "Sample.Plugin.SettingsView",
+                    "Sample.Plugin.SettingsViewModel",
+                    pluginId: "com.company.sales"),
+            ]);
+
+        var diagnostic = Assert.Single(result.Diagnostics);
+
+        Assert.Equal(GeneratorDiagnosticIds.InvalidManifestInput, diagnostic.Id);
+        Assert.Contains("ContributionId", diagnostic.Message, StringComparison.Ordinal);
+        Assert.Empty(result.Manifest.Views);
+    }
+
+    [Fact]
+    public void BuildReportsContributionViewsWithoutPluginIds()
+    {
+        var result = PresentationViewManifestBuilder.Build(
+            [
+                View(
+                    "Sample.Plugin.SettingsView",
+                    "Sample.Plugin.SettingsViewModel",
+                    contributionId: "plugin.settings.view"),
+            ]);
+
+        var diagnostic = Assert.Single(result.Diagnostics);
+
+        Assert.Equal(GeneratorDiagnosticIds.InvalidManifestInput, diagnostic.Id);
+        Assert.Contains("PluginId", diagnostic.Message, StringComparison.Ordinal);
+        Assert.Empty(result.Manifest.Views);
+    }
+
     private static PresentationViewMetadata View(
         string viewTypeName,
         string viewModelTypeName,
