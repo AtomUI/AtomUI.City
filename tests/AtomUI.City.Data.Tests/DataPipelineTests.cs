@@ -540,6 +540,75 @@ public sealed class DataPipelineTests
         Assert.Equal(DataResultStatus.StaleSuppressed, result.Status);
     }
 
+    [Fact]
+    public async Task PipelineWritesStaleSuppressedDiagnosticWhenParentScopeStopsDuringRequest()
+    {
+        var parent = LifecycleScope.CreateRoot(LifecycleScopeKind.Route, "route:/items");
+        var release = new TaskCompletionSource();
+        var diagnostics = new InMemoryDataDiagnostics();
+        var transport = new RecordingTransport(async _ =>
+        {
+            await release.Task;
+
+            return DataResult<string>.Success("late");
+        });
+        var pipeline = new DataRequestPipeline(transport, diagnostics: diagnostics);
+        var request = new DataRequest<string>(
+            "catalog",
+            "get-items",
+            DataTransportKind.Http)
+        {
+            ParentScope = parent,
+        };
+
+        var resultTask = pipeline.SendAsync(request).AsTask();
+        await parent.StopAsync();
+        release.SetResult();
+        var result = await resultTask;
+
+        var record = Assert.Single(
+            diagnostics.Records,
+            record => record.Code == DataDiagnosticIds.RequestStaleSuppressed);
+        Assert.Equal(DataResultStatus.StaleSuppressed, result.Status);
+        Assert.Equal("catalog", record.ClientId);
+        Assert.Equal("get-items", record.OperationName);
+        Assert.Equal(DataTransportKind.Http, record.TransportKind);
+        Assert.Equal(1, record.Attempt);
+        Assert.Equal(DataErrorKind.Cancelled, record.ErrorKind);
+        Assert.NotEqual(Guid.Empty, record.OperationId);
+    }
+
+    [Fact]
+    public async Task PipelineWritesStaleSuppressedDiagnosticWhenParentScopeAlreadyStopped()
+    {
+        var parent = LifecycleScope.CreateRoot(LifecycleScopeKind.Route, "route:/items");
+        await parent.StopAsync();
+        var diagnostics = new InMemoryDataDiagnostics();
+        var transport = new RecordingTransport(_ => DataResult<string>.Success("should-not-run"));
+        var pipeline = new DataRequestPipeline(transport, diagnostics: diagnostics);
+        var request = new DataRequest<string>(
+            "catalog",
+            "get-items",
+            DataTransportKind.Http)
+        {
+            ParentScope = parent,
+        };
+
+        var result = await pipeline.SendAsync(request);
+
+        var record = Assert.Single(
+            diagnostics.Records,
+            record => record.Code == DataDiagnosticIds.RequestStaleSuppressed);
+        Assert.Equal(DataResultStatus.StaleSuppressed, result.Status);
+        Assert.Equal("catalog", record.ClientId);
+        Assert.Equal("get-items", record.OperationName);
+        Assert.Equal(DataTransportKind.Http, record.TransportKind);
+        Assert.Equal(0, record.Attempt);
+        Assert.Equal(DataErrorKind.Cancelled, record.ErrorKind);
+        Assert.NotEqual(Guid.Empty, record.OperationId);
+        Assert.Equal(0, transport.Attempts);
+    }
+
     private sealed class RecordingTransport : IRequestResponseTransport
     {
         private readonly Func<DataRequestContext, ValueTask<DataResult<string>>> _handler;

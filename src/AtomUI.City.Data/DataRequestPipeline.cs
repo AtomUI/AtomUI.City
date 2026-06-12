@@ -43,17 +43,20 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
             return DataResult<TResponse>.Cancelled();
         }
 
-        if (!CanUseParentScope(request.ParentScope))
-        {
-            return DataResult<TResponse>.StaleSuppressed();
-        }
-
         using var timeoutCancellation = CreateTimeoutCancellation(request.Resilience, cancellationToken);
         using var operationCancellation = request.ParentScope is null
             ? CancellationTokenSource.CreateLinkedTokenSource(timeoutCancellation.Token)
             : CancellationTokenSource.CreateLinkedTokenSource(timeoutCancellation.Token, request.ParentScope.CancellationToken);
         var operationToken = operationCancellation.Token;
         var context = DataRequestContext.Create(request, operationToken);
+
+        if (!CanUseParentScope(request.ParentScope))
+        {
+            var suppressedResult = DataResult<TResponse>.StaleSuppressed();
+            WriteStaleSuppressedDiagnostic(context, suppressedResult);
+
+            return suppressedResult;
+        }
 
         var credentialResult = await ResolveCredentialAsync(request, context, operationToken).ConfigureAwait(false);
         if (credentialResult is not null)
@@ -101,7 +104,7 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
                 if (ShouldSuppress(request))
                 {
                     var suppressedResult = DataResult<TResponse>.StaleSuppressed();
-                    WriteRequestResultDiagnostic(context, suppressedResult);
+                    WriteStaleSuppressedDiagnostic(context, suppressedResult);
 
                     return suppressedResult;
                 }
@@ -425,6 +428,22 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
                 ? $"Data operation '{context.OperationName}' completed."
                 : $"Data operation '{context.OperationName}' failed.",
             succeeded ? DataDiagnosticSeverity.Trace : DataDiagnosticSeverity.Warning,
+            context.OperationId,
+            context.ClientId,
+            context.OperationName,
+            context.TransportKind,
+            context.Attempt,
+            result.Error?.Kind));
+    }
+
+    private void WriteStaleSuppressedDiagnostic<TResponse>(
+        DataRequestContext context,
+        DataResult<TResponse> result)
+    {
+        _diagnostics?.Write(new DataDiagnosticRecord(
+            DataDiagnosticIds.RequestStaleSuppressed,
+            $"Data operation '{context.OperationName}' result was suppressed.",
+            DataDiagnosticSeverity.Trace,
             context.OperationId,
             context.ClientId,
             context.OperationName,

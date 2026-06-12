@@ -20,6 +20,7 @@ public static class DataDiagnosticIds
     public const string ClientRegistered = "AUCDATA016";
     public const string ClientUnregistered = "AUCDATA017";
     public const string ClientUnregistrationMissing = "AUCDATA018";
+    public const string RequestStaleSuppressed = "AUCDATA019";
 }
 
 public sealed record DataDiagnosticRecord(
