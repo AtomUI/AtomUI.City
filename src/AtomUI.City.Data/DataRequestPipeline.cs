@@ -76,6 +76,14 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
             return credentialResult;
         }
 
+        if (cancellationToken.IsCancellationRequested)
+        {
+            var cancelledResult = DataResult<TResponse>.Cancelled();
+            WriteRequestResultDiagnostic(context, cancelledResult);
+
+            return cancelledResult;
+        }
+
         var cacheKey = CreateCacheKey(request, context);
         if (cacheKey is not null)
         {
