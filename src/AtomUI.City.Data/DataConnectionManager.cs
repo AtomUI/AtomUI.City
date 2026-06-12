@@ -85,6 +85,11 @@ public sealed class DataConnectionManager
 
             throw;
         }
+
+        _diagnostics?.Write(new DataDiagnosticRecord(
+            DataDiagnosticIds.ConnectionStarted,
+            $"Data connection '{connection.ConnectionId}' started.",
+            DataDiagnosticSeverity.Info));
     }
 
     private async ValueTask StopConnectionAsync(

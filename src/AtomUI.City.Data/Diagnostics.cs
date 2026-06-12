@@ -15,6 +15,7 @@ public static class DataDiagnosticIds
     public const string ClientMissing = "AUCDATA011";
     public const string ConnectionStopFailed = "AUCDATA012";
     public const string ConnectionStartFailed = "AUCDATA013";
+    public const string ConnectionStarted = "AUCDATA014";
 }
 
 public sealed record DataDiagnosticRecord(

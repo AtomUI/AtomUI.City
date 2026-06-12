@@ -21,6 +21,24 @@ public sealed class DataConnectionLifecycleTests
     }
 
     [Fact]
+    public async Task ConnectionManagerWritesStartedDiagnostic()
+    {
+        var diagnostics = new InMemoryDataDiagnostics();
+        var owner = new DataConnectionOwner(DataConnectionOwnerKind.Plugin, "sales-plugin");
+        var connection = new RecordingConnection("sales-hub", owner);
+        var manager = new DataConnectionManager(diagnostics);
+        manager.Register(connection);
+
+        await manager.StartOwnerAsync(owner);
+
+        var record = Assert.Single(
+            diagnostics.Records,
+            record => record.Code == DataDiagnosticIds.ConnectionStarted);
+        Assert.Equal(DataDiagnosticSeverity.Info, record.Severity);
+        Assert.Contains("sales-hub", record.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task ConnectionManagerRejectsOwnerlessLongRunningConnection()
     {
         var connection = new RecordingConnection(

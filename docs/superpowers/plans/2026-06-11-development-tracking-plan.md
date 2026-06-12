@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`307657d feat(Data): diagnose connection stop failures`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，566 tests passed
-- 当前状态：已完成 Data connection start failure diagnostic
+- 当前提交：`e6eb25b feat(Data): diagnose connection start failures`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，567 tests passed
+- 当前状态：已完成 Data connection started diagnostic
 
 **最新实现检查点：**
 
@@ -229,6 +229,7 @@
 - [x] Data HTTP 429 rate limit mapping
 - [x] Data connection stop failure diagnostic
 - [x] Data connection start failure diagnostic
+- [x] Data connection started diagnostic
 
 ## 状态定义
 
