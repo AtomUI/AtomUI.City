@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`771a157 feat(Data): add in-memory request cache`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，555 tests passed
-- 当前状态：已完成 Data cache hit/miss diagnostics
+- 当前提交：`5e48049 feat(Data): add cache hit miss diagnostics`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，556 tests passed
+- 当前状态：已完成 Data request cache key invalidation
 
 **最新实现检查点：**
 
@@ -217,6 +217,7 @@
 - [x] Data request cache DI registration
 - [x] Data cache hit diagnostic
 - [x] Data cache miss diagnostic
+- [x] Data request cache key invalidation
 
 ## 状态定义
 

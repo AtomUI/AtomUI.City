@@ -33,4 +33,16 @@ public sealed class InMemoryDataRequestCache : IDataRequestCache
 
         return ValueTask.CompletedTask;
     }
+
+    public ValueTask InvalidateAsync(
+        DataCacheKey key,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(key);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        _entries.TryRemove(key, out _);
+
+        return ValueTask.CompletedTask;
+    }
 }

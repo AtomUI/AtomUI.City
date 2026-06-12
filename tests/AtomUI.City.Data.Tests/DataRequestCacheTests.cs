@@ -17,6 +17,19 @@ public sealed class DataRequestCacheTests
         Assert.Equal("cached", hit.Value);
     }
 
+    [Fact]
+    public async Task InMemoryCacheInvalidatesEntryByCacheKey()
+    {
+        var cache = new InMemoryDataRequestCache();
+        var key = CreateKey("items:v1");
+
+        await cache.SetAsync(key, "cached");
+        await cache.InvalidateAsync(key);
+        var lookup = await cache.TryGetAsync<string>(key);
+
+        Assert.False(lookup.IsHit);
+    }
+
     private static DataCacheKey CreateKey(string requestFingerprint)
     {
         return new DataCacheKey(

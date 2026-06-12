@@ -10,4 +10,8 @@ public interface IDataRequestCache
         DataCacheKey key,
         TResponse? value,
         CancellationToken cancellationToken = default);
+
+    ValueTask InvalidateAsync(
+        DataCacheKey key,
+        CancellationToken cancellationToken = default);
 }

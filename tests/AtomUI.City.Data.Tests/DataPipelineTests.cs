@@ -603,6 +603,13 @@ public sealed class DataPipelineTests
 
             return ValueTask.CompletedTask;
         }
+
+        public ValueTask InvalidateAsync(
+            DataCacheKey key,
+            CancellationToken cancellationToken = default)
+        {
+            return ValueTask.CompletedTask;
+        }
     }
 
     private sealed class RecordingRequestCache : IDataRequestCache
@@ -646,6 +653,15 @@ public sealed class DataPipelineTests
         {
             Writes++;
             _entries[key] = value;
+
+            return ValueTask.CompletedTask;
+        }
+
+        public ValueTask InvalidateAsync(
+            DataCacheKey key,
+            CancellationToken cancellationToken = default)
+        {
+            _entries.Remove(key);
 
             return ValueTask.CompletedTask;
         }
