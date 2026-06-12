@@ -12,6 +12,7 @@ public static class DataServiceCollectionExtensions
 
         services.TryAddSingleton<IAccessTokenProvider, UnavailableAccessTokenProvider>();
         services.TryAddSingleton<IDataCredentialProvider, AccessTokenCredentialProvider>();
+        services.TryAddSingleton<IDataRequestCache, InMemoryDataRequestCache>();
         services.TryAddSingleton<DataClientRegistry>();
         services.TryAddSingleton<IDataClientFactory>(
             serviceProvider => serviceProvider.GetRequiredService<DataClientRegistry>());

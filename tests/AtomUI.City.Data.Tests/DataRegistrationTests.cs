@@ -16,9 +16,11 @@ public sealed class DataRegistrationTests
         using var serviceProvider = services.BuildServiceProvider();
         var pipeline = serviceProvider.GetRequiredService<IDataRequestPipeline>();
         var credentialProvider = serviceProvider.GetRequiredService<IDataCredentialProvider>();
+        var cache = serviceProvider.GetRequiredService<IDataRequestCache>();
 
         Assert.IsType<DataRequestPipeline>(pipeline);
         Assert.IsType<AccessTokenCredentialProvider>(credentialProvider);
+        Assert.IsType<InMemoryDataRequestCache>(cache);
     }
 
     [Fact]
