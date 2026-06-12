@@ -102,6 +102,32 @@ public sealed class HttpDataTransportTests
         Assert.Equal(DataErrorKind.Cancelled, result.Error?.Kind);
     }
 
+    [Fact]
+    public async Task HttpTransportMapsResponseMapperFailureToSerializationError()
+    {
+        var handler = new RecordingHttpMessageHandler(_ =>
+            new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{broken"),
+            });
+        var transport = new HttpDataTransport(new RecordingHttpClientFactory("api", handler));
+        var parseException = new FormatException("payload is malformed");
+        var request = new HttpDataRequest<string>(
+            "catalog",
+            "get-items",
+            "api",
+            _ => new HttpRequestMessage(HttpMethod.Get, "https://server/items"),
+            _ => throw parseException);
+
+        var result = await transport.SendAsync(
+            request,
+            DataRequestContext.Create(request, CancellationToken.None));
+
+        Assert.False(result.Succeeded);
+        Assert.Equal(DataErrorKind.SerializationError, result.Error?.Kind);
+        Assert.Same(parseException, result.Error?.Exception);
+    }
+
     private sealed class RecordingHttpClientFactory : IHttpClientFactory
     {
         private readonly string _clientName;

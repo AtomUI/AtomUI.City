@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`c37c215 fix(Data): map gRPC cancellation`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，577 tests passed
-- 当前状态：已完成 Data HTTP transport cancellation mapping
+- 当前提交：`f2d041c fix(Data): map HTTP cancellation`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，578 tests passed
+- 当前状态：已完成 Data HTTP response mapper serialization error mapping
 
 **最新实现检查点：**
 
@@ -239,6 +239,7 @@
 - [x] Data stale suppression diagnostic
 - [x] Data gRPC transport cancellation mapping
 - [x] Data HTTP transport cancellation mapping
+- [x] Data HTTP response mapper serialization error mapping
 
 ## 状态定义
 

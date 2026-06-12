@@ -44,7 +44,19 @@ public sealed class HttpDataTransport : IRequestResponseTransport
                 return DataResult<TResponse>.Failed(DataErrorMapper.FromHttpStatusCode(response.StatusCode));
             }
 
-            var mappedResponse = await httpRequest.ResponseMapper(response).ConfigureAwait(false);
+            TResponse mappedResponse;
+            try
+            {
+                mappedResponse = await httpRequest.ResponseMapper(response).ConfigureAwait(false);
+            }
+            catch (Exception exception) when (exception is not OperationCanceledException)
+            {
+                return DataResult<TResponse>.Failed(
+                    new DataError(
+                        DataErrorKind.SerializationError,
+                        exception.Message,
+                        Exception: exception));
+            }
 
             return DataResult<TResponse>.Success(mappedResponse);
         }
