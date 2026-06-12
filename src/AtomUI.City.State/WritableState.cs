@@ -1,18 +1,23 @@
+using AtomUI.City.Diagnostics;
+
 namespace AtomUI.City.State;
 
 public sealed class WritableState<T> : IWritableState<T>
 {
     private readonly IEqualityComparer<T> _comparer;
+    private readonly IHostDiagnostics? _diagnostics;
     private readonly List<StateSubscription> _subscriptions = [];
     private readonly object _syncRoot = new();
     private T _value;
 
     public WritableState(
         T initialValue,
-        IEqualityComparer<T>? comparer = null)
+        IEqualityComparer<T>? comparer = null,
+        IHostDiagnostics? diagnostics = null)
     {
         _value = initialValue;
         _comparer = comparer ?? EqualityComparer<T>.Default;
+        _diagnostics = diagnostics;
     }
 
     public event EventHandler<StateChangedEventArgs<T>>? Changed;
@@ -105,7 +110,8 @@ public sealed class WritableState<T> : IWritableState<T>
 
         var subscription = new StateSubscription(
             args => handler((StateChangedEventArgs<T>)args),
-            options);
+            options,
+            _diagnostics);
 
         lock (_syncRoot)
         {
@@ -175,9 +181,12 @@ public sealed class WritableState<T> : IWritableState<T>
             {
                 handler(this, args);
             }
-            catch
+            catch (Exception exception)
             {
-                // Diagnostics integration is handled by the next State diagnostics phase.
+                _diagnostics?.Write(new HostDiagnosticRecord(
+                    StateDiagnosticIds.ChangedEventHandlerFailed,
+                    $"Writable state changed event handler failed for value type '{typeof(T).FullName}' at version {args.Version}: {exception.Message}",
+                    HostDiagnosticSeverity.Error));
             }
         }
     }

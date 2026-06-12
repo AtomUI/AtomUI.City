@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`a8b665f feat(Presentation): add view factory service context`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，502 tests passed
-- 当前状态：已完成 Generator Presentation view constructor dependency factory
+- 当前提交：`6dc6f2d feat(Generator): support view constructor dependencies`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，504 tests passed
+- 当前状态：已完成 State subscription diagnostics
 
 **最新实现检查点：**
 
@@ -166,6 +166,7 @@
 - [x] Generator Presentation diagnostics source location
 - [x] Presentation ViewFactory service provider context
 - [x] Generator Presentation view constructor dependency factory
+- [x] State subscription diagnostics
 
 ## 状态定义
 

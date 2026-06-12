@@ -1,3 +1,4 @@
+using AtomUI.City.Diagnostics;
 using AtomUI.City.Threading;
 
 namespace AtomUI.City.State;
@@ -5,15 +6,18 @@ namespace AtomUI.City.State;
 internal sealed class StateSubscription : IStateSubscription
 {
     private readonly Action<StateChangedEventArgs> _handler;
+    private readonly IHostDiagnostics? _diagnostics;
     private readonly StateSubscriptionOptions _options;
     private bool _disposed;
 
     public StateSubscription(
         Action<StateChangedEventArgs> handler,
-        StateSubscriptionOptions options)
+        StateSubscriptionOptions options,
+        IHostDiagnostics? diagnostics = null)
     {
         _handler = handler;
         _options = options;
+        _diagnostics = diagnostics;
     }
 
     public void Notify(StateChangedEventArgs args)
@@ -38,9 +42,12 @@ internal sealed class StateSubscription : IStateSubscription
                     break;
             }
         }
-        catch
+        catch (Exception exception)
         {
-            // Diagnostics integration is handled by the next State diagnostics phase.
+            _diagnostics?.Write(new HostDiagnosticRecord(
+                StateDiagnosticIds.SubscriptionHandlerFailed,
+                $"State subscription handler failed at version {args.Version}: {exception.Message}",
+                HostDiagnosticSeverity.Error));
         }
     }
 
