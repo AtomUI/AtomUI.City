@@ -45,6 +45,23 @@ public sealed class StateCollectionTests
     }
 
     [Fact]
+    public void AddOrUpdateSkipsUnchangedItem()
+    {
+        var collection = new StateCollection<string, int>();
+        collection.AddOrUpdate("settings", 1);
+        var notifications = new List<StateCollectionChangedEventArgs<string, int>>();
+
+        collection.OnChange(notifications.Add);
+
+        var changed = collection.AddOrUpdate("settings", 1);
+
+        Assert.False(changed);
+        Assert.Equal(1, collection.Version);
+        Assert.Equal(1, collection.Items["settings"]);
+        Assert.Empty(notifications);
+    }
+
+    [Fact]
     public void RemoveDeletesExistingItemAndRaisesChangeRecord()
     {
         var collection = new StateCollection<string, int>();
@@ -69,6 +86,22 @@ public sealed class StateCollectionTests
     }
 
     [Fact]
+    public void RemoveSkipsMissingItem()
+    {
+        var collection = new StateCollection<string, int>();
+        var notifications = new List<StateCollectionChangedEventArgs<string, int>>();
+
+        collection.OnChange(notifications.Add);
+
+        var removed = collection.Remove("settings");
+
+        Assert.False(removed);
+        Assert.Equal(0, collection.Version);
+        Assert.Empty(collection.Items);
+        Assert.Empty(notifications);
+    }
+
+    [Fact]
     public void ClearDeletesItemsAndRaisesClearedChangeRecord()
     {
         var collection = new StateCollection<string, int>();
@@ -90,6 +123,22 @@ public sealed class StateCollectionTests
         Assert.False(args.Change.HasNewItem);
         Assert.Equal(2, args.Change.CollectionVersion);
         Assert.Equal(2, args.Change.ItemVersion);
+    }
+
+    [Fact]
+    public void ClearSkipsEmptyCollection()
+    {
+        var collection = new StateCollection<string, int>();
+        var notifications = new List<StateCollectionChangedEventArgs<string, int>>();
+
+        collection.OnChange(notifications.Add);
+
+        var cleared = collection.Clear();
+
+        Assert.False(cleared);
+        Assert.Equal(0, collection.Version);
+        Assert.Empty(collection.Items);
+        Assert.Empty(notifications);
     }
 
     [Fact]
@@ -136,6 +185,51 @@ public sealed class StateCollectionTests
                 Assert.Equal(2, change.CollectionVersion);
                 Assert.Equal(1, change.ItemVersion);
             });
+    }
+
+    [Fact]
+    public void AddOrUpdateRangeSkipsUnchangedItems()
+    {
+        var collection = new StateCollection<string, int>();
+        collection.AddOrUpdate("settings", 1);
+        var notifications = new List<StateCollectionChangedEventArgs<string, int>>();
+
+        collection.OnChange(notifications.Add);
+
+        var changed = collection.AddOrUpdateRange(
+            [
+                new KeyValuePair<string, int>("settings", 1),
+            ]);
+
+        Assert.False(changed);
+        Assert.Equal(1, collection.Version);
+        Assert.Equal(1, collection.Items["settings"]);
+        Assert.Empty(notifications);
+    }
+
+    [Fact]
+    public void AddOrUpdateRangeKeepsOldItemsWhenEnumerationFails()
+    {
+        var collection = new StateCollection<string, int>();
+        collection.AddOrUpdate("settings", 1);
+        var notifications = new List<StateCollectionChangedEventArgs<string, int>>();
+
+        collection.OnChange(notifications.Add);
+
+        var exception = Assert.Throws<InvalidOperationException>(
+            () => collection.AddOrUpdateRange(FailingBatch()));
+
+        Assert.Equal("batch failed", exception.Message);
+        Assert.Equal(1, collection.Version);
+        Assert.Equal(1, collection.Items["settings"]);
+        Assert.False(collection.Items.ContainsKey("layout"));
+        Assert.Empty(notifications);
+    }
+
+    private static IEnumerable<KeyValuePair<string, int>> FailingBatch()
+    {
+        yield return new KeyValuePair<string, int>("layout", 2);
+        throw new InvalidOperationException("batch failed");
     }
 
     [Fact]
