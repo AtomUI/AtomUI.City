@@ -43,6 +43,34 @@ public sealed class EventSubscriptionTests
     }
 
     [Fact]
+    public async Task StopAsyncWaitsForInFlightHandlerToComplete()
+    {
+        var eventBus = new InMemoryEventBus();
+        var handlerStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var releaseHandler = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var subscription = eventBus.Subscribe<TestEvent>(
+            async _ =>
+            {
+                handlerStarted.SetResult();
+                await releaseHandler.Task;
+            });
+
+        var publication = eventBus.PublishAsync(new TestEvent("running")).AsTask();
+        await handlerStarted.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+        var stop = subscription.StopAsync().AsTask();
+        await Task.Delay(100);
+
+        Assert.False(stop.IsCompleted);
+
+        releaseHandler.SetResult();
+
+        await stop.WaitAsync(TimeSpan.FromSeconds(5));
+        await publication.WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.Equal(EventSubscriptionState.Disposed, subscription.State);
+    }
+
+    [Fact]
     public async Task OwnerScopeCancellationDisposesSubscription()
     {
         var eventBus = new InMemoryEventBus();

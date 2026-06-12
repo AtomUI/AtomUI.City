@@ -321,6 +321,8 @@ public sealed class InMemoryEventBus : IEventBus
         private readonly SemaphoreSlim _serialGate = new(1, 1);
         private readonly object _stateGate = new();
         private readonly CancellationTokenRegistration _ownerCancellation;
+        private TaskCompletionSource? _drainCompletion;
+        private int _inFlightCount;
         private EventSubscriptionState _state = EventSubscriptionState.Created;
 
         public EventSubscription(
@@ -392,9 +394,12 @@ public sealed class InMemoryEventBus : IEventBus
             if (Options.DispatchPolicy == EventDispatchPolicy.Serialized)
             {
                 await _serialGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+                var acquiredDelivery = false;
+
                 try
                 {
-                    if (State != EventSubscriptionState.Active)
+                    acquiredDelivery = TryBeginDelivery();
+                    if (!acquiredDelivery)
                     {
                         return null;
                     }
@@ -412,45 +417,84 @@ public sealed class InMemoryEventBus : IEventBus
                 }
                 finally
                 {
+                    if (acquiredDelivery)
+                    {
+                        EndDelivery();
+                    }
+
                     _serialGate.Release();
                 }
             }
 
-            return await DispatchAsync(
-                    eventData,
-                    descriptor,
-                    eventId,
-                    correlationId,
-                    causationId,
-                    publishedAt,
-                    publishDepth,
-                    cancellationToken)
-                .ConfigureAwait(false);
+            if (!TryBeginDelivery())
+            {
+                return null;
+            }
+
+            try
+            {
+                return await DispatchAsync(
+                        eventData,
+                        descriptor,
+                        eventId,
+                        correlationId,
+                        causationId,
+                        publishedAt,
+                        publishDepth,
+                        cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            finally
+            {
+                EndDelivery();
+            }
         }
 
-        public ValueTask StopAsync(CancellationToken cancellationToken = default)
+        public async ValueTask StopAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            Task? drainTask;
+            var removeFromBus = false;
 
             lock (_stateGate)
             {
                 if (_state == EventSubscriptionState.Disposed)
                 {
-                    return ValueTask.CompletedTask;
+                    return;
                 }
 
-                _state = EventSubscriptionState.Quiescing;
+                if (_state != EventSubscriptionState.Quiescing)
+                {
+                    _state = EventSubscriptionState.Quiescing;
+                    removeFromBus = true;
+                }
+
+                if (_inFlightCount > 0)
+                {
+                    _drainCompletion ??= new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+                    drainTask = _drainCompletion.Task;
+                }
+                else
+                {
+                    drainTask = null;
+                }
             }
 
-            _eventBus.Remove(this);
-            _ownerCancellation.Dispose();
+            if (removeFromBus)
+            {
+                _eventBus.Remove(this);
+                _ownerCancellation.Dispose();
+            }
+
+            if (drainTask is not null)
+            {
+                await drainTask.WaitAsync(cancellationToken).ConfigureAwait(false);
+            }
 
             lock (_stateGate)
             {
                 _state = EventSubscriptionState.Disposed;
             }
-
-            return ValueTask.CompletedTask;
         }
 
         public void Dispose()
@@ -542,6 +586,38 @@ public sealed class InMemoryEventBus : IEventBus
                     await _handler(eventData, delivery).ConfigureAwait(false);
                     break;
             }
+        }
+
+        private bool TryBeginDelivery()
+        {
+            lock (_stateGate)
+            {
+                if (_state != EventSubscriptionState.Active)
+                {
+                    return false;
+                }
+
+                _inFlightCount++;
+
+                return true;
+            }
+        }
+
+        private void EndDelivery()
+        {
+            TaskCompletionSource? drainCompletion = null;
+
+            lock (_stateGate)
+            {
+                _inFlightCount--;
+
+                if (_inFlightCount == 0 && _state == EventSubscriptionState.Quiescing)
+                {
+                    drainCompletion = _drainCompletion;
+                }
+            }
+
+            drainCompletion?.TrySetResult();
         }
     }
 }
