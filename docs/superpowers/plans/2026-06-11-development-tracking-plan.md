@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`2c7511c feat(Presentation): add localized notification text binding`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，410 tests passed
-- 当前状态：已进入 Localization / Presentation 文案绑定集成实现阶段
+- 当前提交：`644246e feat(Presentation): add localization bridge`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，411 tests passed
+- 当前状态：已进入 Localization / Presentation culture bridge 集成实现阶段
 
 **最新实现检查点：**
 
@@ -65,6 +65,8 @@
 - [x] Presentation localization bridge applier pipeline
 - [x] Presentation localization bridge UI dispatcher dispatch
 - [x] Presentation localization bridge DI registration
+- [x] Presentation current thread culture applier
+- [x] Presentation default culture applier DI registration
 
 ## 状态定义
 

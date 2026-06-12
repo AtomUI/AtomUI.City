@@ -70,13 +70,47 @@ public sealed class PresentationLocalizationBridgeTests
         Assert.Equal(["ja-JP"], applier.AppliedCultures);
     }
 
-    private static CultureState State(string cultureName)
+    [Fact]
+    public async Task ServiceCollectionBridgeAppliesCurrentThreadCultures()
+    {
+        var originalCurrentCulture = CultureInfo.CurrentCulture;
+        var originalCurrentUICulture = CultureInfo.CurrentUICulture;
+        var originalDefaultCulture = CultureInfo.DefaultThreadCurrentCulture;
+        var originalDefaultUICulture = CultureInfo.DefaultThreadCurrentUICulture;
+
+        try
+        {
+            var services = new ServiceCollection();
+            services.AddSingleton<IUiDispatcher>(new RecordingDispatcher());
+            services.AddPresentationLocalizationBridge();
+            var provider = services.BuildServiceProvider();
+            var bridge = provider.GetRequiredService<IPresentationLocalizationBridge>();
+
+            var result = await bridge.ApplyCultureAsync(State("fr-FR", "ja-JP"));
+
+            Assert.True(result.Succeeded);
+            Assert.Equal("fr-FR", CultureInfo.CurrentCulture.Name);
+            Assert.Equal("ja-JP", CultureInfo.CurrentUICulture.Name);
+            Assert.Equal("fr-FR", CultureInfo.DefaultThreadCurrentCulture?.Name);
+            Assert.Equal("ja-JP", CultureInfo.DefaultThreadCurrentUICulture?.Name);
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = originalCurrentCulture;
+            CultureInfo.CurrentUICulture = originalCurrentUICulture;
+            CultureInfo.DefaultThreadCurrentCulture = originalDefaultCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = originalDefaultUICulture;
+        }
+    }
+
+    private static CultureState State(string cultureName, string? uiCultureName = null)
     {
         var culture = CultureInfo.GetCultureInfo(cultureName);
+        var uiCulture = CultureInfo.GetCultureInfo(uiCultureName ?? cultureName);
 
         return new CultureState(
             culture,
-            culture,
+            uiCulture,
             [],
             revision: 1,
             loadedPackageIds: []);

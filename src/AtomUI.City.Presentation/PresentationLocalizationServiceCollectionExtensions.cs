@@ -10,6 +10,7 @@ public static class PresentationLocalizationServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IPresentationCultureApplier, CurrentThreadCultureApplier>());
         services.TryAddSingleton<PresentationLocalizationBridge>();
         services.TryAddSingleton<IPresentationLocalizationBridge>(
             serviceProvider => serviceProvider.GetRequiredService<PresentationLocalizationBridge>());
