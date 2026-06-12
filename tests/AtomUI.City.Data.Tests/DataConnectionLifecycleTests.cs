@@ -36,6 +36,39 @@ public sealed class DataConnectionLifecycleTests
         Assert.Equal(0, connection.StopCount);
     }
 
+    [Fact]
+    public void ConnectionManagerWritesRegisteredDiagnostic()
+    {
+        var diagnostics = new InMemoryDataDiagnostics();
+        var owner = new DataConnectionOwner(DataConnectionOwnerKind.Plugin, "sales-plugin");
+        var connection = new RecordingConnection("sales-hub", owner);
+        var manager = new DataConnectionManager(diagnostics);
+
+        manager.Register(connection);
+
+        var record = Assert.Single(
+            diagnostics.Records,
+            record => record.Code == DataDiagnosticIds.ConnectionRegistered);
+        Assert.Contains("sales-hub", record.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task ConnectionManagerWritesStoppedDiagnostic()
+    {
+        var diagnostics = new InMemoryDataDiagnostics();
+        var owner = new DataConnectionOwner(DataConnectionOwnerKind.Plugin, "sales-plugin");
+        var connection = new RecordingConnection("sales-hub", owner);
+        var manager = new DataConnectionManager(diagnostics);
+        manager.Register(connection);
+
+        await manager.StopOwnerAsync(owner);
+
+        var record = Assert.Single(
+            diagnostics.Records,
+            record => record.Code == DataDiagnosticIds.ConnectionStopped);
+        Assert.Contains("sales-hub", record.Message, StringComparison.Ordinal);
+    }
+
     private sealed class RecordingConnection : IDataConnection
     {
         public RecordingConnection(string connectionId, DataConnectionOwner owner)

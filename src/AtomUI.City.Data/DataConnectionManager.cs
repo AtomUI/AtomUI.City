@@ -3,7 +3,13 @@ namespace AtomUI.City.Data;
 public sealed class DataConnectionManager
 {
     private readonly List<IDataConnection> _connections = [];
+    private readonly IDataDiagnostics? _diagnostics;
     private readonly object _syncRoot = new();
+
+    public DataConnectionManager(IDataDiagnostics? diagnostics = null)
+    {
+        _diagnostics = diagnostics;
+    }
 
     public DataResult<DataConnectionRegistration> Register(IDataConnection connection)
     {
@@ -21,6 +27,11 @@ public sealed class DataConnectionManager
         {
             _connections.Add(connection);
         }
+
+        _diagnostics?.Write(new DataDiagnosticRecord(
+            DataDiagnosticIds.ConnectionRegistered,
+            $"Data connection '{connection.ConnectionId}' registered.",
+            DataDiagnosticSeverity.Info));
 
         return DataResult<DataConnectionRegistration>.Success(new DataConnectionRegistration(connection));
     }
@@ -43,7 +54,7 @@ public sealed class DataConnectionManager
         foreach (var connection in GetOwnerConnections(owner))
         {
             cancellationToken.ThrowIfCancellationRequested();
-            await connection.StopAsync(cancellationToken).ConfigureAwait(false);
+            await StopConnectionAsync(connection, cancellationToken).ConfigureAwait(false);
         }
     }
 
@@ -52,8 +63,20 @@ public sealed class DataConnectionManager
         foreach (var connection in GetConnections())
         {
             cancellationToken.ThrowIfCancellationRequested();
-            await connection.StopAsync(cancellationToken).ConfigureAwait(false);
+            await StopConnectionAsync(connection, cancellationToken).ConfigureAwait(false);
         }
+    }
+
+    private async ValueTask StopConnectionAsync(
+        IDataConnection connection,
+        CancellationToken cancellationToken)
+    {
+        await connection.StopAsync(cancellationToken).ConfigureAwait(false);
+
+        _diagnostics?.Write(new DataDiagnosticRecord(
+            DataDiagnosticIds.ConnectionStopped,
+            $"Data connection '{connection.ConnectionId}' stopped.",
+            DataDiagnosticSeverity.Info));
     }
 
     private IDataConnection[] GetOwnerConnections(DataConnectionOwner owner)
