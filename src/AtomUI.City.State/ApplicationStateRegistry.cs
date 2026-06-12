@@ -1,3 +1,5 @@
+using AtomUI.City.Diagnostics;
+
 namespace AtomUI.City.State;
 
 public sealed class ApplicationStateRegistry :
@@ -5,7 +7,13 @@ public sealed class ApplicationStateRegistry :
     IApplicationStateWriter,
     IStateRegistry
 {
+    private readonly IHostDiagnostics? _diagnostics;
     private readonly Dictionary<string, StateRegistration> _registrations = new(StringComparer.Ordinal);
+
+    public ApplicationStateRegistry(IHostDiagnostics? diagnostics = null)
+    {
+        _diagnostics = diagnostics;
+    }
 
     public void Add<T>(StateDefinition<T> definition)
     {
@@ -20,7 +28,10 @@ public sealed class ApplicationStateRegistry :
             definition.Key.Name,
             new StateRegistration<T>(
                 definition,
-                new WritableState<T>(definition.DefaultValue, definition.Comparer)));
+                new WritableState<T>(
+                    definition.DefaultValue,
+                    definition.Comparer,
+                    _diagnostics)));
     }
 
     public IReadOnlyState<T> Get<T>(StateKey<T> key)
@@ -85,6 +96,7 @@ public sealed class ApplicationStateRegistry :
     {
         if (!_registrations.TryGetValue(key.Name, out var registration))
         {
+            WriteNotRegisteredDiagnostic(key.Name, typeof(T));
             throw new StateNotRegisteredException(key.Name);
         }
 
@@ -93,15 +105,40 @@ public sealed class ApplicationStateRegistry :
             return typedRegistration;
         }
 
-        throw new InvalidOperationException($"State '{key.Name}' is not registered with value type '{typeof(T).FullName}'.");
+        var message = $"State '{key.Name}' is not registered with value type '{typeof(T).FullName}'.";
+
+        throw new InvalidOperationException(message);
     }
 
-    private static void ThrowIfWriteDenied<T>(StateRegistration<T> registration)
+    private void ThrowIfWriteDenied<T>(StateRegistration<T> registration)
     {
         if (registration.Definition.Access == StateAccessPolicy.ReadOnly)
         {
+            WriteWriteDeniedDiagnostic(
+                registration.Definition.Key.Name,
+                typeof(T),
+                registration.Definition.Access);
             throw new StateAccessDeniedException(registration.Definition.Key.Name);
         }
+    }
+
+    private void WriteNotRegisteredDiagnostic(string stateName, Type valueType)
+    {
+        _diagnostics?.Write(new HostDiagnosticRecord(
+            StateDiagnosticIds.ApplicationStateNotRegistered,
+            $"Application state '{stateName}' with value type '{valueType.FullName}' is not registered.",
+            HostDiagnosticSeverity.Warning));
+    }
+
+    private void WriteWriteDeniedDiagnostic(
+        string stateName,
+        Type valueType,
+        StateAccessPolicy access)
+    {
+        _diagnostics?.Write(new HostDiagnosticRecord(
+            StateDiagnosticIds.ApplicationStateWriteDenied,
+            $"Application state '{stateName}' with value type '{valueType.FullName}' rejected write because access policy is '{access}'.",
+            HostDiagnosticSeverity.Warning));
     }
 
     private abstract class StateRegistration
