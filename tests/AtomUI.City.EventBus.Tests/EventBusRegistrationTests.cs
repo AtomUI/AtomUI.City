@@ -22,4 +22,23 @@ public sealed class EventBusRegistrationTests
         Assert.IsType<InMemoryEventBus>(eventBus);
         Assert.IsType<InMemoryEventContractRegistry>(registry);
     }
+
+    [Fact]
+    public async Task ServiceCollectionRegistersEventContractDescriptor()
+    {
+        var services = new ServiceCollection();
+        var contractId = new EventContractId("atomui.city.tests.registration.v1");
+
+        services.AddEventContract<RegisteredEvent>(contractId);
+
+        await using var serviceProvider = services.BuildServiceProvider();
+        var registry = serviceProvider.GetRequiredService<IEventContractRegistry>();
+
+        var descriptor = registry.GetOrCreate<RegisteredEvent>();
+
+        Assert.Equal(contractId, descriptor.ContractId);
+        Assert.Equal(typeof(RegisteredEvent), descriptor.EventType);
+    }
+
+    private sealed record RegisteredEvent(string Value);
 }

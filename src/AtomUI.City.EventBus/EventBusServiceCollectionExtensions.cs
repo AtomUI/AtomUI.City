@@ -10,7 +10,17 @@ public static class EventBusServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.TryAddSingleton<IEventContractRegistry, InMemoryEventContractRegistry>();
+        services.TryAddSingleton<IEventContractRegistry>(serviceProvider =>
+        {
+            var registry = new InMemoryEventContractRegistry();
+
+            foreach (var descriptor in serviceProvider.GetServices<EventContractDescriptor>())
+            {
+                registry.Register(descriptor);
+            }
+
+            return registry;
+        });
         services.TryAddSingleton(serviceProvider => new InMemoryEventBus(
             serviceProvider.GetRequiredService<IEventContractRegistry>(),
             serviceProvider.GetService<IHostDiagnostics>()));
@@ -20,6 +30,18 @@ public static class EventBusServiceCollectionExtensions
             serviceProvider => serviceProvider.GetRequiredService<IEventBus>());
         services.TryAddSingleton<IEventSubscriber>(
             serviceProvider => serviceProvider.GetRequiredService<IEventBus>());
+
+        return services;
+    }
+
+    public static IServiceCollection AddEventContract<TEvent>(
+        this IServiceCollection services,
+        EventContractId contractId)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        services.AddEventBus();
+        services.AddSingleton(EventContractDescriptor.Shared<TEvent>(contractId, typeof(TEvent).Assembly));
 
         return services;
     }
