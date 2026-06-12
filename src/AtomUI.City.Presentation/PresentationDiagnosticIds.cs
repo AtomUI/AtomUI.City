@@ -32,4 +32,7 @@ public static class PresentationDiagnosticIds
     public const string ResourceContributionRegistered = "AUCPRS028";
     public const string ResourceContributionRevoked = "AUCPRS029";
     public const string ResourceContributionRevokeFailed = "AUCPRS030";
+    public const string PluginViewTracked = "AUCPRS031";
+    public const string PluginViewClosed = "AUCPRS032";
+    public const string PluginViewCloseFailed = "AUCPRS033";
 }

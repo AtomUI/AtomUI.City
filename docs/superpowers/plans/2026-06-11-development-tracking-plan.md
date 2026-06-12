@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`fff9200 feat(Presentation): add command binding`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，471 tests passed
-- 当前状态：已进入 Presentation resource contribution registry 实现阶段
+- 当前提交：`30409a4 feat(Presentation): add resource contribution registry`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，477 tests passed
+- 当前状态：已完成 Presentation active plugin view close 实现
 
 **最新实现检查点：**
 
@@ -134,6 +134,12 @@
 - [x] Presentation resource contribution revoke by PluginId
 - [x] Presentation resource contribution revoke by ContributionId
 - [x] Presentation resource contribution revoke failure diagnostics
+- [x] Presentation active plugin view registry DI registration
+- [x] Presentation active plugin view lease tracking
+- [x] Presentation active plugin view close by PluginId
+- [x] Presentation active plugin view close by ContributionId
+- [x] Presentation active plugin view stale outlet protection
+- [x] Presentation active plugin view close failure diagnostics
 
 ## 状态定义
 
