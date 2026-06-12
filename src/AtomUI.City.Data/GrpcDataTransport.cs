@@ -26,9 +26,16 @@ public sealed class GrpcDataTransport : IRequestResponseTransport
                 .Invoker(new GrpcRequestContext(context), cancellationToken)
                 .ConfigureAwait(false);
 
-            return callResult.Succeeded
-                ? DataResult<TResponse>.Success(callResult.Value!)
-                : DataResult<TResponse>.Failed(DataErrorMapper.FromGrpcStatus(callResult.StatusCode, callResult.Detail));
+            if (callResult.Succeeded)
+            {
+                return DataResult<TResponse>.Success(callResult.Value!);
+            }
+
+            var error = DataErrorMapper.FromGrpcStatus(callResult.StatusCode, callResult.Detail);
+
+            return error.Kind == DataErrorKind.Cancelled
+                ? DataResult<TResponse>.Cancelled(error.Message)
+                : DataResult<TResponse>.Failed(error);
         }
         catch (OperationCanceledException)
         {

@@ -61,6 +61,23 @@ public sealed class GrpcDataTransportTests
     }
 
     [Fact]
+    public async Task GrpcTransportMapsCancelledStatusToCancelledResult()
+    {
+        var transport = new GrpcDataTransport();
+        var request = new GrpcDataRequest<string>(
+            "catalog",
+            "get-items",
+            (_, _) => ValueTask.FromResult(GrpcCallResult<string>.Failed(GrpcStatusCode.Cancelled, "cancelled")));
+
+        var result = await transport.SendAsync(
+            request,
+            DataRequestContext.Create(request, CancellationToken.None));
+
+        Assert.Equal(DataResultStatus.Cancelled, result.Status);
+        Assert.Equal(DataErrorKind.Cancelled, result.Error?.Kind);
+    }
+
+    [Fact]
     public async Task GrpcTransportMapsInvokerFailureToTransportError()
     {
         var transport = new GrpcDataTransport();
