@@ -64,6 +64,14 @@ public sealed class HttpDataTransport : IRequestResponseTransport
         {
             return DataResult<TResponse>.Cancelled();
         }
+        catch (Exception exception)
+        {
+            return DataResult<TResponse>.Failed(
+                new DataError(
+                    DataErrorKind.TransportError,
+                    exception.Message,
+                    Exception: exception));
+        }
     }
 
     private static void AttachCredential(HttpRequestMessage message, DataCredential? credential)

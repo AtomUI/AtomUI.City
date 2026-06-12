@@ -128,6 +128,28 @@ public sealed class HttpDataTransportTests
         Assert.Same(parseException, result.Error?.Exception);
     }
 
+    [Fact]
+    public async Task HttpTransportMapsSendFailureToTransportError()
+    {
+        var sendException = new HttpRequestException("network down");
+        var handler = new RecordingHttpMessageHandler(_ => throw sendException);
+        var transport = new HttpDataTransport(new RecordingHttpClientFactory("api", handler));
+        var request = new HttpDataRequest<string>(
+            "catalog",
+            "get-items",
+            "api",
+            _ => new HttpRequestMessage(HttpMethod.Get, "https://server/items"),
+            _ => ValueTask.FromResult("unused"));
+
+        var result = await transport.SendAsync(
+            request,
+            DataRequestContext.Create(request, CancellationToken.None));
+
+        Assert.False(result.Succeeded);
+        Assert.Equal(DataErrorKind.TransportError, result.Error?.Kind);
+        Assert.Same(sendException, result.Error?.Exception);
+    }
+
     private sealed class RecordingHttpClientFactory : IHttpClientFactory
     {
         private readonly string _clientName;

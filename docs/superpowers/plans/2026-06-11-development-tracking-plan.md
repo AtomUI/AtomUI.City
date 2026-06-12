@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`4e738a8 fix(Data): map HTTP response serialization errors`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，579 tests passed
-- 当前状态：已完成 Data gRPC invoker transport error mapping
+- 当前提交：`2de1a30 fix(Data): map gRPC transport failures`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，580 tests passed
+- 当前状态：已完成 Data HTTP send transport error mapping
 
 **最新实现检查点：**
 
@@ -241,6 +241,7 @@
 - [x] Data HTTP transport cancellation mapping
 - [x] Data HTTP response mapper serialization error mapping
 - [x] Data gRPC invoker transport error mapping
+- [x] Data HTTP send transport error mapping
 
 ## 状态定义
 
