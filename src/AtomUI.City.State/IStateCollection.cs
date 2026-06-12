@@ -7,6 +7,8 @@ public interface IStateCollection<TKey, TItem>
 
     IReadOnlyDictionary<TKey, TItem> Items { get; }
 
+    bool TryGetItemVersion(TKey key, out long version);
+
     bool AddOrUpdate(TKey key, TItem item);
 
     bool AddOrUpdateRange(IEnumerable<KeyValuePair<TKey, TItem>> items);

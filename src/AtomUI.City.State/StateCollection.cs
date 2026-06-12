@@ -44,6 +44,23 @@ public sealed class StateCollection<TKey, TItem> : IStateCollection<TKey, TItem>
         }
     }
 
+    public bool TryGetItemVersion(TKey key, out long version)
+    {
+        ArgumentNullException.ThrowIfNull(key);
+
+        lock (_syncRoot)
+        {
+            if (_items.TryGetValue(key, out var item))
+            {
+                version = item.Version;
+                return true;
+            }
+
+            version = 0;
+            return false;
+        }
+    }
+
     public bool AddOrUpdate(TKey key, TItem item)
     {
         ArgumentNullException.ThrowIfNull(key);

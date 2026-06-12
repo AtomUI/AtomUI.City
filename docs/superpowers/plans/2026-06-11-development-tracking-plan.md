@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`8e790e8 feat(State): add collection clear records`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，522 tests passed
-- 当前状态：已完成 State collection batch add or update notifications
+- 当前提交：`5d743fc feat(State): add collection batch updates`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，523 tests passed
+- 当前状态：已完成 State collection item version query
 
 **最新实现检查点：**
 
@@ -184,6 +184,7 @@
 - [x] State collection remove change records
 - [x] State collection clear change records
 - [x] State collection batch add or update notifications
+- [x] State collection item version query
 
 ## 状态定义
 

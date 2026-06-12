@@ -137,4 +137,23 @@ public sealed class StateCollectionTests
                 Assert.Equal(1, change.ItemVersion);
             });
     }
+
+    [Fact]
+    public void TryGetItemVersionReturnsCurrentItemVersion()
+    {
+        var collection = new StateCollection<string, int>();
+
+        var missing = collection.TryGetItemVersion("settings", out var missingVersion);
+        collection.AddOrUpdate("settings", 1);
+        var added = collection.TryGetItemVersion("settings", out var addedVersion);
+        collection.AddOrUpdate("settings", 2);
+        var updated = collection.TryGetItemVersion("settings", out var updatedVersion);
+
+        Assert.False(missing);
+        Assert.Equal(0, missingVersion);
+        Assert.True(added);
+        Assert.Equal(1, addedVersion);
+        Assert.True(updated);
+        Assert.Equal(2, updatedVersion);
+    }
 }
