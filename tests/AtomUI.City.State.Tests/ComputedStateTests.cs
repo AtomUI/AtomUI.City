@@ -98,4 +98,33 @@ public sealed class ComputedStateTests
         Assert.Throws<ObjectDisposedException>(() => computed.OnChange(_ => { }));
         Assert.Equal(0, computeCount);
     }
+
+    [Fact]
+    public void ComputedStateDoesNotRepeatInitialComputeFailureUntilDependencyChanges()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var source = new WritableState<int>(1);
+        var computeCount = 0;
+        var computed = new ComputedState<int>(
+            () =>
+            {
+                computeCount++;
+                return source.Value == 1
+                    ? throw new InvalidOperationException("initial failure")
+                    : source.Value;
+            },
+            diagnostics,
+            source);
+
+        _ = computed.Value;
+        _ = computed.Value;
+
+        Assert.Equal(1, computeCount);
+        Assert.Single(diagnostics.Records);
+
+        source.SetValue(2);
+
+        Assert.Equal(2, computed.Value);
+        Assert.Equal(2, computeCount);
+    }
 }

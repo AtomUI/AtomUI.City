@@ -9,6 +9,7 @@ public sealed class ComputedState<T> : IComputedState<T>, IDisposable
     private readonly IHostDiagnostics? _diagnostics;
     private readonly List<StateSubscription> _subscriptions = [];
     private readonly List<IStateSubscription> _dependencySubscriptions = [];
+    private bool _hasComputeFailure;
     private bool _hasValue;
     private bool _isDisposed;
     private T? _value;
@@ -163,7 +164,7 @@ public sealed class ComputedState<T> : IComputedState<T>, IDisposable
 
     private void EnsureValue()
     {
-        if (_hasValue)
+        if (_hasValue || _hasComputeFailure)
         {
             return;
         }
@@ -176,6 +177,7 @@ public sealed class ComputedState<T> : IComputedState<T>, IDisposable
         try
         {
             _value = _compute();
+            _hasComputeFailure = false;
             _hasValue = true;
             LastError = null;
 
@@ -183,6 +185,7 @@ public sealed class ComputedState<T> : IComputedState<T>, IDisposable
         }
         catch (Exception exception)
         {
+            _hasComputeFailure = true;
             LastError = exception;
             _diagnostics?.Write(new HostDiagnosticRecord(
                 StateDiagnosticIds.ComputedStateComputeFailed,
