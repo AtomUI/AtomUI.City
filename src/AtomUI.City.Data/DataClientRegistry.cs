@@ -16,6 +16,15 @@ public sealed class DataClientRegistry : IDataClientFactory
         }
     }
 
+    public bool Unregister<TClient>()
+        where TClient : class, IDataClient
+    {
+        lock (_syncRoot)
+        {
+            return _clients.Remove(typeof(TClient));
+        }
+    }
+
     public TClient GetRequiredClient<TClient>()
         where TClient : class, IDataClient
     {

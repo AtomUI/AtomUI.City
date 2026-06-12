@@ -26,6 +26,20 @@ public sealed class DataClientContractTests
         Assert.Contains(nameof(IInventoryClient), exception.Message, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void DataClientRegistryUnregistersTypedClient()
+    {
+        var registry = new DataClientRegistry();
+        var client = new InventoryClient();
+        registry.Register<IInventoryClient>(client);
+
+        var removed = registry.Unregister<IInventoryClient>();
+
+        Assert.True(removed);
+        Assert.Throws<KeyNotFoundException>(
+            () => registry.GetRequiredClient<IInventoryClient>());
+    }
+
     private interface IInventoryClient : IDataClient;
 
     private sealed class InventoryClient : IInventoryClient
