@@ -103,6 +103,29 @@ public sealed class HttpDataTransportTests
     }
 
     [Fact]
+    public async Task HttpTransportMapsSendTimeout()
+    {
+        var timeoutException = new TaskCanceledException("request timed out");
+        var handler = new RecordingHttpMessageHandler(_ => throw timeoutException);
+        var transport = new HttpDataTransport(new RecordingHttpClientFactory("api", handler));
+        var request = new HttpDataRequest<string>(
+            "catalog",
+            "get-items",
+            "api",
+            _ => new HttpRequestMessage(HttpMethod.Get, "https://server/items"),
+            _ => ValueTask.FromResult("unused"));
+
+        var result = await transport.SendAsync(
+            request,
+            DataRequestContext.Create(request, CancellationToken.None),
+            CancellationToken.None);
+
+        Assert.Equal(DataResultStatus.Failed, result.Status);
+        Assert.Equal(DataErrorKind.Timeout, result.Error?.Kind);
+        Assert.Same(timeoutException, result.Error?.Exception);
+    }
+
+    [Fact]
     public async Task HttpTransportMapsResponseMapperFailureToSerializationError()
     {
         var handler = new RecordingHttpMessageHandler(_ =>

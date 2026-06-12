@@ -60,6 +60,14 @@ public sealed class HttpDataTransport : IRequestResponseTransport
 
             return DataResult<TResponse>.Success(mappedResponse);
         }
+        catch (TaskCanceledException exception) when (!cancellationToken.IsCancellationRequested)
+        {
+            return DataResult<TResponse>.Failed(
+                new DataError(
+                    DataErrorKind.Timeout,
+                    exception.Message,
+                    Exception: exception));
+        }
         catch (OperationCanceledException)
         {
             return DataResult<TResponse>.Cancelled();

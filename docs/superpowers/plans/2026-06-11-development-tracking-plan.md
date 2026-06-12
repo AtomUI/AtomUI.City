@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`a76c4fc feat(Data): diagnose request cancellations`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，583 tests passed
-- 当前状态：已完成 Data gRPC cancelled status mapping
+- 当前提交：`da0ee13 fix(Data): map gRPC cancelled status`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，584 tests passed
+- 当前状态：已完成 Data HTTP transport timeout mapping
 
 **最新实现检查点：**
 
@@ -244,6 +244,7 @@
 - [x] Data HTTP send transport error mapping
 - [x] Data request cancellation diagnostic
 - [x] Data gRPC cancelled status mapping
+- [x] Data HTTP transport timeout mapping
 
 ## 状态定义
 
