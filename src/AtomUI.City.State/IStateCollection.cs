@@ -9,6 +9,8 @@ public interface IStateCollection<TKey, TItem>
 
     bool AddOrUpdate(TKey key, TItem item);
 
+    bool AddOrUpdateRange(IEnumerable<KeyValuePair<TKey, TItem>> items);
+
     bool Remove(TKey key);
 
     bool Clear();

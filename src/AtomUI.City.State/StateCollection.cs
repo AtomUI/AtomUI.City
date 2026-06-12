@@ -99,6 +99,79 @@ public sealed class StateCollection<TKey, TItem> : IStateCollection<TKey, TItem>
         return true;
     }
 
+    public bool AddOrUpdateRange(IEnumerable<KeyValuePair<TKey, TItem>> items)
+    {
+        ArgumentNullException.ThrowIfNull(items);
+
+        StateCollectionChangedEventArgs<TKey, TItem> args;
+        StateSubscription[] subscriptions;
+
+        lock (_syncRoot)
+        {
+            var nextItems = new Dictionary<TKey, CollectionItem>(_items, _items.Comparer);
+            var nextVersion = Version + 1;
+            var changes = new List<StateCollectionChange<TKey, TItem>>();
+
+            foreach (var item in items)
+            {
+                ArgumentNullException.ThrowIfNull(item.Key);
+
+                if (nextItems.TryGetValue(item.Key, out var currentItem))
+                {
+                    if (_itemComparer.Equals(currentItem.Value, item.Value))
+                    {
+                        continue;
+                    }
+
+                    var itemVersion = currentItem.Version + 1;
+                    nextItems[item.Key] = new CollectionItem(item.Value, itemVersion);
+                    changes.Add(new StateCollectionChange<TKey, TItem>(
+                        StateCollectionChangeKind.Updated,
+                        item.Key,
+                        HasOldItem: true,
+                        currentItem.Value,
+                        HasNewItem: true,
+                        item.Value,
+                        nextVersion,
+                        itemVersion));
+                }
+                else
+                {
+                    nextItems.Add(item.Key, new CollectionItem(item.Value, Version: 1));
+                    changes.Add(new StateCollectionChange<TKey, TItem>(
+                        StateCollectionChangeKind.Added,
+                        item.Key,
+                        HasOldItem: false,
+                        OldItem: default,
+                        HasNewItem: true,
+                        item.Value,
+                        nextVersion,
+                        ItemVersion: 1));
+                }
+            }
+
+            if (changes.Count == 0)
+            {
+                return false;
+            }
+
+            Version = nextVersion;
+            _items.Clear();
+
+            foreach (var item in nextItems)
+            {
+                _items.Add(item.Key, item.Value);
+            }
+
+            args = new StateCollectionChangedEventArgs<TKey, TItem>(changes);
+            subscriptions = _subscriptions.ToArray();
+        }
+
+        Notify(args, subscriptions);
+
+        return true;
+    }
+
     public bool Remove(TKey key)
     {
         ArgumentNullException.ThrowIfNull(key);
