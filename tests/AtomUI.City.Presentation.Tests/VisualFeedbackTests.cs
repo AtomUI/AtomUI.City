@@ -1,3 +1,4 @@
+using AtomUI.City.Diagnostics;
 using AtomUI.City.Presentation;
 
 namespace AtomUI.City.Presentation.Tests;
@@ -40,6 +41,45 @@ public sealed class VisualFeedbackTests
         hub.Notify(new SettingsView(), VisualLifecycleEventKind.Attached);
 
         Assert.Empty(events);
+    }
+
+    [Fact]
+    public void VisualLifecycleHubRecordsAdapterExecutionDiagnostics()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var hub = new VisualLifecycleHub(diagnostics);
+        var view = new SettingsView();
+        using var subscription = hub.Subscribe(_ => { });
+
+        hub.Notify(view, VisualLifecycleEventKind.Attached);
+
+        Assert.Contains(
+            diagnostics.Records,
+            record =>
+                record.Code == PresentationDiagnosticIds.VisualLifecycleAdapterExecuted &&
+                record.Severity == HostDiagnosticSeverity.Info &&
+                record.Message.Contains(typeof(SettingsView).FullName!, StringComparison.Ordinal) &&
+                record.Message.Contains(nameof(VisualLifecycleEventKind.Attached), StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void VisualLifecycleHubRecordsAdapterFailureDiagnostics()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var hub = new VisualLifecycleHub(diagnostics);
+        var view = new SettingsView();
+        using var subscription = hub.Subscribe(_ => throw new InvalidOperationException("adapter failed"));
+
+        Assert.Throws<InvalidOperationException>(
+            () => hub.Notify(view, VisualLifecycleEventKind.Detached));
+
+        Assert.Contains(
+            diagnostics.Records,
+            record =>
+                record.Code == PresentationDiagnosticIds.VisualLifecycleAdapterFailed &&
+                record.Severity == HostDiagnosticSeverity.Error &&
+                record.Message.Contains("adapter failed", StringComparison.Ordinal) &&
+                record.Message.Contains(nameof(VisualLifecycleEventKind.Detached), StringComparison.Ordinal));
     }
 
     [Fact]

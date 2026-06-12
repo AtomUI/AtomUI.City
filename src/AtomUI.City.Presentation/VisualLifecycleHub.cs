@@ -1,9 +1,23 @@
+using AtomUI.City.Diagnostics;
+
 namespace AtomUI.City.Presentation;
 
 public sealed class VisualLifecycleHub
 {
     private readonly object _gate = new();
     private readonly List<Action<VisualLifecycleEvent>> _subscribers = new();
+    private readonly IHostDiagnostics? _diagnostics;
+
+    public VisualLifecycleHub()
+    {
+    }
+
+    public VisualLifecycleHub(IHostDiagnostics diagnostics)
+    {
+        ArgumentNullException.ThrowIfNull(diagnostics);
+
+        _diagnostics = diagnostics;
+    }
 
     public IDisposable Subscribe(Action<VisualLifecycleEvent> handler)
     {
@@ -32,7 +46,17 @@ public sealed class VisualLifecycleHub
 
         foreach (var subscriber in subscribers)
         {
-            subscriber(lifecycleEvent);
+            try
+            {
+                subscriber(lifecycleEvent);
+                WriteAdapterExecutedDiagnostic(lifecycleEvent);
+            }
+            catch (Exception exception)
+            {
+                WriteAdapterFailedDiagnostic(lifecycleEvent, exception);
+
+                throw;
+            }
         }
     }
 
@@ -42,6 +66,24 @@ public sealed class VisualLifecycleHub
         {
             _subscribers.Remove(handler);
         }
+    }
+
+    private void WriteAdapterExecutedDiagnostic(VisualLifecycleEvent lifecycleEvent)
+    {
+        _diagnostics?.Write(new HostDiagnosticRecord(
+            PresentationDiagnosticIds.VisualLifecycleAdapterExecuted,
+            $"Visual lifecycle adapter handled {lifecycleEvent.Kind} for view '{lifecycleEvent.View.GetType().FullName}'.",
+            HostDiagnosticSeverity.Info));
+    }
+
+    private void WriteAdapterFailedDiagnostic(
+        VisualLifecycleEvent lifecycleEvent,
+        Exception exception)
+    {
+        _diagnostics?.Write(new HostDiagnosticRecord(
+            PresentationDiagnosticIds.VisualLifecycleAdapterFailed,
+            $"Visual lifecycle adapter failed while handling {lifecycleEvent.Kind} for view '{lifecycleEvent.View.GetType().FullName}': {exception.Message}",
+            HostDiagnosticSeverity.Error));
     }
 
     private sealed class Subscription : IDisposable

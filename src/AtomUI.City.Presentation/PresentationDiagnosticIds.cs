@@ -15,4 +15,6 @@ public static class PresentationDiagnosticIds
     public const string OutletCommitPlanned = "AUCPRS011";
     public const string OutletCommitSucceeded = "AUCPRS012";
     public const string OutletCommitFailed = "AUCPRS013";
+    public const string VisualLifecycleAdapterExecuted = "AUCPRS014";
+    public const string VisualLifecycleAdapterFailed = "AUCPRS015";
 }
