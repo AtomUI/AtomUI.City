@@ -8,4 +8,5 @@ public static class StateDiagnosticIds
     public const string ApplicationStateWriteDenied = "AUCSTA004";
     public const string ComputedStateComputeFailed = "AUCSTA005";
     public const string WritableStateUpdateFailed = "AUCSTA006";
+    public const string SnapshotRestoreFailed = "AUCSTA007";
 }

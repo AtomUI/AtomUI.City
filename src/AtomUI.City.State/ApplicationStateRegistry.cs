@@ -88,7 +88,7 @@ public sealed class ApplicationStateRegistry :
                 continue;
             }
 
-            registration.Restore(entry);
+            registration.Restore(entry, _diagnostics);
         }
     }
 
@@ -152,7 +152,9 @@ public sealed class ApplicationStateRegistry :
 
         public abstract StateSnapshotEntry CreateSnapshotEntry();
 
-        public abstract void Restore(StateSnapshotEntry entry);
+        public abstract void Restore(
+            StateSnapshotEntry entry,
+            IHostDiagnostics? diagnostics);
     }
 
     private sealed class StateRegistration<T> : StateRegistration
@@ -182,10 +184,16 @@ public sealed class ApplicationStateRegistry :
                 Definition.PluginId);
         }
 
-        public override void Restore(StateSnapshotEntry entry)
+        public override void Restore(
+            StateSnapshotEntry entry,
+            IHostDiagnostics? diagnostics)
         {
             if (entry.SchemaVersion != Definition.SchemaVersion)
             {
+                WriteRestoreFailedDiagnostic(
+                    diagnostics,
+                    entry,
+                    $"schema version '{entry.SchemaVersion}' does not match expected schema version '{Definition.SchemaVersion}'");
                 return;
             }
 
@@ -193,6 +201,24 @@ public sealed class ApplicationStateRegistry :
             {
                 State.Restore(value, entry.Version);
             }
+            else
+            {
+                WriteRestoreFailedDiagnostic(
+                    diagnostics,
+                    entry,
+                    $"value type '{entry.ValueType.FullName}' cannot be restored as '{typeof(T).FullName}'");
+            }
+        }
+
+        private void WriteRestoreFailedDiagnostic(
+            IHostDiagnostics? diagnostics,
+            StateSnapshotEntry entry,
+            string reason)
+        {
+            diagnostics?.Write(new HostDiagnosticRecord(
+                StateDiagnosticIds.SnapshotRestoreFailed,
+                $"State snapshot restore failed for state '{entry.StateName}': {reason}.",
+                HostDiagnosticSeverity.Warning));
         }
     }
 }
