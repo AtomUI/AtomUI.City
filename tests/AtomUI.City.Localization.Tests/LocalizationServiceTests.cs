@@ -223,6 +223,52 @@ public sealed class LocalizationServiceTests
     }
 
     [Fact]
+    public async Task LocalizedMessageTextRefreshesFormattedValueWhenCultureChanges()
+    {
+        var zh = Package("Host.zh-CN", "zh-CN", ("Validation.Length", "字段 {0} 不能超过 {1} 个字符"));
+        var en = Package("Host.en-US", "en-US", ("Validation.Length", "{0} must be at most {1} characters."));
+        var service = new LocalizationService(
+            [zh.Descriptor, en.Descriptor],
+            [new RecordingLanguagePackageProvider(zh, en)],
+            bridge: new RecordingPresentationLocalizationBridge());
+
+        await service.SetCultureAsync("zh-CN");
+        using var text = await service.CreateMessageTextAsync("Validation.Length", ["Name", 12]);
+        var changes = new List<string>();
+        text.Changed += (_, args) => changes.Add(args.Value);
+
+        await service.SetCultureAsync("en-US");
+
+        Assert.Equal("Name must be at most 12 characters.", text.Value);
+        Assert.Equal("en-US", text.Culture.Name);
+        Assert.Equal(2, text.Revision);
+        Assert.Equal(["Name must be at most 12 characters."], changes);
+    }
+
+    [Fact]
+    public async Task DisposedLocalizedMessageTextDoesNotRefreshAfterCultureChanges()
+    {
+        var zh = Package("Host.zh-CN", "zh-CN", ("Validation.Required", "请输入 {0}"));
+        var en = Package("Host.en-US", "en-US", ("Validation.Required", "{0} is required."));
+        var service = new LocalizationService(
+            [zh.Descriptor, en.Descriptor],
+            [new RecordingLanguagePackageProvider(zh, en)],
+            bridge: new RecordingPresentationLocalizationBridge());
+
+        await service.SetCultureAsync("zh-CN");
+        var text = await service.CreateMessageTextAsync("Validation.Required", ["Name"]);
+        var changed = false;
+        text.Changed += (_, _) => changed = true;
+
+        text.Dispose();
+        await service.SetCultureAsync("en-US");
+
+        Assert.False(changed);
+        Assert.Equal("请输入 Name", text.Value);
+        Assert.Equal(1, text.Revision);
+    }
+
+    [Fact]
     public async Task DisposedLocalizedTextDoesNotRefreshAfterCultureChanges()
     {
         var zh = Package("Host.zh-CN", "zh-CN", ("Settings.Title", "设置"));

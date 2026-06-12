@@ -9,7 +9,7 @@ public sealed class LocalizationService : ILocalizationService
     private readonly IPresentationLocalizationBridge _bridge;
     private readonly ILocalizationDiagnostics? _diagnostics;
     private readonly Dictionary<string, LanguagePackage> _loadedPackages = [];
-    private readonly List<LocalizedText> _localizedTexts = [];
+    private readonly List<ILocalizedText> _localizedTexts = [];
     private readonly object _localizedTextGate = new();
     private readonly SemaphoreSlim _switchLock = new(1, 1);
 
@@ -198,7 +198,18 @@ public sealed class LocalizationService : ILocalizationService
         return text;
     }
 
-    internal void UnregisterLocalizedText(LocalizedText text)
+    public async ValueTask<ILocalizedText> CreateMessageTextAsync(
+        string key,
+        IReadOnlyList<object?> arguments,
+        CancellationToken cancellationToken = default)
+    {
+        var text = await LocalizedMessageText.CreateAsync(this, key, arguments, cancellationToken).ConfigureAwait(false);
+        RegisterLocalizedText(text);
+
+        return text;
+    }
+
+    internal void UnregisterLocalizedText(ILocalizedText text)
     {
         lock (_localizedTextGate)
         {
@@ -217,7 +228,7 @@ public sealed class LocalizationService : ILocalizationService
             errorKind: LocalizationErrorKind.RefreshFailed);
     }
 
-    private void RegisterLocalizedText(LocalizedText text)
+    private void RegisterLocalizedText(ILocalizedText text)
     {
         lock (_localizedTextGate)
         {
@@ -227,7 +238,7 @@ public sealed class LocalizationService : ILocalizationService
 
     private async ValueTask RefreshLocalizedTextsAsync(CancellationToken cancellationToken)
     {
-        LocalizedText[] localizedTexts;
+        ILocalizedText[] localizedTexts;
 
         lock (_localizedTextGate)
         {

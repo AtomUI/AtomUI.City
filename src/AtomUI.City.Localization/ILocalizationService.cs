@@ -24,4 +24,9 @@ public interface ILocalizationService
     ValueTask<ILocalizedText> CreateTextAsync(
         string key,
         CancellationToken cancellationToken = default);
+
+    ValueTask<ILocalizedText> CreateMessageTextAsync(
+        string key,
+        IReadOnlyList<object?> arguments,
+        CancellationToken cancellationToken = default);
 }

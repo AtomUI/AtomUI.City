@@ -6,6 +6,7 @@ namespace AtomUI.City.Presentation;
 internal sealed class LocalizedTextBindingSet
 {
     private readonly ILocalizationService _localization;
+    private readonly IUiDispatcher _dispatcher;
     private readonly LocalizedTextBinding _textBinding;
 
     public LocalizedTextBindingSet(
@@ -16,6 +17,7 @@ internal sealed class LocalizedTextBindingSet
         ArgumentNullException.ThrowIfNull(dispatcher);
 
         _localization = localization;
+        _dispatcher = dispatcher;
         _textBinding = new LocalizedTextBinding(dispatcher);
     }
 
@@ -39,6 +41,48 @@ internal sealed class LocalizedTextBindingSet
             .BindAsync(text, new TargetAdapter(setText), cancellationToken)
             .ConfigureAwait(false);
         resources.Add(binding);
+    }
+
+    public async ValueTask BindMessageAsync(
+        string? key,
+        IReadOnlyList<object?>? arguments,
+        string? fallbackMessage,
+        Action<string?> setText,
+        List<IDisposable> resources,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(setText);
+        ArgumentNullException.ThrowIfNull(resources);
+
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            await ApplyTextAsync(setText, fallbackMessage, cancellationToken).ConfigureAwait(false);
+            return;
+        }
+
+        var text = await _localization
+            .CreateMessageTextAsync(key, arguments ?? [], cancellationToken)
+            .ConfigureAwait(false);
+        resources.Add(text);
+        var binding = await _textBinding
+            .BindAsync(text, new TargetAdapter(setText), cancellationToken)
+            .ConfigureAwait(false);
+        resources.Add(binding);
+    }
+
+    public ValueTask ApplyTextAsync(
+        Action<string?> setText,
+        string? value,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(setText);
+
+        return _dispatcher.InvokeAsync(
+            () =>
+            {
+                setText(value);
+            },
+            cancellationToken);
     }
 
     public static IDisposable CreateHandle(List<IDisposable> resources)
