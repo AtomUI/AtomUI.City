@@ -1,3 +1,4 @@
+using AtomUI.City.Diagnostics;
 using AtomUI.City.Presentation;
 using AtomUI.City.Threading;
 
@@ -68,6 +69,57 @@ public sealed class RouteOutletTests
         Assert.Equal(PresentationError.OutletNotFound, result.Error);
         Assert.Same(first.View, outlet.CurrentContent);
         Assert.True(rejected.IsDisposed);
+    }
+
+    [Fact]
+    public async Task OutletRecordsCommitPlanAndSuccessDiagnostics()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var dispatcher = new RecordingDispatcher();
+        var outlet = new RouteOutlet("primary", dispatcher, diagnostics);
+        var handle = BoundViewHandle.FromExisting(
+            new SettingsView(),
+            new SettingsViewModel());
+
+        await outlet.CommitAsync(RouteOutletCommitPlan.Replace("primary", handle));
+
+        Assert.Contains(
+            diagnostics.Records,
+            record =>
+                record.Code == PresentationDiagnosticIds.OutletCommitPlanned &&
+                record.Severity == HostDiagnosticSeverity.Info &&
+                record.Message.Contains("primary", StringComparison.Ordinal) &&
+                record.Message.Contains(nameof(RouteOutletOperation.Replace), StringComparison.Ordinal));
+        Assert.Contains(
+            diagnostics.Records,
+            record =>
+                record.Code == PresentationDiagnosticIds.OutletCommitSucceeded &&
+                record.Severity == HostDiagnosticSeverity.Info &&
+                record.Message.Contains("primary", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task OutletRecordsCommitPlanAndFailureDiagnostics()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var dispatcher = new RecordingDispatcher();
+        var outlet = new RouteOutlet("primary", dispatcher, diagnostics);
+        var rejected = BoundViewHandle.FromExisting(new SettingsView(), new SettingsViewModel());
+
+        await outlet.CommitAsync(RouteOutletCommitPlan.Replace("secondary", rejected));
+
+        Assert.Contains(
+            diagnostics.Records,
+            record =>
+                record.Code == PresentationDiagnosticIds.OutletCommitPlanned &&
+                record.Severity == HostDiagnosticSeverity.Info &&
+                record.Message.Contains("secondary", StringComparison.Ordinal));
+        Assert.Contains(
+            diagnostics.Records,
+            record =>
+                record.Code == PresentationDiagnosticIds.OutletCommitFailed &&
+                record.Severity == HostDiagnosticSeverity.Error &&
+                record.Message.Contains(nameof(PresentationError.OutletNotFound), StringComparison.Ordinal));
     }
 
     private sealed class RecordingDispatcher : IUiDispatcher

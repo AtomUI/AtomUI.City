@@ -12,4 +12,7 @@ public static class PresentationDiagnosticIds
     public const string ViewCreationFailed = "AUCPRS008";
     public const string ViewBound = "AUCPRS009";
     public const string ViewBindingFailed = "AUCPRS010";
+    public const string OutletCommitPlanned = "AUCPRS011";
+    public const string OutletCommitSucceeded = "AUCPRS012";
+    public const string OutletCommitFailed = "AUCPRS013";
 }
