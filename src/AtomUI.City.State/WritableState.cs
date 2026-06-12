@@ -154,6 +154,11 @@ public sealed class WritableState<T> : IWritableState<T>
 
         lock (_syncRoot)
         {
+            if (_comparer.Equals(_value, value) && Version == version)
+            {
+                return;
+            }
+
             var oldValue = _value;
             _value = value;
             Version = version;
