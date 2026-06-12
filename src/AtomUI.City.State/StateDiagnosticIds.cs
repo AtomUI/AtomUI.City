@@ -10,4 +10,5 @@ public static class StateDiagnosticIds
     public const string WritableStateUpdateFailed = "AUCSTA006";
     public const string SnapshotRestoreFailed = "AUCSTA007";
     public const string ApplicationStateAlreadyRegistered = "AUCSTA008";
+    public const string StateScopeDisposeFailed = "AUCSTA009";
 }

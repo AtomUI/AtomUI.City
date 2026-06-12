@@ -1,3 +1,4 @@
+using AtomUI.City.Diagnostics;
 using AtomUI.City.State;
 
 namespace AtomUI.City.State.Tests;
@@ -31,6 +32,29 @@ public sealed class StateScopeTests
         state.SetValue(1);
 
         Assert.Equal(0, calls);
+    }
+
+    [Fact]
+    public void StateScopeRecordsDisposeFailuresAndContinuesDisposal()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var calls = new List<string>();
+        var scope = new StateScope("activation", diagnostics);
+
+        scope.Add(new TestSubscription(() => calls.Add("first")));
+        scope.Add(new TestSubscription(() => throw new InvalidOperationException("bad dispose")));
+        scope.Add(new TestSubscription(() => calls.Add("third")));
+
+        scope.Dispose();
+
+        Assert.Equal(["third", "first"], calls);
+        Assert.Equal(StateScopeState.Disposed, scope.State);
+
+        var record = Assert.Single(diagnostics.Records);
+        Assert.Equal("AUCSTA009", record.Code);
+        Assert.Equal(HostDiagnosticSeverity.Error, record.Severity);
+        Assert.Contains(scope.Id, record.Message, StringComparison.Ordinal);
+        Assert.Contains("bad dispose", record.Message, StringComparison.Ordinal);
     }
 
     private sealed class TestSubscription : IStateSubscription
