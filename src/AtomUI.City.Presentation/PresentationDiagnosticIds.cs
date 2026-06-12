@@ -29,4 +29,7 @@ public static class PresentationDiagnosticIds
     public const string ValidationVisualStateApplyFailed = "AUCPRS025";
     public const string CommandStateApplied = "AUCPRS026";
     public const string CommandStateApplyFailed = "AUCPRS027";
+    public const string ResourceContributionRegistered = "AUCPRS028";
+    public const string ResourceContributionRevoked = "AUCPRS029";
+    public const string ResourceContributionRevokeFailed = "AUCPRS030";
 }

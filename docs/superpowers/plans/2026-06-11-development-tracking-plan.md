@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`05419b0 feat(Presentation): add validation visual state binding`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，466 tests passed
-- 当前状态：已进入 Presentation command binding 集成实现阶段
+- 当前提交：`fff9200 feat(Presentation): add command binding`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，471 tests passed
+- 当前状态：已进入 Presentation resource contribution registry 实现阶段
 
 **最新实现检查点：**
 
@@ -128,6 +128,12 @@
 - [x] Presentation command binding async executing state
 - [x] Presentation command binding disposal through ActivationScope
 - [x] Presentation command binding diagnostics
+- [x] Presentation resource contribution registry DI registration
+- [x] Presentation resource contribution lease registration
+- [x] Presentation resource contribution lease disposal
+- [x] Presentation resource contribution revoke by PluginId
+- [x] Presentation resource contribution revoke by ContributionId
+- [x] Presentation resource contribution revoke failure diagnostics
 
 ## 状态定义
 
