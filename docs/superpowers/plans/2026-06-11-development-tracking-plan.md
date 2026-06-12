@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`3b8ad2c fix(Data): guard late request cancellation`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，590 tests passed
-- 当前状态：已完成 Data credential late cancellation guard
+- 当前提交：`95da206 fix(Data): guard credential cancellation`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，591 tests passed
+- 当前状态：已完成 Data cache read late cancellation guard
 
 **最新实现检查点：**
 
@@ -251,6 +251,7 @@
 - [x] Data cache read timeout cancellation result mapping
 - [x] Data request token late cancellation guard
 - [x] Data credential late cancellation guard
+- [x] Data cache read late cancellation guard
 
 ## 状态定义
 

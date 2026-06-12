@@ -90,6 +90,14 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
             var cachedResult = await ReadCacheAsync<TResponse>(cacheKey, context, operationToken).ConfigureAwait(false);
             if (cachedResult is not null)
             {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    var cancelledResult = DataResult<TResponse>.Cancelled();
+                    WriteRequestResultDiagnostic(context, cancelledResult);
+
+                    return cancelledResult;
+                }
+
                 if (cachedResult.Status == DataResultStatus.Cancelled
                     && IsOperationTimeout(timeoutCancellation, cancellationToken))
                 {

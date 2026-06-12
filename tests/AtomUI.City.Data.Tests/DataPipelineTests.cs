@@ -226,6 +226,36 @@ public sealed class DataPipelineTests
     }
 
     [Fact]
+    public async Task PipelineReturnsCancelledWhenRequestTokenIsCancelledDuringCacheRead()
+    {
+        var release = new TaskCompletionSource();
+        var cache = new CallbackRequestCache(async _ =>
+        {
+            await release.Task;
+
+            return "cached";
+        });
+        var transport = new RecordingTransport(_ => DataResult<string>.Success("should-not-run"));
+        var pipeline = new DataRequestPipeline(transport, cache: cache);
+        var request = new DataRequest<string>(
+            "catalog",
+            "get-items",
+            DataTransportKind.Http)
+        {
+            Cache = DataCacheOptions.Enabled("items:v1"),
+        };
+        using var cancellation = new CancellationTokenSource();
+
+        var resultTask = pipeline.SendAsync(request, cancellation.Token).AsTask();
+        await cancellation.CancelAsync();
+        release.SetResult();
+        var result = await resultTask;
+
+        Assert.Equal(DataResultStatus.Cancelled, result.Status);
+        Assert.Equal(0, transport.Attempts);
+    }
+
+    [Fact]
     public async Task PipelineWritesCacheWriteFailureDiagnosticAndReturnsTransportResult()
     {
         var diagnostics = new InMemoryDataDiagnostics();
@@ -954,6 +984,42 @@ public sealed class DataPipelineTests
             await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
 
             return DataCacheLookup<TResponse>.Miss();
+        }
+
+        public ValueTask SetAsync<TResponse>(
+            DataCacheKey key,
+            TResponse? value,
+            CancellationToken cancellationToken = default)
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        public ValueTask InvalidateAsync(
+            DataCacheKey key,
+            CancellationToken cancellationToken = default)
+        {
+            return ValueTask.CompletedTask;
+        }
+    }
+
+    private sealed class CallbackRequestCache : IDataRequestCache
+    {
+        private readonly Func<CancellationToken, ValueTask<object?>> _readHandler;
+
+        public CallbackRequestCache(Func<CancellationToken, ValueTask<object?>> readHandler)
+        {
+            _readHandler = readHandler;
+        }
+
+        public async ValueTask<DataCacheLookup<TResponse>> TryGetAsync<TResponse>(
+            DataCacheKey key,
+            CancellationToken cancellationToken = default)
+        {
+            var value = await _readHandler(cancellationToken);
+
+            return value is TResponse response
+                ? DataCacheLookup<TResponse>.Hit(response)
+                : DataCacheLookup<TResponse>.Miss();
         }
 
         public ValueTask SetAsync<TResponse>(
