@@ -96,6 +96,14 @@ public sealed class StateCollection<TKey, TItem> : IStateCollection<TKey, TItem>
                 snapshotKeys.Add(item.Key);
                 var hasOldItem = _items.TryGetValue(item.Key, out var oldItem);
                 nextItems[item.Key] = new CollectionItem(item.Item, item.ItemVersion);
+
+                if (hasOldItem &&
+                    _itemComparer.Equals(oldItem!.Value, item.Item) &&
+                    oldItem.Version == item.ItemVersion)
+                {
+                    continue;
+                }
+
                 changes.Add(new StateCollectionChange<TKey, TItem>(
                     StateCollectionChangeKind.Reset,
                     item.Key,

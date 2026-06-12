@@ -278,4 +278,22 @@ public sealed class StateCollectionTests
                 Assert.Equal(2, change.ItemVersion);
             });
     }
+
+    [Fact]
+    public void RestoreSnapshotSkipsNotificationForUnchangedSnapshot()
+    {
+        var collection = new StateCollection<string, int>();
+        collection.AddOrUpdate("settings", 1);
+        var snapshot = collection.CreateSnapshot();
+        var notifications = new List<StateCollectionChangedEventArgs<string, int>>();
+
+        collection.OnChange(notifications.Add);
+
+        var restored = collection.RestoreSnapshot(snapshot);
+
+        Assert.False(restored);
+        Assert.Equal(1, collection.Version);
+        Assert.Equal(1, collection.Items["settings"]);
+        Assert.Empty(notifications);
+    }
 }

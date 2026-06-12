@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`640ae45 feat(State): restore collection snapshots`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，526 tests passed
-- 当前状态：已完成 State collection empty snapshot restore
+- 当前提交：`65f1844 fix(State): reset missing collection snapshot items`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，527 tests passed
+- 当前状态：已完成 State collection unchanged snapshot restore guard
 
 **最新实现检查点：**
 
@@ -188,6 +188,7 @@
 - [x] State collection snapshot creation
 - [x] State collection snapshot restore
 - [x] State collection empty snapshot restore
+- [x] State collection unchanged snapshot restore guard
 
 ## 状态定义
 
