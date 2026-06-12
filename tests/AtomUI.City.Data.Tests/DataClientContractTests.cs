@@ -72,6 +72,24 @@ public sealed class DataClientContractTests
             () => registry.GetRequiredClient<IInventoryClient>());
     }
 
+    [Fact]
+    public void DataClientRegistryWritesUnregisteredClientDiagnostic()
+    {
+        var diagnostics = new InMemoryDataDiagnostics();
+        var registry = new DataClientRegistry(diagnostics);
+        var client = new InventoryClient();
+        registry.Register<IInventoryClient>(client);
+
+        registry.Unregister<IInventoryClient>();
+
+        var record = Assert.Single(
+            diagnostics.Records,
+            record => record.Code == DataDiagnosticIds.ClientUnregistered);
+        Assert.Equal(DataDiagnosticSeverity.Info, record.Severity);
+        Assert.Equal("inventory", record.ClientId);
+        Assert.Contains(nameof(IInventoryClient), record.Message, StringComparison.Ordinal);
+    }
+
     private interface IInventoryClient : IDataClient;
 
     private sealed class InventoryClient : IInventoryClient

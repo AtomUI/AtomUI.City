@@ -31,10 +31,27 @@ public sealed class DataClientRegistry : IDataClientFactory
     public bool Unregister<TClient>()
         where TClient : class, IDataClient
     {
+        IDataClient? removedClient = null;
         lock (_syncRoot)
         {
-            return _clients.Remove(typeof(TClient));
+            if (_clients.Remove(typeof(TClient), out var client))
+            {
+                removedClient = client;
+            }
         }
+
+        if (removedClient is null)
+        {
+            return false;
+        }
+
+        _diagnostics?.Write(new DataDiagnosticRecord(
+            DataDiagnosticIds.ClientUnregistered,
+            $"Data client '{typeof(TClient).FullName}' unregistered.",
+            DataDiagnosticSeverity.Info,
+            ClientId: removedClient.ClientId));
+
+        return true;
     }
 
     public TClient GetRequiredClient<TClient>()
