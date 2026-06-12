@@ -21,6 +21,7 @@
     <ProjectReference Include="../../src/AtomUI.City.Core/AtomUI.City.Core.csproj" />
     <ProjectReference Include="../../src/AtomUI.City.Generators/AtomUI.City.Generators.csproj" />
     <ProjectReference Include="../../src/AtomUI.City.Localization/AtomUI.City.Localization.csproj" />
+    <ProjectReference Include="../../src/AtomUI.City.Presentation/AtomUI.City.Presentation.csproj" />
     <ProjectReference Include="../../src/AtomUI.City.PluginSystem/AtomUI.City.PluginSystem.csproj" />
     <ProjectReference Include="../../src/AtomUI.City.Routing/AtomUI.City.Routing.csproj" />
   </ItemGroup>

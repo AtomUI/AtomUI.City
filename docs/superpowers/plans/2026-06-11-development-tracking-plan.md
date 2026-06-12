@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`86d363c feat(Generator): emit presentation view registrar`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，498 tests passed
-- 当前状态：已完成 Generator Presentation manifest diagnostics reporting 实现
+- 当前提交：`637d6c8 feat(Generator): report presentation manifest diagnostics`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，499 tests passed
+- 当前状态：已完成 Generator Presentation generated registrar compile verification
 
 **最新实现检查点：**
 
@@ -162,6 +162,7 @@
 - [x] Generator Presentation view registrar source builder
 - [x] Generator Presentation view registrar incremental output
 - [x] Generator Presentation manifest diagnostics reporting
+- [x] Generator Presentation generated registrar compile verification
 
 ## 状态定义
 

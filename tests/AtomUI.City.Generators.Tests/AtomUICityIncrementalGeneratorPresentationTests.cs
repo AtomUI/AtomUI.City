@@ -110,13 +110,45 @@ public sealed class AtomUICityIncrementalGeneratorPresentationTests
         Assert.Contains("Sample.App.SettingsViewModel", diagnostic.GetMessage(), StringComparison.Ordinal);
     }
 
-    private static CSharpCompilation CreateCompilation(string source)
+    [Fact]
+    public void GeneratedPresentationViewRegistrarCompilesAgainstPresentationContracts()
+    {
+        var compilation = CreateCompilation(
+            """
+            namespace Sample.App
+            {
+                public sealed class SettingsViewModel
+                {
+                }
+
+                [AtomUI.City.Presentation.ViewFor(typeof(SettingsViewModel))]
+                public sealed class SettingsView
+                {
+                }
+            }
+            """,
+            MetadataReference.CreateFromFile(typeof(AtomUI.City.Presentation.ViewForAttribute).Assembly.Location));
+        var driver = CSharpGeneratorDriver.Create(new AtomUICityIncrementalGenerator());
+
+        driver.RunGeneratorsAndUpdateCompilation(
+            compilation,
+            out var outputCompilation,
+            out var generatorDiagnostics);
+
+        Assert.Empty(generatorDiagnostics);
+        Assert.Empty(outputCompilation.GetDiagnostics().Where(diagnostic => diagnostic.Severity == DiagnosticSeverity.Error));
+    }
+
+    private static CSharpCompilation CreateCompilation(
+        string source,
+        params MetadataReference[] additionalReferences)
     {
         var sourceTree = CSharpSyntaxTree.ParseText(source);
         var references = AppDomain.CurrentDomain
             .GetAssemblies()
             .Where(assembly => !assembly.IsDynamic && !string.IsNullOrWhiteSpace(assembly.Location))
             .Select(assembly => MetadataReference.CreateFromFile(assembly.Location))
+            .Concat(additionalReferences)
             .DistinctBy(reference => reference.Display)
             .ToArray();
 
