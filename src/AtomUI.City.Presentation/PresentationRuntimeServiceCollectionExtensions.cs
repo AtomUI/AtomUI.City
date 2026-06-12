@@ -1,3 +1,4 @@
+using AtomUI.City.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -9,7 +10,8 @@ public static class PresentationRuntimeServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.TryAddSingleton<PresentationRuntime>();
+        services.TryAddSingleton(
+            serviceProvider => new PresentationRuntime(serviceProvider.GetService<IHostDiagnostics>()));
         services.TryAddSingleton<IPresentationRuntime>(
             serviceProvider => serviceProvider.GetRequiredService<PresentationRuntime>());
 

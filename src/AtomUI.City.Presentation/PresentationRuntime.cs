@@ -1,3 +1,4 @@
+using AtomUI.City.Diagnostics;
 using AtomUI.City.Lifecycle;
 
 namespace AtomUI.City.Presentation;
@@ -5,8 +6,14 @@ namespace AtomUI.City.Presentation;
 public sealed class PresentationRuntime : IPresentationRuntime
 {
     private readonly object _syncRoot = new();
+    private readonly IHostDiagnostics? _diagnostics;
     private LifecycleScope? _presentationScope;
     private PresentationRuntimeState _state = PresentationRuntimeState.NotReady;
+
+    public PresentationRuntime(IHostDiagnostics? diagnostics = null)
+    {
+        _diagnostics = diagnostics;
+    }
 
     public PresentationRuntimeState State
     {
@@ -50,6 +57,7 @@ public sealed class PresentationRuntime : IPresentationRuntime
         ArgumentException.ThrowIfNullOrWhiteSpace(presentationScopeId);
         cancellationToken.ThrowIfCancellationRequested();
 
+        LifecycleScope presentationScope;
         lock (_syncRoot)
         {
             if (_state == PresentationRuntimeState.Ready)
@@ -62,11 +70,17 @@ public sealed class PresentationRuntime : IPresentationRuntime
                 throw CreateRuntimeStoppingException();
             }
 
-            _presentationScope = applicationScope.CreateChild(
+            presentationScope = applicationScope.CreateChild(
                 LifecycleScopeKind.Presentation,
                 presentationScopeId);
+            _presentationScope = presentationScope;
             _state = PresentationRuntimeState.Ready;
         }
+
+        WriteDiagnostic(
+            PresentationDiagnosticIds.RuntimeReady,
+            "Presentation runtime is ready.",
+            presentationScope.Id);
 
         return ValueTask.CompletedTask;
     }
@@ -115,6 +129,11 @@ public sealed class PresentationRuntime : IPresentationRuntime
             }
         }
 
+        WriteDiagnostic(
+            PresentationDiagnosticIds.RuntimeStopping,
+            "Presentation runtime is stopping.",
+            presentationScope.Id);
+
         try
         {
             await presentationScope.StopAsync().ConfigureAwait(false);
@@ -133,6 +152,18 @@ public sealed class PresentationRuntime : IPresentationRuntime
 
             throw;
         }
+    }
+
+    private void WriteDiagnostic(
+        string code,
+        string message,
+        string scopeId)
+    {
+        _diagnostics?.Write(new HostDiagnosticRecord(
+            code,
+            message,
+            HostDiagnosticSeverity.Info,
+            ScopeId: scopeId));
     }
 
     private static PresentationException CreateRuntimeNotReadyException()

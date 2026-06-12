@@ -1,3 +1,4 @@
+using AtomUI.City.Diagnostics;
 using AtomUI.City.Lifecycle;
 using AtomUI.City.Presentation;
 using Microsoft.Extensions.DependencyInjection;
@@ -69,6 +70,41 @@ public sealed class PresentationRuntimeTests
     }
 
     [Fact]
+    public async Task StartAsyncRecordsRuntimeReadyDiagnostic()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        await using var application = LifecycleScope.CreateRoot(LifecycleScopeKind.Application, "application");
+        var runtime = new PresentationRuntime(diagnostics);
+
+        await runtime.StartAsync(application);
+
+        Assert.Contains(
+            diagnostics.Records,
+            record =>
+                record.Code == PresentationDiagnosticIds.RuntimeReady &&
+                record.ScopeId == "presentation" &&
+                record.Severity == HostDiagnosticSeverity.Info);
+    }
+
+    [Fact]
+    public async Task StopAsyncRecordsRuntimeStoppingDiagnostic()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        await using var application = LifecycleScope.CreateRoot(LifecycleScopeKind.Application, "application");
+        var runtime = new PresentationRuntime(diagnostics);
+
+        await runtime.StartAsync(application);
+        await runtime.StopAsync();
+
+        Assert.Contains(
+            diagnostics.Records,
+            record =>
+                record.Code == PresentationDiagnosticIds.RuntimeStopping &&
+                record.ScopeId == "presentation" &&
+                record.Severity == HostDiagnosticSeverity.Info);
+    }
+
+    [Fact]
     public async Task ServiceCollectionRegistersPresentationRuntime()
     {
         var services = new ServiceCollection();
@@ -79,5 +115,25 @@ public sealed class PresentationRuntimeTests
         var runtime = provider.GetRequiredService<IPresentationRuntime>();
 
         Assert.IsType<PresentationRuntime>(runtime);
+    }
+
+    [Fact]
+    public async Task ServiceCollectionRuntimeUsesRegisteredDiagnostics()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var services = new ServiceCollection();
+
+        services.AddSingleton<IHostDiagnostics>(diagnostics);
+        services.AddPresentationRuntime();
+
+        await using var provider = services.BuildServiceProvider();
+        var runtime = provider.GetRequiredService<IPresentationRuntime>();
+        await using var application = LifecycleScope.CreateRoot(LifecycleScopeKind.Application, "application");
+
+        await runtime.StartAsync(application);
+
+        Assert.Contains(
+            diagnostics.Records,
+            record => record.Code == PresentationDiagnosticIds.RuntimeReady);
     }
 }

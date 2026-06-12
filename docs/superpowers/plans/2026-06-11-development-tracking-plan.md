@@ -5,8 +5,8 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`bd17c01 feat(Presentation): add Avalonia UI dispatcher`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，425 tests passed
+- 当前提交：`c0996da feat(Presentation): add presentation runtime`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，428 tests passed
 - 当前状态：已进入 Localization / Presentation culture bridge 集成实现阶段
 
 **最新实现检查点：**
@@ -81,6 +81,9 @@
 - [x] Presentation runtime WindowScope creation
 - [x] Presentation runtime stopping rejects new windows
 - [x] Presentation runtime DI registration
+- [x] Presentation runtime ready diagnostics
+- [x] Presentation runtime stopping diagnostics
+- [x] Presentation runtime diagnostics DI integration
 
 ## 状态定义
 
