@@ -29,22 +29,29 @@ public sealed class HttpDataTransport : IRequestResponseTransport
                     "HTTP transport requires an HTTP data request."));
         }
 
-        var client = _httpClientFactory.CreateClient(httpRequest.ClientName);
-        using var message = httpRequest.RequestFactory(context);
-        AttachCredential(message, context.Credential);
-
-        using var response = await client
-            .SendAsync(message, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
-            .ConfigureAwait(false);
-
-        if (!response.IsSuccessStatusCode)
+        try
         {
-            return DataResult<TResponse>.Failed(DataErrorMapper.FromHttpStatusCode(response.StatusCode));
+            var client = _httpClientFactory.CreateClient(httpRequest.ClientName);
+            using var message = httpRequest.RequestFactory(context);
+            AttachCredential(message, context.Credential);
+
+            using var response = await client
+                .SendAsync(message, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return DataResult<TResponse>.Failed(DataErrorMapper.FromHttpStatusCode(response.StatusCode));
+            }
+
+            var mappedResponse = await httpRequest.ResponseMapper(response).ConfigureAwait(false);
+
+            return DataResult<TResponse>.Success(mappedResponse);
         }
-
-        var mappedResponse = await httpRequest.ResponseMapper(response).ConfigureAwait(false);
-
-        return DataResult<TResponse>.Success(mappedResponse);
+        catch (OperationCanceledException)
+        {
+            return DataResult<TResponse>.Cancelled();
+        }
     }
 
     private static void AttachCredential(HttpRequestMessage message, DataCredential? credential)

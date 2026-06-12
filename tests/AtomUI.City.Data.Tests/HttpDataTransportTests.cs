@@ -82,6 +82,26 @@ public sealed class HttpDataTransportTests
         Assert.Equal(expectedError, result.Error?.Kind);
     }
 
+    [Fact]
+    public async Task HttpTransportMapsCancellation()
+    {
+        var handler = new RecordingHttpMessageHandler(_ => throw new OperationCanceledException());
+        var transport = new HttpDataTransport(new RecordingHttpClientFactory("api", handler));
+        var request = new HttpDataRequest<string>(
+            "catalog",
+            "get-items",
+            "api",
+            _ => new HttpRequestMessage(HttpMethod.Get, "https://server/items"),
+            _ => ValueTask.FromResult("unused"));
+
+        var result = await transport.SendAsync(
+            request,
+            DataRequestContext.Create(request, CancellationToken.None));
+
+        Assert.Equal(DataResultStatus.Cancelled, result.Status);
+        Assert.Equal(DataErrorKind.Cancelled, result.Error?.Kind);
+    }
+
     private sealed class RecordingHttpClientFactory : IHttpClientFactory
     {
         private readonly string _clientName;
