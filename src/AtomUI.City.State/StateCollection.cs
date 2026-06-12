@@ -76,6 +76,63 @@ public sealed class StateCollection<TKey, TItem> : IStateCollection<TKey, TItem>
         }
     }
 
+    public bool RestoreSnapshot(StateCollectionSnapshot<TKey, TItem> snapshot)
+    {
+        ArgumentNullException.ThrowIfNull(snapshot);
+
+        StateCollectionChangedEventArgs<TKey, TItem> args;
+        StateSubscription[] subscriptions;
+
+        lock (_syncRoot)
+        {
+            var nextItems = new Dictionary<TKey, CollectionItem>(_items.Comparer);
+            var changes = new List<StateCollectionChange<TKey, TItem>>();
+
+            foreach (var item in snapshot.Items)
+            {
+                ArgumentNullException.ThrowIfNull(item.Key);
+
+                var hasOldItem = _items.TryGetValue(item.Key, out var oldItem);
+                nextItems[item.Key] = new CollectionItem(item.Item, item.ItemVersion);
+                changes.Add(new StateCollectionChange<TKey, TItem>(
+                    StateCollectionChangeKind.Reset,
+                    item.Key,
+                    hasOldItem,
+                    hasOldItem ? oldItem!.Value : default,
+                    HasNewItem: true,
+                    item.Item,
+                    snapshot.CollectionVersion,
+                    item.ItemVersion));
+            }
+
+            if (changes.Count == 0 && _items.Count == 0 && Version == snapshot.CollectionVersion)
+            {
+                return false;
+            }
+
+            _items.Clear();
+
+            foreach (var item in nextItems)
+            {
+                _items.Add(item.Key, item.Value);
+            }
+
+            Version = snapshot.CollectionVersion;
+
+            if (changes.Count == 0)
+            {
+                return false;
+            }
+
+            args = new StateCollectionChangedEventArgs<TKey, TItem>(changes);
+            subscriptions = _subscriptions.ToArray();
+        }
+
+        Notify(args, subscriptions);
+
+        return true;
+    }
+
     public bool AddOrUpdate(TKey key, TItem item)
     {
         ArgumentNullException.ThrowIfNull(key);

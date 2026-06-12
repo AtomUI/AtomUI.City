@@ -11,6 +11,8 @@ public interface IStateCollection<TKey, TItem>
 
     StateCollectionSnapshot<TKey, TItem> CreateSnapshot();
 
+    bool RestoreSnapshot(StateCollectionSnapshot<TKey, TItem> snapshot);
+
     bool AddOrUpdate(TKey key, TItem item);
 
     bool AddOrUpdateRange(IEnumerable<KeyValuePair<TKey, TItem>> items);

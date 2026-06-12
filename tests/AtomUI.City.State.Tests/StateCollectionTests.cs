@@ -184,4 +184,54 @@ public sealed class StateCollectionTests
                 Assert.Equal(1, item.ItemVersion);
             });
     }
+
+    [Fact]
+    public void RestoreSnapshotRebuildsItemsVersionsAndRaisesResetNotification()
+    {
+        var collection = new StateCollection<string, int>();
+        var notifications = new List<StateCollectionChangedEventArgs<string, int>>();
+        var snapshot = new StateCollectionSnapshot<string, int>(
+            collectionVersion: 5,
+            [
+                new StateCollectionSnapshotEntry<string, int>("settings", 3, ItemVersion: 2),
+                new StateCollectionSnapshotEntry<string, int>("layout", 2, ItemVersion: 1),
+            ]);
+
+        collection.OnChange(notifications.Add);
+
+        var restored = collection.RestoreSnapshot(snapshot);
+
+        Assert.True(restored);
+        Assert.Equal(5, collection.Version);
+        Assert.Equal(3, collection.Items["settings"]);
+        Assert.Equal(2, collection.Items["layout"]);
+        Assert.True(collection.TryGetItemVersion("settings", out var settingsVersion));
+        Assert.Equal(2, settingsVersion);
+        Assert.True(collection.TryGetItemVersion("layout", out var layoutVersion));
+        Assert.Equal(1, layoutVersion);
+        var args = Assert.Single(notifications);
+        Assert.Equal(2, args.Changes.Count);
+        Assert.Collection(
+            args.Changes,
+            change =>
+            {
+                Assert.Equal(StateCollectionChangeKind.Reset, change.Kind);
+                Assert.Equal("settings", change.Key);
+                Assert.False(change.HasOldItem);
+                Assert.True(change.HasNewItem);
+                Assert.Equal(3, change.NewItem);
+                Assert.Equal(5, change.CollectionVersion);
+                Assert.Equal(2, change.ItemVersion);
+            },
+            change =>
+            {
+                Assert.Equal(StateCollectionChangeKind.Reset, change.Kind);
+                Assert.Equal("layout", change.Key);
+                Assert.False(change.HasOldItem);
+                Assert.True(change.HasNewItem);
+                Assert.Equal(2, change.NewItem);
+                Assert.Equal(5, change.CollectionVersion);
+                Assert.Equal(1, change.ItemVersion);
+            });
+    }
 }
