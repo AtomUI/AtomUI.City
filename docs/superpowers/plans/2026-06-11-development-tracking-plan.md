@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`06ad253 fix(Data): preserve nullable cache hits`
+- 当前提交：`f95039c feat(Data): add connection lifecycle diagnostics`
 - 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，560 tests passed
-- 当前状态：已完成 Data connection lifecycle diagnostics
+- 当前状态：已完成 Data connection manager DI registration
 
 **最新实现检查点：**
 
@@ -222,6 +222,7 @@
 - [x] Data request cache nullable value hit
 - [x] Data connection registered diagnostic
 - [x] Data connection stopped diagnostic
+- [x] Data connection manager DI registration
 
 ## 状态定义
 
