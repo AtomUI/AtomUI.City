@@ -18,6 +18,19 @@ public sealed class DataRequestCacheTests
     }
 
     [Fact]
+    public async Task InMemoryCacheStoresNullReferenceValuesByCacheKey()
+    {
+        var cache = new InMemoryDataRequestCache();
+        var key = CreateKey("nullable:v1");
+
+        await cache.SetAsync<string?>(key, null);
+        var lookup = await cache.TryGetAsync<string?>(key);
+
+        Assert.True(lookup.IsHit);
+        Assert.Null(lookup.Value);
+    }
+
+    [Fact]
     public async Task InMemoryCacheInvalidatesEntryByCacheKey()
     {
         var cache = new InMemoryDataRequestCache();

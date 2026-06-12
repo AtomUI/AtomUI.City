@@ -17,7 +17,7 @@ public sealed class DataCacheLookup<TResponse>
         return new DataCacheLookup<TResponse>(hit: false, value: default);
     }
 
-    public static DataCacheLookup<TResponse> Hit(TResponse value)
+    public static DataCacheLookup<TResponse> Hit(TResponse? value)
     {
         return new DataCacheLookup<TResponse>(hit: true, value);
     }

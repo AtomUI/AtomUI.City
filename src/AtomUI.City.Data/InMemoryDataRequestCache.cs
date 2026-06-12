@@ -4,7 +4,7 @@ namespace AtomUI.City.Data;
 
 public sealed class InMemoryDataRequestCache : IDataRequestCache
 {
-    private readonly ConcurrentDictionary<DataCacheKey, object?> _entries = new();
+    private readonly ConcurrentDictionary<DataCacheKey, CacheEntry> _entries = new();
     private readonly IDataDiagnostics? _diagnostics;
 
     public InMemoryDataRequestCache(IDataDiagnostics? diagnostics = null)
@@ -19,9 +19,9 @@ public sealed class InMemoryDataRequestCache : IDataRequestCache
         ArgumentNullException.ThrowIfNull(key);
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (_entries.TryGetValue(key, out var value) && value is TResponse response)
+        if (_entries.TryGetValue(key, out var entry) && entry.ResponseType == typeof(TResponse))
         {
-            return ValueTask.FromResult(DataCacheLookup<TResponse>.Hit(response));
+            return ValueTask.FromResult(DataCacheLookup<TResponse>.Hit((TResponse?)entry.Value));
         }
 
         return ValueTask.FromResult(DataCacheLookup<TResponse>.Miss());
@@ -35,7 +35,7 @@ public sealed class InMemoryDataRequestCache : IDataRequestCache
         ArgumentNullException.ThrowIfNull(key);
         cancellationToken.ThrowIfCancellationRequested();
 
-        _entries[key] = value;
+        _entries[key] = new CacheEntry(typeof(TResponse), value);
 
         return ValueTask.CompletedTask;
     }
@@ -58,4 +58,6 @@ public sealed class InMemoryDataRequestCache : IDataRequestCache
 
         return ValueTask.CompletedTask;
     }
+
+    private sealed record CacheEntry(Type ResponseType, object? Value);
 }
