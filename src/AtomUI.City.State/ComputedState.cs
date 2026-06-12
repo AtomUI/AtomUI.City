@@ -113,12 +113,12 @@ public sealed class ComputedState<T> : IComputedState<T>, IDisposable
 
         foreach (var subscription in _dependencySubscriptions)
         {
-            subscription.Dispose();
+            DisposeSubscription(subscription);
         }
 
         foreach (var subscription in _subscriptions)
         {
-            subscription.Dispose();
+            DisposeSubscription(subscription);
         }
 
         _dependencySubscriptions.Clear();
@@ -201,6 +201,21 @@ public sealed class ComputedState<T> : IComputedState<T>, IDisposable
         if (_isDisposed)
         {
             throw new ObjectDisposedException(nameof(ComputedState<T>));
+        }
+    }
+
+    private void DisposeSubscription(IDisposable subscription)
+    {
+        try
+        {
+            subscription.Dispose();
+        }
+        catch (Exception exception)
+        {
+            _diagnostics?.Write(new HostDiagnosticRecord(
+                StateDiagnosticIds.ComputedStateDisposeFailed,
+                $"Computed state failed to dispose value type '{typeof(T).FullName}' subscription: {exception.Message}",
+                HostDiagnosticSeverity.Error));
         }
     }
 }

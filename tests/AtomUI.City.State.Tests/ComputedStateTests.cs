@@ -127,4 +127,85 @@ public sealed class ComputedStateTests
         Assert.Equal(2, computed.Value);
         Assert.Equal(2, computeCount);
     }
+
+    [Fact]
+    public void ComputedStateRecordsDisposeFailuresAndContinuesDisposal()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var calls = new List<string>();
+        var failingDependency = new TestReadOnlyState(
+            new TestSubscription(() => throw new InvalidOperationException("bad dependency dispose")));
+        var secondDependency = new TestReadOnlyState(
+            new TestSubscription(() => calls.Add("second")));
+        var computed = new ComputedState<int>(
+            () => 1,
+            diagnostics,
+            failingDependency,
+            secondDependency);
+
+        computed.Dispose();
+
+        Assert.Equal(["second"], calls);
+        var record = Assert.Single(diagnostics.Records);
+        Assert.Equal("AUCSTA010", record.Code);
+        Assert.Equal(HostDiagnosticSeverity.Error, record.Severity);
+        Assert.Contains("bad dependency dispose", record.Message, StringComparison.Ordinal);
+    }
+
+    private sealed class TestReadOnlyState : IReadOnlyState<int>
+    {
+        private readonly IStateSubscription _subscription;
+
+        public TestReadOnlyState(IStateSubscription subscription)
+        {
+            _subscription = subscription;
+        }
+
+        public int Value => 0;
+
+        object? IReadOnlyState.Value => Value;
+
+        public long Version => 0;
+
+        public Type ValueType => typeof(int);
+
+        public IStateSubscription OnChange(Action<StateChangedEventArgs<int>> handler)
+        {
+            return _subscription;
+        }
+
+        public IStateSubscription OnChange(
+            Action<StateChangedEventArgs<int>> handler,
+            StateSubscriptionOptions options)
+        {
+            return _subscription;
+        }
+
+        IStateSubscription IReadOnlyState.OnChange(Action<StateChangedEventArgs> handler)
+        {
+            return _subscription;
+        }
+
+        IStateSubscription IReadOnlyState.OnChange(
+            Action<StateChangedEventArgs> handler,
+            StateSubscriptionOptions options)
+        {
+            return _subscription;
+        }
+    }
+
+    private sealed class TestSubscription : IStateSubscription
+    {
+        private readonly Action _dispose;
+
+        public TestSubscription(Action dispose)
+        {
+            _dispose = dispose;
+        }
+
+        public void Dispose()
+        {
+            _dispose();
+        }
+    }
 }

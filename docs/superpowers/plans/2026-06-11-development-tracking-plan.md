@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`056ae5f feat(State): guard disposed computed state`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，516 tests passed
-- 当前状态：已完成 State computed failure retry guard
+- 当前提交：`40b3743 feat(State): cache computed failure state`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，517 tests passed
+- 当前状态：已完成 State computed dispose failure diagnostics
 
 **最新实现检查点：**
 
@@ -178,6 +178,7 @@
 - [x] State disposed scope subscription diagnostics
 - [x] State computed dispose lifecycle guard
 - [x] State computed failure retry guard
+- [x] State computed dispose failure diagnostics
 
 ## 状态定义
 
