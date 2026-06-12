@@ -41,4 +41,26 @@ public sealed class SignalRDataTransportTests
         Assert.False(result.Succeeded);
         Assert.Equal(DataErrorKind.TransportError, result.Error?.Kind);
     }
+
+    [Fact]
+    public async Task SignalRTransportMapsInvokeTimeout()
+    {
+        var timeoutException = new TaskCanceledException("hub invoke timed out");
+        var transport = new SignalRDataTransport();
+        var request = new SignalRDataRequest<string>(
+            "notifications",
+            "load-count",
+            "NotificationHub",
+            "GetUnreadCount",
+            (_, _) => throw timeoutException);
+
+        var result = await transport.SendAsync(
+            request,
+            DataRequestContext.Create(request, CancellationToken.None),
+            CancellationToken.None);
+
+        Assert.Equal(DataResultStatus.Failed, result.Status);
+        Assert.Equal(DataErrorKind.Timeout, result.Error?.Kind);
+        Assert.Same(timeoutException, result.Error?.Exception);
+    }
 }
