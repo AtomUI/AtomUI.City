@@ -538,6 +538,31 @@ public sealed class DataPipelineTests
     }
 
     [Fact]
+    public async Task PipelineReturnsCancelledWhenRequestTokenIsCancelledDuringTransport()
+    {
+        var release = new TaskCompletionSource();
+        var transport = new RecordingTransport(async _ =>
+        {
+            await release.Task;
+
+            return DataResult<string>.Success("late");
+        });
+        var pipeline = new DataRequestPipeline(transport);
+        var request = new DataRequest<string>(
+            "catalog",
+            "get-items",
+            DataTransportKind.Http);
+        using var cancellation = new CancellationTokenSource();
+
+        var resultTask = pipeline.SendAsync(request, cancellation.Token).AsTask();
+        await cancellation.CancelAsync();
+        release.SetResult();
+        var result = await resultTask;
+
+        Assert.Equal(DataResultStatus.Cancelled, result.Status);
+    }
+
+    [Fact]
     public async Task PipelineWritesCancelledDiagnosticWhenRequestTokenIsAlreadyCancelled()
     {
         var diagnostics = new InMemoryDataDiagnostics();

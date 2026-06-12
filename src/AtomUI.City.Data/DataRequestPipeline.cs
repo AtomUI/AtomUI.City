@@ -125,6 +125,14 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
                     return suppressedResult;
                 }
 
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    var cancelledResult = DataResult<TResponse>.Cancelled();
+                    WriteRequestResultDiagnostic(context, cancelledResult);
+
+                    return cancelledResult;
+                }
+
                 if (result.Status == DataResultStatus.Cancelled
                     && IsOperationTimeout(timeoutCancellation, cancellationToken))
                 {
