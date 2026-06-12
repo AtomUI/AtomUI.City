@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`c1134b1 feat(Presentation): add resource apply diagnostics`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，453 tests passed
-- 当前状态：已进入 Presentation interaction handler 集成实现阶段
+- 当前提交：`7dd45f9 feat(Presentation): add interaction handler registry`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，456 tests passed
+- 当前状态：已进入 Presentation plugin interaction handler revocation 实现阶段
 
 **最新实现检查点：**
 
@@ -111,6 +111,11 @@
 - [x] Presentation interaction missing handler diagnostics
 - [x] Presentation interaction handler failure diagnostics
 - [x] Presentation interaction handler activation-scope cancellation
+- [x] Presentation plugin interaction handler registration metadata
+- [x] Presentation plugin interaction handler revoke by PluginId
+- [x] Presentation plugin interaction handler revoke by ContributionId
+- [x] Presentation plugin interaction handler revocation cancels pending requests
+- [x] Presentation plugin interaction handler revoke diagnostics
 
 ## 状态定义
 

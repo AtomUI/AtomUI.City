@@ -24,4 +24,5 @@ public static class PresentationDiagnosticIds
     public const string InteractionHandled = "AUCPRS020";
     public const string InteractionNotHandled = "AUCPRS021";
     public const string InteractionFailed = "AUCPRS022";
+    public const string InteractionHandlerRevoked = "AUCPRS023";
 }

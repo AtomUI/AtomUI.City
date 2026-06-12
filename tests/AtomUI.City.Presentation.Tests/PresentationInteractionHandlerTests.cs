@@ -130,6 +130,90 @@ public sealed class PresentationInteractionHandlerTests
         Assert.Equal(InteractionResultStatus.Canceled, result.Status);
     }
 
+    [Fact]
+    public async Task RegistryRevokesHandlersByPluginId()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var registry = new InteractionHandlerRegistry(new RecordingDispatcher(), diagnostics);
+        registry.Register<ConfirmRequest, bool>(
+            (_, _) => ValueTask.FromResult(true),
+            new InteractionHandlerRegistrationOptions
+            {
+                PluginId = "com.company.sales",
+                ContributionId = "sales.confirmation",
+            });
+
+        var revoked = registry.RevokePlugin("com.company.sales");
+        var result = await registry.HandleAsync<ConfirmRequest, bool>(
+            new ConfirmRequest("Delete?"));
+
+        Assert.Equal(1, revoked);
+        Assert.Equal(InteractionResultStatus.NotHandled, result.Status);
+        Assert.Contains(
+            diagnostics.Records,
+            record =>
+                record.Code == PresentationDiagnosticIds.InteractionHandlerRevoked &&
+                record.Severity == HostDiagnosticSeverity.Info &&
+                record.Message.Contains("com.company.sales", StringComparison.Ordinal) &&
+                record.Message.Contains("sales.confirmation", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task RegistryRevokesHandlersByContributionId()
+    {
+        var registry = new InteractionHandlerRegistry(new RecordingDispatcher());
+        registry.Register<ConfirmRequest, bool>(
+            (_, _) => ValueTask.FromResult(false),
+            new InteractionHandlerRegistrationOptions
+            {
+                PluginId = "com.company.sales",
+                ContributionId = "sales.confirmation",
+            });
+        registry.Register<ConfirmRequest, bool>(
+            (_, _) => ValueTask.FromResult(true),
+            new InteractionHandlerRegistrationOptions
+            {
+                PluginId = "com.company.support",
+                ContributionId = "support.confirmation",
+            });
+
+        var revoked = registry.RevokeContribution("support.confirmation");
+        var result = await registry.HandleAsync<ConfirmRequest, bool>(
+            new ConfirmRequest("Delete?"));
+
+        Assert.Equal(1, revoked);
+        Assert.Equal(InteractionResultStatus.Completed, result.Status);
+        Assert.False(result.Value);
+    }
+
+    [Fact]
+    public async Task RevokingPluginCancelsPendingInteraction()
+    {
+        var registry = new InteractionHandlerRegistry(new RecordingDispatcher());
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        registry.Register<ConfirmRequest, bool>(
+            async (_, cancellationToken) =>
+            {
+                started.SetResult();
+                await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken);
+                return true;
+            },
+            new InteractionHandlerRegistrationOptions
+            {
+                PluginId = "com.company.sales",
+                ContributionId = "sales.confirmation",
+            });
+
+        var request = registry.HandleAsync<ConfirmRequest, bool>(
+            new ConfirmRequest("Delete?")).AsTask();
+        await started.Task;
+
+        registry.RevokePlugin("com.company.sales");
+        var result = await request;
+
+        Assert.Equal(InteractionResultStatus.Canceled, result.Status);
+    }
+
     private readonly record struct ConfirmRequest(string Message);
 
     private sealed class RecordingDispatcher : IUiDispatcher

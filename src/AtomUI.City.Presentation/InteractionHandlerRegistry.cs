@@ -30,14 +30,27 @@ public sealed class InteractionHandlerRegistry : IInteractionHandlerRegistry
         Func<InteractionContext<TRequest>, CancellationToken, ValueTask<TResult>> handler,
         IActivationScope? activationScope = null)
     {
+        return Register(
+            handler,
+            new InteractionHandlerRegistrationOptions
+            {
+                ActivationScope = activationScope,
+            });
+    }
+
+    public IDisposable Register<TRequest, TResult>(
+        Func<InteractionContext<TRequest>, CancellationToken, ValueTask<TResult>> handler,
+        InteractionHandlerRegistrationOptions options)
+    {
         ArgumentNullException.ThrowIfNull(handler);
+        ArgumentNullException.ThrowIfNull(options);
 
         var key = InteractionHandlerKey.Create<TRequest, TResult>();
         var registration = new HandlerRegistration<TRequest, TResult>(
             this,
             key,
             handler,
-            activationScope);
+            options);
 
         lock (_gate)
         {
@@ -50,7 +63,7 @@ public sealed class InteractionHandlerRegistry : IInteractionHandlerRegistry
             registrations.Add(registration);
         }
 
-        activationScope?.Add(registration);
+        options.ActivationScope?.Add(registration);
 
         return registration;
     }
@@ -68,9 +81,10 @@ public sealed class InteractionHandlerRegistry : IInteractionHandlerRegistry
         }
 
         using var linkedCancellation = registration.ActivationScope is null
-            ? CancellationTokenSource.CreateLinkedTokenSource(cancellationToken)
+            ? CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, registration.CancellationToken)
             : CancellationTokenSource.CreateLinkedTokenSource(
                 cancellationToken,
+                registration.CancellationToken,
                 registration.ActivationScope.CancellationToken);
 
         try
@@ -106,6 +120,21 @@ public sealed class InteractionHandlerRegistry : IInteractionHandlerRegistry
         }
     }
 
+    public int RevokePlugin(string pluginId)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(pluginId);
+
+        return Revoke(registration => string.Equals(registration.PluginId, pluginId, StringComparison.Ordinal));
+    }
+
+    public int RevokeContribution(string contributionId)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(contributionId);
+
+        return Revoke(
+            registration => string.Equals(registration.ContributionId, contributionId, StringComparison.Ordinal));
+    }
+
     private HandlerRegistration<TRequest, TResult>? FindLastRegistration<TRequest, TResult>()
     {
         var key = InteractionHandlerKey.Create<TRequest, TResult>();
@@ -113,9 +142,33 @@ public sealed class InteractionHandlerRegistry : IInteractionHandlerRegistry
         lock (_gate)
         {
             return _registrations.TryGetValue(key, out var registrations)
-                ? registrations.OfType<HandlerRegistration<TRequest, TResult>>().LastOrDefault()
+                ? registrations
+                    .OfType<HandlerRegistration<TRequest, TResult>>()
+                    .LastOrDefault(registration => !registration.IsDisposed)
                 : null;
         }
+    }
+
+    private int Revoke(Func<HandlerRegistration, bool> predicate)
+    {
+        List<HandlerRegistration> registrations;
+
+        lock (_gate)
+        {
+            registrations = _registrations
+                .Values
+                .SelectMany(static items => items)
+                .Where(registration => !registration.IsDisposed && predicate(registration))
+                .ToList();
+        }
+
+        foreach (var registration in registrations)
+        {
+            registration.Dispose();
+            WriteRevokedDiagnostic(registration);
+        }
+
+        return registrations.Count;
     }
 
     private void Remove(HandlerRegistration registration)
@@ -159,34 +212,59 @@ public sealed class InteractionHandlerRegistry : IInteractionHandlerRegistry
             HostDiagnosticSeverity.Error));
     }
 
+    private void WriteRevokedDiagnostic(HandlerRegistration registration)
+    {
+        _diagnostics?.Write(new HostDiagnosticRecord(
+            PresentationDiagnosticIds.InteractionHandlerRevoked,
+            $"Presentation interaction handler revoked plugin '{Normalize(registration.PluginId)}' contribution '{Normalize(registration.ContributionId)}'.",
+            HostDiagnosticSeverity.Info));
+    }
+
+    private static string Normalize(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value) ? "<none>" : value;
+    }
+
     private abstract class HandlerRegistration : IDisposable
     {
+        private readonly CancellationTokenSource _cancellation = new();
         private readonly InteractionHandlerRegistry _registry;
-        private bool _disposed;
 
         protected HandlerRegistration(
             InteractionHandlerRegistry registry,
             InteractionHandlerKey key,
-            IActivationScope? activationScope)
+            InteractionHandlerRegistrationOptions options)
         {
             _registry = registry;
             Key = key;
-            ActivationScope = activationScope;
+            ActivationScope = options.ActivationScope;
+            PluginId = string.IsNullOrWhiteSpace(options.PluginId) ? null : options.PluginId;
+            ContributionId = string.IsNullOrWhiteSpace(options.ContributionId) ? null : options.ContributionId;
         }
 
         public InteractionHandlerKey Key { get; }
 
         public IActivationScope? ActivationScope { get; }
 
+        public CancellationToken CancellationToken => _cancellation.Token;
+
+        public string? PluginId { get; }
+
+        public string? ContributionId { get; }
+
+        public bool IsDisposed { get; private set; }
+
         public void Dispose()
         {
-            if (_disposed)
+            if (IsDisposed)
             {
                 return;
             }
 
-            _disposed = true;
+            IsDisposed = true;
+            _cancellation.Cancel();
             _registry.Remove(this);
+            _cancellation.Dispose();
         }
     }
 
@@ -198,8 +276,8 @@ public sealed class InteractionHandlerRegistry : IInteractionHandlerRegistry
             InteractionHandlerRegistry registry,
             InteractionHandlerKey key,
             Func<InteractionContext<TRequest>, CancellationToken, ValueTask<TResult>> handler,
-            IActivationScope? activationScope)
-            : base(registry, key, activationScope)
+            InteractionHandlerRegistrationOptions options)
+            : base(registry, key, options)
         {
             _handler = handler;
         }
