@@ -5,8 +5,8 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`644246e feat(Presentation): add localization bridge`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，411 tests passed
+- 当前提交：`49bbe62 feat(Presentation): add current thread culture applier`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，412 tests passed
 - 当前状态：已进入 Localization / Presentation culture bridge 集成实现阶段
 
 **最新实现检查点：**
@@ -67,6 +67,8 @@
 - [x] Presentation localization bridge DI registration
 - [x] Presentation current thread culture applier
 - [x] Presentation default culture applier DI registration
+- [x] Presentation culture flow direction applier
+- [x] Presentation flow direction target DI registration
 
 ## 状态定义
 

@@ -103,6 +103,32 @@ public sealed class PresentationLocalizationBridgeTests
         }
     }
 
+    [Fact]
+    public async Task ServiceCollectionBridgeAppliesFlowDirectionTargets()
+    {
+        var services = new ServiceCollection();
+        var dispatcher = new RecordingDispatcher();
+        services.AddSingleton(dispatcher);
+        services.AddSingleton<IUiDispatcher>(dispatcher);
+        services.AddPresentationFlowDirectionTarget<RecordingFlowDirectionTarget>();
+        services.AddPresentationLocalizationBridge();
+        var provider = services.BuildServiceProvider();
+        var bridge = provider.GetRequiredService<IPresentationLocalizationBridge>();
+
+        var rtlResult = await bridge.ApplyCultureAsync(State("ar-SA"));
+        var ltrResult = await bridge.ApplyCultureAsync(State("en-US"));
+
+        Assert.True(rtlResult.Succeeded);
+        Assert.True(ltrResult.Succeeded);
+        var target = provider.GetRequiredService<IEnumerable<IPresentationFlowDirectionTarget>>()
+            .OfType<RecordingFlowDirectionTarget>()
+            .Single();
+        Assert.Equal(
+            [PresentationFlowDirection.RightToLeft, PresentationFlowDirection.LeftToRight],
+            target.AppliedDirections);
+        Assert.Equal([true, true], target.DispatcherAccess);
+    }
+
     private static CultureState State(string cultureName, string? uiCultureName = null)
     {
         var culture = CultureInfo.GetCultureInfo(cultureName);
@@ -125,6 +151,31 @@ public sealed class PresentationLocalizationBridgeTests
             CancellationToken cancellationToken = default)
         {
             AppliedCultures.Add(state.CurrentCulture.Name);
+
+            return ValueTask.FromResult(LocalizationResult.Success());
+        }
+    }
+
+    private sealed class RecordingFlowDirectionTarget : IPresentationFlowDirectionTarget
+    {
+        private readonly RecordingDispatcher _dispatcher;
+
+        public RecordingFlowDirectionTarget(RecordingDispatcher dispatcher)
+        {
+            _dispatcher = dispatcher;
+        }
+
+        public List<PresentationFlowDirection> AppliedDirections { get; } = [];
+
+        public List<bool> DispatcherAccess { get; } = [];
+
+        public ValueTask<LocalizationResult> ApplyFlowDirectionAsync(
+            PresentationFlowDirection direction,
+            CultureState state,
+            CancellationToken cancellationToken = default)
+        {
+            AppliedDirections.Add(direction);
+            DispatcherAccess.Add(_dispatcher.IsOnDispatcher);
 
             return ValueTask.FromResult(LocalizationResult.Success());
         }
