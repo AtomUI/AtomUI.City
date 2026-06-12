@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`c2edc47 feat(Routing): add localized route metadata binding`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，403 tests passed
-- 当前状态：已进入 Security / Data / Localization 基础集成实现阶段
+- 当前提交：`d6fcc0e feat(Presentation): add localized window title binding`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，407 tests passed
+- 当前状态：已进入 Localization / Presentation 文案绑定集成实现阶段
 
 **最新实现检查点：**
 
@@ -57,6 +57,11 @@
 - [x] Presentation window title literal fallback
 - [x] Presentation window title culture refresh
 - [x] Presentation window title disposal through ActivationScope
+- [x] Presentation notification text descriptor
+- [x] Presentation notification text localization binding
+- [x] Presentation notification text literal fallback
+- [x] Presentation notification text culture refresh
+- [x] Presentation notification text disposal through ActivationScope
 
 ## 状态定义
 
