@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`d393276 feat(Generator): validate presentation plugin views`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，494 tests passed
-- 当前状态：已完成 Presentation plugin unload view registry cleanup 实现
+- 当前提交：`0db6e65 feat(Presentation): revoke plugin view registrations`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，496 tests passed
+- 当前状态：已完成 Generator Presentation view registrar source builder 实现
 
 **最新实现检查点：**
 
@@ -159,6 +159,7 @@
 - [x] Presentation ViewRegistry DI registration
 - [x] Presentation plugin unload cleanup revokes View descriptors
 - [x] Presentation plugin unload cleanup records View descriptor revoke failure
+- [x] Generator Presentation view registrar source builder
 
 ## 状态定义
 
