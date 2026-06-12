@@ -53,6 +53,30 @@ public sealed class DataConnectionLifecycleTests
     }
 
     [Fact]
+    public async Task ConnectionManagerWritesStartFailureDiagnosticAndPropagatesFailure()
+    {
+        var diagnostics = new InMemoryDataDiagnostics();
+        var owner = new DataConnectionOwner(DataConnectionOwnerKind.Plugin, "sales-plugin");
+        var connection = new RecordingConnection("sales-hub", owner)
+        {
+            StartFailure = new InvalidOperationException("start failed"),
+        };
+        var manager = new DataConnectionManager(diagnostics);
+        manager.Register(connection);
+
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+            () => manager.StartOwnerAsync(owner).AsTask());
+
+        Assert.Equal("start failed", exception.Message);
+        var record = Assert.Single(
+            diagnostics.Records,
+            record => record.Code == DataDiagnosticIds.ConnectionStartFailed);
+        Assert.Equal(DataDiagnosticSeverity.Error, record.Severity);
+        Assert.Equal(DataErrorKind.ConnectionFailed, record.ErrorKind);
+        Assert.Contains("sales-hub", record.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task ConnectionManagerWritesStoppedDiagnostic()
     {
         var diagnostics = new InMemoryDataDiagnostics();
@@ -111,11 +135,18 @@ public sealed class DataConnectionLifecycleTests
 
         public int StopCount { get; private set; }
 
+        public Exception? StartFailure { get; init; }
+
         public Exception? StopFailure { get; init; }
 
         public ValueTask StartAsync(CancellationToken cancellationToken = default)
         {
             StartCount++;
+            if (StartFailure is not null)
+            {
+                throw StartFailure;
+            }
+
             State = DataConnectionState.Connected;
 
             return ValueTask.CompletedTask;

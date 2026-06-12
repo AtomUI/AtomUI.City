@@ -14,6 +14,7 @@ public static class DataDiagnosticIds
     public const string CacheInvalidated = "AUCDATA010";
     public const string ClientMissing = "AUCDATA011";
     public const string ConnectionStopFailed = "AUCDATA012";
+    public const string ConnectionStartFailed = "AUCDATA013";
 }
 
 public sealed record DataDiagnosticRecord(

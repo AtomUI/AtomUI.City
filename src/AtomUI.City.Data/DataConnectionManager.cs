@@ -43,7 +43,7 @@ public sealed class DataConnectionManager
         foreach (var connection in GetOwnerConnections(owner))
         {
             cancellationToken.ThrowIfCancellationRequested();
-            await connection.StartAsync(cancellationToken).ConfigureAwait(false);
+            await StartConnectionAsync(connection, cancellationToken).ConfigureAwait(false);
         }
     }
 
@@ -64,6 +64,26 @@ public sealed class DataConnectionManager
         {
             cancellationToken.ThrowIfCancellationRequested();
             await StopConnectionAsync(connection, cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    private async ValueTask StartConnectionAsync(
+        IDataConnection connection,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await connection.StartAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
+        {
+            _diagnostics?.Write(new DataDiagnosticRecord(
+                DataDiagnosticIds.ConnectionStartFailed,
+                $"Data connection '{connection.ConnectionId}' start failed.",
+                DataDiagnosticSeverity.Error,
+                ErrorKind: DataErrorKind.ConnectionFailed));
+
+            throw;
         }
     }
 
