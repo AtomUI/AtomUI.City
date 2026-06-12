@@ -5,6 +5,8 @@ public static class DataDiagnosticIds
     public const string RequestRetry = "AUCDATA001";
     public const string ConnectionRegistered = "AUCDATA002";
     public const string ConnectionStopped = "AUCDATA003";
+    public const string RequestCompleted = "AUCDATA004";
+    public const string RequestFailed = "AUCDATA005";
 }
 
 public sealed record DataDiagnosticRecord(

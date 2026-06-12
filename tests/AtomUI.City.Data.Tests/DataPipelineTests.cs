@@ -25,6 +25,54 @@ public sealed class DataPipelineTests
     }
 
     [Fact]
+    public async Task PipelineWritesCompletedDiagnosticWithRequestMetadata()
+    {
+        var diagnostics = new InMemoryDataDiagnostics();
+        var transport = new RecordingTransport(_ => DataResult<string>.Success("response"));
+        var pipeline = new DataRequestPipeline(transport, diagnostics: diagnostics);
+        var request = new DataRequest<string>(
+            "catalog",
+            "get-items",
+            DataTransportKind.Http);
+
+        await pipeline.SendAsync(request);
+
+        var record = Assert.Single(
+            diagnostics.Records,
+            record => record.Code == DataDiagnosticIds.RequestCompleted);
+        Assert.Equal("catalog", record.ClientId);
+        Assert.Equal("get-items", record.OperationName);
+        Assert.Equal(DataTransportKind.Http, record.TransportKind);
+        Assert.Equal(1, record.Attempt);
+        Assert.NotEqual(Guid.Empty, record.OperationId);
+    }
+
+    [Fact]
+    public async Task PipelineWritesFailedDiagnosticWithErrorMetadata()
+    {
+        var diagnostics = new InMemoryDataDiagnostics();
+        var transport = new RecordingTransport(_ =>
+            DataResult<string>.Failed(new DataError(DataErrorKind.ServiceUnavailable, "down")));
+        var pipeline = new DataRequestPipeline(transport, diagnostics: diagnostics);
+        var request = new DataRequest<string>(
+            "catalog",
+            "get-items",
+            DataTransportKind.Http);
+
+        await pipeline.SendAsync(request);
+
+        var record = Assert.Single(
+            diagnostics.Records,
+            record => record.Code == DataDiagnosticIds.RequestFailed);
+        Assert.Equal("catalog", record.ClientId);
+        Assert.Equal("get-items", record.OperationName);
+        Assert.Equal(DataTransportKind.Http, record.TransportKind);
+        Assert.Equal(1, record.Attempt);
+        Assert.Equal(DataErrorKind.ServiceUnavailable, record.ErrorKind);
+        Assert.NotEqual(Guid.Empty, record.OperationId);
+    }
+
+    [Fact]
     public async Task PipelineSelectsTransportByRequestKind()
     {
         var httpTransport = new RecordingTransport(_ => DataResult<string>.Success("http"));

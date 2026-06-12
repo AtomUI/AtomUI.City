@@ -67,10 +67,13 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
             {
                 if (!_transports.TryGetValue(request.TransportKind, out var transport))
                 {
-                    return DataResult<TResponse>.Failed(
+                    var missingTransportResult = DataResult<TResponse>.Failed(
                         new DataError(
                             DataErrorKind.PolicyRejected,
                             $"No data transport is registered for '{request.TransportKind}'."));
+                    WriteRequestResultDiagnostic(context, missingTransportResult);
+
+                    return missingTransportResult;
                 }
 
                 var result = await transport
@@ -79,11 +82,16 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
 
                 if (ShouldSuppress(request))
                 {
-                    return DataResult<TResponse>.StaleSuppressed();
+                    var suppressedResult = DataResult<TResponse>.StaleSuppressed();
+                    WriteRequestResultDiagnostic(context, suppressedResult);
+
+                    return suppressedResult;
                 }
 
                 if (result.Succeeded || !ShouldRetry(request, result, attempt, maxAttempts))
                 {
+                    WriteRequestResultDiagnostic(context, result);
+
                     return result;
                 }
 
@@ -93,25 +101,37 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
             }
             catch (OperationCanceledException) when (timeoutCancellation.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
             {
-                return DataResult<TResponse>.Failed(
+                var timeoutResult = DataResult<TResponse>.Failed(
                     new DataError(DataErrorKind.Timeout, "Data operation timed out."));
+                WriteRequestResultDiagnostic(context, timeoutResult);
+
+                return timeoutResult;
             }
             catch (OperationCanceledException)
             {
-                return DataResult<TResponse>.Cancelled();
+                var cancelledResult = DataResult<TResponse>.Cancelled();
+                WriteRequestResultDiagnostic(context, cancelledResult);
+
+                return cancelledResult;
             }
             catch (Exception exception)
             {
-                return DataResult<TResponse>.Failed(
+                var failedResult = DataResult<TResponse>.Failed(
                     new DataError(
                         DataErrorKind.TransportError,
                         exception.Message,
                         Exception: exception));
+                WriteRequestResultDiagnostic(context, failedResult);
+
+                return failedResult;
             }
         }
 
-        return DataResult<TResponse>.Failed(
+        var emptyResult = DataResult<TResponse>.Failed(
             new DataError(DataErrorKind.Unknown, "Data operation did not produce a result."));
+        WriteRequestResultDiagnostic(context, emptyResult);
+
+        return emptyResult;
     }
 
     private async ValueTask<DataResult<TResponse>?> ResolveCredentialAsync<TResponse>(
@@ -250,5 +270,25 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
     private void WriteDiagnostic(string code, string message)
     {
         _diagnostics?.Write(new DataDiagnosticRecord(code, message, DataDiagnosticSeverity.Trace));
+    }
+
+    private void WriteRequestResultDiagnostic<TResponse>(
+        DataRequestContext context,
+        DataResult<TResponse> result)
+    {
+        var succeeded = result.Succeeded;
+
+        _diagnostics?.Write(new DataDiagnosticRecord(
+            succeeded ? DataDiagnosticIds.RequestCompleted : DataDiagnosticIds.RequestFailed,
+            succeeded
+                ? $"Data operation '{context.OperationName}' completed."
+                : $"Data operation '{context.OperationName}' failed.",
+            succeeded ? DataDiagnosticSeverity.Trace : DataDiagnosticSeverity.Warning,
+            context.OperationId,
+            context.ClientId,
+            context.OperationName,
+            context.TransportKind,
+            context.Attempt,
+            result.Error?.Kind));
     }
 }
