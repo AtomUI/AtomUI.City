@@ -160,6 +160,16 @@ public sealed class InMemoryEventBus : IEventBus
         var descriptor = _contractRegistry.GetOrCreate<TEvent>();
         var eventId = Guid.NewGuid();
 
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return ValueTask.FromResult(
+                new EventPostResult(
+                    eventId,
+                    descriptor.ContractId,
+                    Accepted: false,
+                    "Publication was canceled before it was accepted."));
+        }
+
         _ = Task.Run(
             async () =>
             {

@@ -89,5 +89,21 @@ public sealed class EventPublicationTests
         Assert.Equal(result.EventId, await observedEventId.Task.WaitAsync(TimeSpan.FromSeconds(5)));
     }
 
+    [Fact]
+    public async Task PostAsyncRejectsAlreadyCanceledPublication()
+    {
+        var eventBus = new InMemoryEventBus();
+        using var cancellation = new CancellationTokenSource();
+        await cancellation.CancelAsync();
+
+        var result = await eventBus.PostAsync(
+            new TestEvent("posted"),
+            cancellationToken: cancellation.Token);
+
+        Assert.False(result.Accepted);
+        Assert.NotEqual(Guid.Empty, result.EventId);
+        Assert.False(string.IsNullOrWhiteSpace(result.RejectionReason));
+    }
+
     private sealed record TestEvent(string Value);
 }

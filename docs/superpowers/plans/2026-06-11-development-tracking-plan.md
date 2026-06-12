@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`c5a613e test(State): cover collection no-op updates`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，536 tests passed
-- 当前状态：已完成 EventBus subscription error policy handling
+- 当前提交：`4d86c84 feat(EventBus): add subscription error policies`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，537 tests passed
+- 当前状态：已完成 EventBus PostAsync canceled publication rejection
 
 **最新实现检查点：**
 
@@ -196,6 +196,7 @@
 - [x] EventBus subscription error policy configuration
 - [x] EventBus stop publication error policy
 - [x] EventBus fail publisher error policy
+- [x] EventBus PostAsync canceled publication rejection
 
 ## 状态定义
 
