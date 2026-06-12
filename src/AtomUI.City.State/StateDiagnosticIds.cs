@@ -7,4 +7,5 @@ public static class StateDiagnosticIds
     public const string ApplicationStateNotRegistered = "AUCSTA003";
     public const string ApplicationStateWriteDenied = "AUCSTA004";
     public const string ComputedStateComputeFailed = "AUCSTA005";
+    public const string WritableStateUpdateFailed = "AUCSTA006";
 }

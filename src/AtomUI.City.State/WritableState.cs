@@ -77,7 +77,17 @@ public sealed class WritableState<T> : IWritableState<T>
 
         lock (_syncRoot)
         {
-            var nextValue = updater(_value);
+            T nextValue;
+
+            try
+            {
+                nextValue = updater(_value);
+            }
+            catch (Exception exception)
+            {
+                WriteUpdateFailedDiagnostic(exception);
+                throw;
+            }
 
             if (_comparer.Equals(_value, nextValue))
             {
@@ -189,6 +199,14 @@ public sealed class WritableState<T> : IWritableState<T>
                     HostDiagnosticSeverity.Error));
             }
         }
+    }
+
+    private void WriteUpdateFailedDiagnostic(Exception exception)
+    {
+        _diagnostics?.Write(new HostDiagnosticRecord(
+            StateDiagnosticIds.WritableStateUpdateFailed,
+            $"Writable state failed to update value type '{typeof(T).FullName}' at version {Version}: {exception.Message}",
+            HostDiagnosticSeverity.Error));
     }
 
     private void Remove(StateSubscription subscription)

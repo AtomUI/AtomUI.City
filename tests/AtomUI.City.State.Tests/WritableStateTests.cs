@@ -1,3 +1,4 @@
+using AtomUI.City.Diagnostics;
 using AtomUI.City.State;
 
 namespace AtomUI.City.State.Tests;
@@ -62,5 +63,22 @@ public sealed class WritableStateTests
 
         Assert.Equal(3, state.Value);
         Assert.Equal(0, state.Version);
+    }
+
+    [Fact]
+    public void UpdateRecordsUpdaterFailureDiagnostics()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var state = new WritableState<int>(3, diagnostics: diagnostics);
+
+        Assert.Throws<InvalidOperationException>(
+            () => state.Update(_ => throw new InvalidOperationException("bad update")));
+
+        Assert.Equal(3, state.Value);
+        Assert.Equal(0, state.Version);
+        var record = Assert.Single(diagnostics.Records);
+        Assert.Equal(StateDiagnosticIds.WritableStateUpdateFailed, record.Code);
+        Assert.Equal(HostDiagnosticSeverity.Error, record.Severity);
+        Assert.Contains("bad update", record.Message, StringComparison.Ordinal);
     }
 }

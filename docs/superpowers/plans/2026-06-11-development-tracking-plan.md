@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`39db025 feat(State): add application registry diagnostics`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，507 tests passed
-- 当前状态：已完成 State computed failure diagnostics
+- 当前提交：`458bdf4 feat(State): add computed failure diagnostics`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，508 tests passed
+- 当前状态：已完成 State writable update failure diagnostics
 
 **最新实现检查点：**
 
@@ -169,6 +169,7 @@
 - [x] State subscription diagnostics
 - [x] State application registry diagnostics
 - [x] State computed failure diagnostics
+- [x] State writable update failure diagnostics
 
 ## 状态定义
 
