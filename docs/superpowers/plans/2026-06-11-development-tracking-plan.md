@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`0ab4a80 fix(Data): guard credential timeout`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，593 tests passed
-- 当前状态：已完成 Data cache read late timeout guard
+- 当前提交：`a59d98f fix(Data): guard cache read timeout`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，594 tests passed
+- 当前状态：已完成 Data transport late timeout guard
 
 **最新实现检查点：**
 
@@ -254,6 +254,7 @@
 - [x] Data cache read late cancellation guard
 - [x] Data credential late timeout guard
 - [x] Data cache read late timeout guard
+- [x] Data transport late timeout guard
 
 ## 状态定义
 
