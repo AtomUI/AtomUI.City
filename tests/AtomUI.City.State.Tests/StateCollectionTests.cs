@@ -43,4 +43,28 @@ public sealed class StateCollectionTests
                 Assert.Equal(2, args.Change.ItemVersion);
             });
     }
+
+    [Fact]
+    public void RemoveDeletesExistingItemAndRaisesChangeRecord()
+    {
+        var collection = new StateCollection<string, int>();
+        collection.AddOrUpdate("settings", 1);
+        var changes = new List<StateCollectionChangedEventArgs<string, int>>();
+
+        collection.OnChange(changes.Add);
+
+        var removed = collection.Remove("settings");
+
+        Assert.True(removed);
+        Assert.Equal(2, collection.Version);
+        Assert.False(collection.Items.ContainsKey("settings"));
+        var args = Assert.Single(changes);
+        Assert.Equal(StateCollectionChangeKind.Removed, args.Change.Kind);
+        Assert.Equal("settings", args.Change.Key);
+        Assert.True(args.Change.HasOldItem);
+        Assert.Equal(1, args.Change.OldItem);
+        Assert.False(args.Change.HasNewItem);
+        Assert.Equal(2, args.Change.CollectionVersion);
+        Assert.Equal(2, args.Change.ItemVersion);
+    }
 }

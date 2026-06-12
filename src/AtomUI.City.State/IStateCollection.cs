@@ -9,6 +9,8 @@ public interface IStateCollection<TKey, TItem>
 
     bool AddOrUpdate(TKey key, TItem item);
 
+    bool Remove(TKey key);
+
     IStateSubscription OnChange(Action<StateCollectionChangedEventArgs<TKey, TItem>> handler);
 
     IStateSubscription OnChange(

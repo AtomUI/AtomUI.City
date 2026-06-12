@@ -99,6 +99,42 @@ public sealed class StateCollection<TKey, TItem> : IStateCollection<TKey, TItem>
         return true;
     }
 
+    public bool Remove(TKey key)
+    {
+        ArgumentNullException.ThrowIfNull(key);
+
+        StateCollectionChangedEventArgs<TKey, TItem> args;
+        StateSubscription[] subscriptions;
+
+        lock (_syncRoot)
+        {
+            if (!_items.TryGetValue(key, out var currentItem))
+            {
+                return false;
+            }
+
+            var itemVersion = currentItem.Version + 1;
+            Version++;
+            _items.Remove(key);
+            var change = new StateCollectionChange<TKey, TItem>(
+                StateCollectionChangeKind.Removed,
+                key,
+                HasOldItem: true,
+                currentItem.Value,
+                HasNewItem: false,
+                NewItem: default,
+                Version,
+                itemVersion);
+
+            args = new StateCollectionChangedEventArgs<TKey, TItem>(change);
+            subscriptions = _subscriptions.ToArray();
+        }
+
+        Notify(args, subscriptions);
+
+        return true;
+    }
+
     public IStateSubscription OnChange(Action<StateCollectionChangedEventArgs<TKey, TItem>> handler)
     {
         return OnChange(handler, StateSubscriptionOptions.Immediate);
