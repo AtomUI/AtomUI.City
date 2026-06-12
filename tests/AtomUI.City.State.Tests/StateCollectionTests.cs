@@ -156,4 +156,32 @@ public sealed class StateCollectionTests
         Assert.True(updated);
         Assert.Equal(2, updatedVersion);
     }
+
+    [Fact]
+    public void CreateSnapshotCapturesCollectionVersionItemsAndItemVersions()
+    {
+        var collection = new StateCollection<string, int>();
+        collection.AddOrUpdate("settings", 1);
+        collection.AddOrUpdate("layout", 2);
+        collection.AddOrUpdate("settings", 3);
+
+        var snapshot = collection.CreateSnapshot();
+
+        Assert.Equal(3, snapshot.CollectionVersion);
+        Assert.Equal(2, snapshot.ItemCount);
+        Assert.Collection(
+            snapshot.Items,
+            item =>
+            {
+                Assert.Equal("settings", item.Key);
+                Assert.Equal(3, item.Item);
+                Assert.Equal(2, item.ItemVersion);
+            },
+            item =>
+            {
+                Assert.Equal("layout", item.Key);
+                Assert.Equal(2, item.Item);
+                Assert.Equal(1, item.ItemVersion);
+            });
+    }
 }

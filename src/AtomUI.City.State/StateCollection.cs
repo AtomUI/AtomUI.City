@@ -61,6 +61,21 @@ public sealed class StateCollection<TKey, TItem> : IStateCollection<TKey, TItem>
         }
     }
 
+    public StateCollectionSnapshot<TKey, TItem> CreateSnapshot()
+    {
+        lock (_syncRoot)
+        {
+            var items = _items
+                .Select(item => new StateCollectionSnapshotEntry<TKey, TItem>(
+                    item.Key,
+                    item.Value.Value,
+                    item.Value.Version))
+                .ToArray();
+
+            return new StateCollectionSnapshot<TKey, TItem>(Version, items);
+        }
+    }
+
     public bool AddOrUpdate(TKey key, TItem item)
     {
         ArgumentNullException.ThrowIfNull(key);

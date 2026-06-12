@@ -9,6 +9,8 @@ public interface IStateCollection<TKey, TItem>
 
     bool TryGetItemVersion(TKey key, out long version);
 
+    StateCollectionSnapshot<TKey, TItem> CreateSnapshot();
+
     bool AddOrUpdate(TKey key, TItem item);
 
     bool AddOrUpdateRange(IEnumerable<KeyValuePair<TKey, TItem>> items);
