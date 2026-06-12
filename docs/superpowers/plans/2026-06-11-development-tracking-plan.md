@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`7ce84bb feat(Data): diagnose missing client unregistrations`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，572 tests passed
-- 当前状态：已完成 Data request retry diagnostic metadata
+- 当前提交：`bf61c19 feat(Data): enrich retry diagnostics`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，573 tests passed
+- 当前状态：已完成 Data request retry diagnostic error kind
 
 **最新实现检查点：**
 
@@ -235,6 +235,7 @@
 - [x] Data client unregistration diagnostic
 - [x] Data client unregistration missing diagnostic
 - [x] Data request retry diagnostic metadata
+- [x] Data request retry diagnostic error kind
 
 ## 状态定义
 
