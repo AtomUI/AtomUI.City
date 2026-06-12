@@ -5,8 +5,8 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`e22ff9d feat(Presentation): add localized command and interaction text`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，389 tests passed
+- 当前提交：`9bdc380 feat(Localization): add validation message text binding`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，394 tests passed
 - 当前状态：已进入 Security / Data / Localization 基础集成实现阶段
 
 **最新实现检查点：**
@@ -41,6 +41,11 @@
 - [x] Presentation validation message literal fallback
 - [x] Presentation validation message culture refresh
 - [x] Presentation validation message disposal through ActivationScope
+- [x] Presentation generic error message descriptor
+- [x] Presentation error message localization binding
+- [x] Presentation Security authorization error message binding
+- [x] Presentation error message culture refresh
+- [x] Presentation error message disposal through ActivationScope
 
 ## 状态定义
 
