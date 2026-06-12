@@ -234,4 +234,48 @@ public sealed class StateCollectionTests
                 Assert.Equal(1, change.ItemVersion);
             });
     }
+
+    [Fact]
+    public void RestoreSnapshotClearsItemsMissingFromSnapshotAndRaisesResetNotification()
+    {
+        var collection = new StateCollection<string, int>();
+        collection.AddOrUpdate("settings", 1);
+        collection.AddOrUpdate("layout", 2);
+        var notifications = new List<StateCollectionChangedEventArgs<string, int>>();
+        var snapshot = new StateCollectionSnapshot<string, int>(
+            collectionVersion: 5,
+            []);
+
+        collection.OnChange(notifications.Add);
+
+        var restored = collection.RestoreSnapshot(snapshot);
+
+        Assert.True(restored);
+        Assert.Equal(5, collection.Version);
+        Assert.Empty(collection.Items);
+        var args = Assert.Single(notifications);
+        Assert.Equal(2, args.Changes.Count);
+        Assert.Collection(
+            args.Changes,
+            change =>
+            {
+                Assert.Equal(StateCollectionChangeKind.Reset, change.Kind);
+                Assert.Equal("settings", change.Key);
+                Assert.True(change.HasOldItem);
+                Assert.Equal(1, change.OldItem);
+                Assert.False(change.HasNewItem);
+                Assert.Equal(5, change.CollectionVersion);
+                Assert.Equal(2, change.ItemVersion);
+            },
+            change =>
+            {
+                Assert.Equal(StateCollectionChangeKind.Reset, change.Kind);
+                Assert.Equal("layout", change.Key);
+                Assert.True(change.HasOldItem);
+                Assert.Equal(2, change.OldItem);
+                Assert.False(change.HasNewItem);
+                Assert.Equal(5, change.CollectionVersion);
+                Assert.Equal(2, change.ItemVersion);
+            });
+    }
 }

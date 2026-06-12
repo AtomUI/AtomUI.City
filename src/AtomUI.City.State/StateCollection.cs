@@ -86,12 +86,14 @@ public sealed class StateCollection<TKey, TItem> : IStateCollection<TKey, TItem>
         lock (_syncRoot)
         {
             var nextItems = new Dictionary<TKey, CollectionItem>(_items.Comparer);
+            var snapshotKeys = new HashSet<TKey>(_items.Comparer);
             var changes = new List<StateCollectionChange<TKey, TItem>>();
 
             foreach (var item in snapshot.Items)
             {
                 ArgumentNullException.ThrowIfNull(item.Key);
 
+                snapshotKeys.Add(item.Key);
                 var hasOldItem = _items.TryGetValue(item.Key, out var oldItem);
                 nextItems[item.Key] = new CollectionItem(item.Item, item.ItemVersion);
                 changes.Add(new StateCollectionChange<TKey, TItem>(
@@ -105,7 +107,25 @@ public sealed class StateCollection<TKey, TItem> : IStateCollection<TKey, TItem>
                     item.ItemVersion));
             }
 
-            if (changes.Count == 0 && _items.Count == 0 && Version == snapshot.CollectionVersion)
+            foreach (var item in _items)
+            {
+                if (snapshotKeys.Contains(item.Key))
+                {
+                    continue;
+                }
+
+                changes.Add(new StateCollectionChange<TKey, TItem>(
+                    StateCollectionChangeKind.Reset,
+                    item.Key,
+                    HasOldItem: true,
+                    item.Value.Value,
+                    HasNewItem: false,
+                    NewItem: default,
+                    snapshot.CollectionVersion,
+                    item.Value.Version + 1));
+            }
+
+            if (changes.Count == 0 && Version == snapshot.CollectionVersion)
             {
                 return false;
             }
