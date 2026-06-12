@@ -14,6 +14,7 @@ public static class DataErrorMapper
             HttpStatusCode.NotFound => DataErrorKind.NotFound,
             HttpStatusCode.Conflict => DataErrorKind.Conflict,
             HttpStatusCode.RequestTimeout => DataErrorKind.Timeout,
+            HttpStatusCode.TooManyRequests => DataErrorKind.PolicyRejected,
             HttpStatusCode.ServiceUnavailable => DataErrorKind.ServiceUnavailable,
             >= HttpStatusCode.InternalServerError => DataErrorKind.ServerError,
             _ => DataErrorKind.TransportError,

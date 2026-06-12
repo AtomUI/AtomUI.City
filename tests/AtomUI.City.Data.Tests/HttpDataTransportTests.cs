@@ -61,6 +61,7 @@ public sealed class HttpDataTransportTests
     [InlineData(HttpStatusCode.Forbidden, DataErrorKind.AuthorizationForbidden)]
     [InlineData(HttpStatusCode.NotFound, DataErrorKind.NotFound)]
     [InlineData(HttpStatusCode.Conflict, DataErrorKind.Conflict)]
+    [InlineData(HttpStatusCode.TooManyRequests, DataErrorKind.PolicyRejected)]
     [InlineData(HttpStatusCode.InternalServerError, DataErrorKind.ServerError)]
     public async Task HttpTransportMapsStatusCodes(HttpStatusCode statusCode, DataErrorKind expectedError)
     {
