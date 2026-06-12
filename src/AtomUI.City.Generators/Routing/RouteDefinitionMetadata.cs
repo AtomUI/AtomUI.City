@@ -12,7 +12,12 @@ public sealed class RouteDefinitionMetadata
         string? parentMethodName,
         string outletName,
         string? extensionPoint,
-        string? redirectTargetMethodName)
+        string? redirectTargetMethodName,
+        string? titleKey = null,
+        string? descriptionKey = null,
+        string? breadcrumbKey = null,
+        string? groupKey = null,
+        string? errorTitleKey = null)
     {
         if (string.IsNullOrWhiteSpace(routeMapTypeName))
         {
@@ -44,6 +49,11 @@ public sealed class RouteDefinitionMetadata
         OutletName = outletName;
         ExtensionPoint = extensionPoint;
         RedirectTargetMethodName = redirectTargetMethodName;
+        TitleKey = titleKey;
+        DescriptionKey = descriptionKey;
+        BreadcrumbKey = breadcrumbKey;
+        GroupKey = groupKey;
+        ErrorTitleKey = errorTitleKey;
     }
 
     public string RouteMapTypeName { get; }
@@ -65,4 +75,14 @@ public sealed class RouteDefinitionMetadata
     public string? ExtensionPoint { get; }
 
     public string? RedirectTargetMethodName { get; }
+
+    public string? TitleKey { get; }
+
+    public string? DescriptionKey { get; }
+
+    public string? BreadcrumbKey { get; }
+
+    public string? GroupKey { get; }
+
+    public string? ErrorTitleKey { get; }
 }

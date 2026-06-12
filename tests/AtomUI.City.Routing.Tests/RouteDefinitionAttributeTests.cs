@@ -13,6 +13,11 @@ public sealed class RouteDefinitionAttributeTests
             Parent = "Shell",
             Outlet = "side",
             ExtensionPoint = "settings.pages",
+            TitleKey = "Routes.Settings.Title",
+            DescriptionKey = "Routes.Settings.Description",
+            BreadcrumbKey = "Routes.Settings.Breadcrumb",
+            GroupKey = "Routes.Settings.Group",
+            ErrorTitleKey = "Routes.Settings.ErrorTitle",
         };
 
         Assert.Equal(RouteDefinitionKind.Route, attribute.Kind);
@@ -22,6 +27,11 @@ public sealed class RouteDefinitionAttributeTests
         Assert.Equal("Shell", attribute.Parent);
         Assert.Equal("side", attribute.Outlet);
         Assert.Equal("settings.pages", attribute.ExtensionPoint);
+        Assert.Equal("Routes.Settings.Title", attribute.TitleKey);
+        Assert.Equal("Routes.Settings.Description", attribute.DescriptionKey);
+        Assert.Equal("Routes.Settings.Breadcrumb", attribute.BreadcrumbKey);
+        Assert.Equal("Routes.Settings.Group", attribute.GroupKey);
+        Assert.Equal("Routes.Settings.ErrorTitle", attribute.ErrorTitleKey);
     }
 
     [Fact]

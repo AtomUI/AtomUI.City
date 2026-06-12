@@ -64,6 +64,28 @@ public sealed class RouteGraphAndMatcherTests
         Assert.Equal(RouteGraphError.DuplicateRouteId, exception.Error);
     }
 
+    [Fact]
+    public void RouteDescriptorStoresLocalizationMetadata()
+    {
+        var descriptor = new RouteDescriptor(
+            "settings",
+            RouteDefinitionKind.Route,
+            "settings",
+            new ViewModelTargetDescriptor(typeof(SettingsViewModel)),
+            metadata: new RouteMetadataDescriptor(
+                titleKey: "Routes.Settings.Title",
+                descriptionKey: "Routes.Settings.Description",
+                breadcrumbKey: "Routes.Settings.Breadcrumb",
+                groupKey: "Routes.Settings.Group",
+                errorTitleKey: "Routes.Settings.ErrorTitle"));
+
+        Assert.Equal("Routes.Settings.Title", descriptor.Metadata.TitleKey);
+        Assert.Equal("Routes.Settings.Description", descriptor.Metadata.DescriptionKey);
+        Assert.Equal("Routes.Settings.Breadcrumb", descriptor.Metadata.BreadcrumbKey);
+        Assert.Equal("Routes.Settings.Group", descriptor.Metadata.GroupKey);
+        Assert.Equal("Routes.Settings.ErrorTitle", descriptor.Metadata.ErrorTitleKey);
+    }
+
     private static RouteDescriptor Layout(string id, Type viewModelType)
     {
         return new RouteDescriptor(

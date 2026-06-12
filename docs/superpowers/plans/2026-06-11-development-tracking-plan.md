@@ -5,8 +5,8 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`9bdc380 feat(Localization): add validation message text binding`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，394 tests passed
+- 当前提交：`94f28fb feat(Presentation): add localized error message binding`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，399 tests passed
 - 当前状态：已进入 Security / Data / Localization 基础集成实现阶段
 
 **最新实现检查点：**
@@ -46,6 +46,12 @@
 - [x] Presentation Security authorization error message binding
 - [x] Presentation error message culture refresh
 - [x] Presentation error message disposal through ActivationScope
+- [x] Routing route localization metadata descriptor
+- [x] Routing route attributes carry localization keys
+- [x] Generator route metadata carries localization keys into manifests
+- [x] Presentation route text localization binding
+- [x] Presentation route title and breadcrumb culture refresh
+- [x] Presentation route text disposal through ActivationScope
 
 ## 状态定义
 

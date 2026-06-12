@@ -64,6 +64,38 @@ public sealed class RouteManifestBuilderTests
         Assert.Empty(result.Manifest.Routes);
     }
 
+    [Fact]
+    public void BuildCarriesRouteLocalizationMetadata()
+    {
+        var result = RouteManifestBuilder.Build(
+            [
+                new RouteDefinitionMetadata(
+                    "Sample.App.AppRoutes",
+                    "Settings",
+                    "app.settings",
+                    RouteDefinitionMetadataKind.Route,
+                    "settings",
+                    "Sample.App.SettingsViewModel",
+                    parentMethodName: null,
+                    outletName: "primary",
+                    extensionPoint: null,
+                    redirectTargetMethodName: null,
+                    titleKey: "Routes.Settings.Title",
+                    descriptionKey: "Routes.Settings.Description",
+                    breadcrumbKey: "Routes.Settings.Breadcrumb",
+                    groupKey: "Routes.Settings.Group",
+                    errorTitleKey: "Routes.Settings.ErrorTitle"),
+            ]);
+
+        var route = Assert.Single(result.Manifest.Routes);
+
+        Assert.Equal("Routes.Settings.Title", route.TitleKey);
+        Assert.Equal("Routes.Settings.Description", route.DescriptionKey);
+        Assert.Equal("Routes.Settings.Breadcrumb", route.BreadcrumbKey);
+        Assert.Equal("Routes.Settings.Group", route.GroupKey);
+        Assert.Equal("Routes.Settings.ErrorTitle", route.ErrorTitleKey);
+    }
+
     private static RouteDefinitionMetadata Route(
         string routeMapTypeName,
         string methodName,

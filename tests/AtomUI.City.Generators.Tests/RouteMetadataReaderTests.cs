@@ -75,7 +75,12 @@ public sealed class RouteMetadataReaderTests
                 [LayoutRoute(typeof(ShellViewModel), Id = "app.shell")]
                 public static RouteReference Shell() => default;
 
-                [Route("settings", typeof(SettingsViewModel), Id = "app.settings", Parent = nameof(Shell), Outlet = "side")]
+                [Route("settings", typeof(SettingsViewModel), Id = "app.settings", Parent = nameof(Shell), Outlet = "side",
+                    TitleKey = "Routes.Settings.Title",
+                    DescriptionKey = "Routes.Settings.Description",
+                    BreadcrumbKey = "Routes.Settings.Breadcrumb",
+                    GroupKey = "Routes.Settings.Group",
+                    ErrorTitleKey = "Routes.Settings.ErrorTitle")]
                 public static RouteReference Settings() => default;
             }
             """);
@@ -95,6 +100,11 @@ public sealed class RouteMetadataReaderTests
                 Assert.Equal("Sample.App.SettingsViewModel", route.ViewModelTypeName);
                 Assert.Equal("Shell", route.ParentMethodName);
                 Assert.Equal("side", route.OutletName);
+                Assert.Equal("Routes.Settings.Title", route.TitleKey);
+                Assert.Equal("Routes.Settings.Description", route.DescriptionKey);
+                Assert.Equal("Routes.Settings.Breadcrumb", route.BreadcrumbKey);
+                Assert.Equal("Routes.Settings.Group", route.GroupKey);
+                Assert.Equal("Routes.Settings.ErrorTitle", route.ErrorTitleKey);
             });
     }
 

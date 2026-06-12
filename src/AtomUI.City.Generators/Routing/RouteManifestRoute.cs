@@ -10,7 +10,12 @@ public sealed class RouteManifestRoute
         string? parentRouteId,
         string outletName,
         string? extensionPoint,
-        string? redirectTargetRouteId)
+        string? redirectTargetRouteId,
+        string? titleKey = null,
+        string? descriptionKey = null,
+        string? breadcrumbKey = null,
+        string? groupKey = null,
+        string? errorTitleKey = null)
     {
         if (string.IsNullOrWhiteSpace(id))
         {
@@ -30,6 +35,11 @@ public sealed class RouteManifestRoute
         OutletName = outletName;
         ExtensionPoint = extensionPoint;
         RedirectTargetRouteId = redirectTargetRouteId;
+        TitleKey = titleKey;
+        DescriptionKey = descriptionKey;
+        BreadcrumbKey = breadcrumbKey;
+        GroupKey = groupKey;
+        ErrorTitleKey = errorTitleKey;
     }
 
     public string Id { get; }
@@ -47,4 +57,14 @@ public sealed class RouteManifestRoute
     public string? ExtensionPoint { get; }
 
     public string? RedirectTargetRouteId { get; }
+
+    public string? TitleKey { get; }
+
+    public string? DescriptionKey { get; }
+
+    public string? BreadcrumbKey { get; }
+
+    public string? GroupKey { get; }
+
+    public string? ErrorTitleKey { get; }
 }

@@ -24,4 +24,14 @@ public abstract class RouteDefinitionAttribute : Attribute
     public string? ExtensionPoint { get; set; }
 
     public string? Target { get; set; }
+
+    public string? TitleKey { get; set; }
+
+    public string? DescriptionKey { get; set; }
+
+    public string? BreadcrumbKey { get; set; }
+
+    public string? GroupKey { get; set; }
+
+    public string? ErrorTitleKey { get; set; }
 }

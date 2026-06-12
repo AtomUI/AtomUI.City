@@ -62,7 +62,12 @@ public static class RouteManifestBuilder
                 parentRouteIds[route.Id],
                 route.OutletName,
                 route.ExtensionPoint,
-                redirectTargetRouteIds[route.Id]))
+                redirectTargetRouteIds[route.Id],
+                route.TitleKey,
+                route.DescriptionKey,
+                route.BreadcrumbKey,
+                route.GroupKey,
+                route.ErrorTitleKey))
             .OrderBy(route => route.Id, StringComparer.Ordinal)
             .ToArray();
 

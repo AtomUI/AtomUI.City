@@ -13,7 +13,8 @@ public sealed class RouteDescriptor
         string? redirectTargetRouteId = null,
         IReadOnlyList<Type>? enterGuardTypes = null,
         IReadOnlyList<Type>? leaveGuardTypes = null,
-        IReadOnlyList<Type>? matchPolicyTypes = null)
+        IReadOnlyList<Type>? matchPolicyTypes = null,
+        RouteMetadataDescriptor? metadata = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(routeId);
         ArgumentException.ThrowIfNullOrWhiteSpace(outletName);
@@ -29,6 +30,7 @@ public sealed class RouteDescriptor
         EnterGuardTypes = enterGuardTypes?.ToArray() ?? [];
         LeaveGuardTypes = leaveGuardTypes?.ToArray() ?? [];
         MatchPolicyTypes = matchPolicyTypes?.ToArray() ?? [];
+        Metadata = metadata ?? RouteMetadataDescriptor.Empty;
     }
 
     public string RouteId { get; }
@@ -52,4 +54,6 @@ public sealed class RouteDescriptor
     public IReadOnlyList<Type> LeaveGuardTypes { get; }
 
     public IReadOnlyList<Type> MatchPolicyTypes { get; }
+
+    public RouteMetadataDescriptor Metadata { get; }
 }

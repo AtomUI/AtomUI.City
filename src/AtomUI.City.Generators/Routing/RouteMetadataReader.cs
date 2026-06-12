@@ -55,7 +55,12 @@ public static class RouteMetadataReader
                 ReadNamedString(attribute, "Parent"),
                 ReadNamedString(attribute, "Outlet") ?? "primary",
                 ReadExtensionPoint(attribute, kind.Value),
-                ReadNamedString(attribute, "Target"));
+                ReadNamedString(attribute, "Target"),
+                ReadNamedString(attribute, "TitleKey"),
+                ReadNamedString(attribute, "DescriptionKey"),
+                ReadNamedString(attribute, "BreadcrumbKey"),
+                ReadNamedString(attribute, "GroupKey"),
+                ReadNamedString(attribute, "ErrorTitleKey"));
         }
 
         return null;
