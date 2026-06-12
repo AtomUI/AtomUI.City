@@ -8,7 +8,10 @@ internal sealed class StateSubscription : IStateSubscription
     private readonly Action<StateChangedEventArgs> _handler;
     private readonly IHostDiagnostics? _diagnostics;
     private readonly StateSubscriptionOptions _options;
+    private readonly Queue<StateChangedEventArgs> _queuedNotifications = [];
+    private readonly object _queueSyncRoot = new();
     private bool _disposed;
+    private bool _isProcessingQueue;
 
     public StateSubscription(
         Action<StateChangedEventArgs> handler,
@@ -37,6 +40,9 @@ internal sealed class StateSubscription : IStateSubscription
                 case StateDispatchPolicy.Background:
                     Task.Run(() => _handler(args)).GetAwaiter().GetResult();
                     break;
+                case StateDispatchPolicy.Queued:
+                    Enqueue(args);
+                    break;
                 default:
                     _handler(args);
                     break;
@@ -54,6 +60,74 @@ internal sealed class StateSubscription : IStateSubscription
     public void Dispose()
     {
         _disposed = true;
+
+        lock (_queueSyncRoot)
+        {
+            _queuedNotifications.Clear();
+            _isProcessingQueue = false;
+        }
+    }
+
+    private void Enqueue(StateChangedEventArgs args)
+    {
+        var shouldStartProcessing = false;
+
+        lock (_queueSyncRoot)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            _queuedNotifications.Enqueue(args);
+
+            if (!_isProcessingQueue)
+            {
+                _isProcessingQueue = true;
+                shouldStartProcessing = true;
+            }
+        }
+
+        if (shouldStartProcessing)
+        {
+            _ = Task.Run(ProcessQueue);
+        }
+    }
+
+    private void ProcessQueue()
+    {
+        while (true)
+        {
+            StateChangedEventArgs args;
+
+            lock (_queueSyncRoot)
+            {
+                if (_disposed || _queuedNotifications.Count == 0)
+                {
+                    _isProcessingQueue = false;
+                    return;
+                }
+
+                args = _queuedNotifications.Dequeue();
+            }
+
+            NotifyQueued(args);
+        }
+    }
+
+    private void NotifyQueued(StateChangedEventArgs args)
+    {
+        try
+        {
+            _handler(args);
+        }
+        catch (Exception exception)
+        {
+            _diagnostics?.Write(new HostDiagnosticRecord(
+                StateDiagnosticIds.SubscriptionHandlerFailed,
+                $"State subscription handler failed at version {args.Version}: {exception.Message}",
+                HostDiagnosticSeverity.Error));
+        }
     }
 }
 
@@ -88,6 +162,13 @@ public sealed class StateSubscriptionOptions
     {
         return new StateSubscriptionOptions(
             StateDispatchPolicy.Background,
+            dispatcher: null);
+    }
+
+    public static StateSubscriptionOptions Queued()
+    {
+        return new StateSubscriptionOptions(
+            StateDispatchPolicy.Queued,
             dispatcher: null);
     }
 }

@@ -89,6 +89,60 @@ public sealed class StateThreadingTests
         Assert.Equal(StateDispatchPolicy.Background, options.DispatchPolicy);
     }
 
+    [Fact]
+    public async Task QueuedSubscriptionDispatchesNotificationsInOrderWithoutBlockingSetValue()
+    {
+        var state = new WritableState<int>(0);
+        var observed = new List<int>();
+        using var releaseFirstHandler = new ManualResetEventSlim(false);
+        var firstHandlerEntered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var syncRoot = new object();
+        var options = StateSubscriptionOptions.Queued();
+
+        state.OnChange(
+            args =>
+            {
+                if (args.NewValue == 1)
+                {
+                    firstHandlerEntered.SetResult();
+                    Assert.True(releaseFirstHandler.Wait(TimeSpan.FromSeconds(5)));
+                }
+
+                lock (syncRoot)
+                {
+                    observed.Add(args.NewValue);
+
+                    if (observed.Count == 2)
+                    {
+                        completion.SetResult();
+                    }
+                }
+            },
+            options);
+
+        var setValues = Task.Run(() =>
+        {
+            state.SetValue(1);
+            state.SetValue(2);
+        });
+
+        await firstHandlerEntered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+        var completedBeforeRelease = await Task.WhenAny(
+            setValues,
+            Task.Delay(TimeSpan.FromSeconds(1))) == setValues;
+
+        releaseFirstHandler.Set();
+
+        Assert.True(completedBeforeRelease);
+        await setValues.WaitAsync(TimeSpan.FromSeconds(5));
+        await completion.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+        Assert.Equal([1, 2], observed);
+        Assert.Equal(StateDispatchPolicy.Queued, options.DispatchPolicy);
+    }
+
     private sealed class RecordingDispatcher : IUiDispatcher
     {
         public int InvokeCount { get; private set; }
