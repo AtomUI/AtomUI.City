@@ -16,6 +16,9 @@ public static class PresentationLocalizationServiceCollectionExtensions
         services.TryAddSingleton<PresentationLocalizationBridge>();
         services.TryAddSingleton<IPresentationLocalizationBridge>(
             serviceProvider => serviceProvider.GetRequiredService<PresentationLocalizationBridge>());
+        services.TryAddSingleton<PresentationResourceDictionaryRevoker>();
+        services.TryAddSingleton<IPresentationResourceDictionaryRevoker>(
+            serviceProvider => serviceProvider.GetRequiredService<PresentationResourceDictionaryRevoker>());
 
         return services;
     }

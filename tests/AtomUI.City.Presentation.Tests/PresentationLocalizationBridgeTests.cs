@@ -153,6 +153,32 @@ public sealed class PresentationLocalizationBridgeTests
         Assert.Equal([true], target.DispatcherAccess);
     }
 
+    [Fact]
+    public async Task ServiceCollectionRevokesResourceDictionaryTargets()
+    {
+        var services = new ServiceCollection();
+        var dispatcher = new RecordingDispatcher();
+        services.AddSingleton(dispatcher);
+        services.AddSingleton<IUiDispatcher>(dispatcher);
+        services.AddPresentationResourceDictionaryTarget<RecordingResourceDictionaryTarget>();
+        services.AddPresentationLocalizationBridge();
+        var provider = services.BuildServiceProvider();
+        var revoker = provider.GetRequiredService<IPresentationResourceDictionaryRevoker>();
+
+        var result = await revoker.RevokeAsync(
+            new PresentationResourceDictionaryRevocation(
+                "plugin.orders",
+                contributionId: "plugin.orders.resources"));
+
+        Assert.True(result.Succeeded);
+        var target = provider.GetRequiredService<IEnumerable<IPresentationResourceDictionaryTarget>>()
+            .OfType<RecordingResourceDictionaryTarget>()
+            .Single();
+        Assert.Equal(["plugin.orders"], target.RevokedPluginIds);
+        Assert.Equal(["plugin.orders.resources"], target.RevokedContributionIds);
+        Assert.Equal([true], target.RevokeDispatcherAccess);
+    }
+
     private static CultureState State(
         string cultureName,
         string? uiCultureName = null,
@@ -223,6 +249,12 @@ public sealed class PresentationLocalizationBridgeTests
 
         public List<bool> DispatcherAccess { get; } = [];
 
+        public List<string> RevokedPluginIds { get; } = [];
+
+        public List<string?> RevokedContributionIds { get; } = [];
+
+        public List<bool> RevokeDispatcherAccess { get; } = [];
+
         public ValueTask<LocalizationResult> ApplyResourcesAsync(
             CultureState state,
             CancellationToken cancellationToken = default)
@@ -230,6 +262,17 @@ public sealed class PresentationLocalizationBridgeTests
             AppliedCultures.Add(state.CurrentCulture.Name);
             AppliedPackageIds.Add(state.LoadedPackageIds.ToArray());
             DispatcherAccess.Add(_dispatcher.IsOnDispatcher);
+
+            return ValueTask.FromResult(LocalizationResult.Success());
+        }
+
+        public ValueTask<LocalizationResult> RevokeResourcesAsync(
+            PresentationResourceDictionaryRevocation revocation,
+            CancellationToken cancellationToken = default)
+        {
+            RevokedPluginIds.Add(revocation.PluginId);
+            RevokedContributionIds.Add(revocation.ContributionId);
+            RevokeDispatcherAccess.Add(_dispatcher.IsOnDispatcher);
 
             return ValueTask.FromResult(LocalizationResult.Success());
         }
