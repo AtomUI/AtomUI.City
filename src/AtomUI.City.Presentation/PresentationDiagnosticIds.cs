@@ -35,4 +35,6 @@ public static class PresentationDiagnosticIds
     public const string PluginViewTracked = "AUCPRS031";
     public const string PluginViewClosed = "AUCPRS032";
     public const string PluginViewCloseFailed = "AUCPRS033";
+    public const string PluginUnloadCleanupCompleted = "AUCPRS034";
+    public const string PluginUnloadCleanupFailed = "AUCPRS035";
 }
