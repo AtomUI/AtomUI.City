@@ -1,3 +1,4 @@
+using AtomUI.City.Diagnostics;
 using AtomUI.City.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -10,7 +11,11 @@ public static class AvaloniaUiDispatcherServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.TryAddSingleton<IUiDispatcher, AvaloniaUiDispatcher>();
+        services.TryAddSingleton<IUiDispatcher>(
+            serviceProvider => new AvaloniaUiDispatcher(
+                Avalonia.Threading.Dispatcher.UIThread,
+                serviceProvider.GetService<IPresentationRuntime>(),
+                serviceProvider.GetService<IHostDiagnostics>()));
 
         return services;
     }

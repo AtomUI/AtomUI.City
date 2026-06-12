@@ -5,8 +5,8 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`0db650a feat(Presentation): add runtime diagnostics`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，431 tests passed
+- 当前提交：`54182bd feat(Presentation): gate dispatcher by runtime state`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，433 tests passed
 - 当前状态：已进入 Localization / Presentation culture bridge 集成实现阶段
 
 **最新实现检查点：**
@@ -87,6 +87,9 @@
 - [x] Presentation dispatcher runtime not-ready gate
 - [x] Presentation dispatcher runtime stopping gate
 - [x] Presentation dispatcher runtime DI integration
+- [x] Presentation dispatcher rejected operation diagnostics
+- [x] Presentation dispatcher callback failure diagnostics
+- [x] Presentation dispatcher diagnostics DI integration
 
 ## 状态定义
 

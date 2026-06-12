@@ -1,3 +1,4 @@
+using AtomUI.City.Diagnostics;
 using AtomUI.City.Lifecycle;
 using AtomUI.City.Presentation;
 using AtomUI.City.Threading;
@@ -164,6 +165,49 @@ public sealed class AvaloniaUiDispatcherTests
         Assert.Equal(PresentationError.RuntimeStopping, resultException.Error);
         Assert.Equal(PresentationError.RuntimeStopping, postException.Error);
         Assert.False(wasCalled);
+    }
+
+    [Fact]
+    public async Task RuntimeRejectedOperationsRecordDiagnostics()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        await using var application = LifecycleScope.CreateRoot(LifecycleScopeKind.Application, "application");
+        var runtime = new PresentationRuntime();
+        await runtime.StartAsync(application);
+        await runtime.StopAsync();
+        var dispatcher = new AvaloniaUiDispatcher(
+            Dispatcher.CurrentDispatcher,
+            runtime,
+            diagnostics);
+
+        await Assert.ThrowsAsync<PresentationException>(
+            () => dispatcher.InvokeAsync(() => { }).AsTask());
+
+        Assert.Contains(
+            diagnostics.Records,
+            record =>
+                record.Code == PresentationDiagnosticIds.DispatcherOperationRejected &&
+                record.ScopeId == "presentation" &&
+                record.Severity == HostDiagnosticSeverity.Warning);
+    }
+
+    [Fact]
+    public async Task CallbackFailuresRecordDiagnostics()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var dispatcher = new AvaloniaUiDispatcher(
+            Dispatcher.CurrentDispatcher,
+            runtime: null,
+            diagnostics);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            () => dispatcher.InvokeAsync(() => throw new InvalidOperationException("callback failed")).AsTask());
+
+        Assert.Contains(
+            diagnostics.Records,
+            record =>
+                record.Code == PresentationDiagnosticIds.DispatcherCallbackFailed &&
+                record.Severity == HostDiagnosticSeverity.Error);
     }
 
     private sealed class InlineUiDispatcher : IUiDispatcher

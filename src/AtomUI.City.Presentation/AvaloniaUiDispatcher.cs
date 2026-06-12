@@ -1,3 +1,4 @@
+using AtomUI.City.Diagnostics;
 using AtomUI.City.Threading;
 using Avalonia.Threading;
 
@@ -7,28 +8,38 @@ public sealed class AvaloniaUiDispatcher : IUiDispatcher
 {
     private readonly Dispatcher _dispatcher;
     private readonly IPresentationRuntime? _runtime;
+    private readonly IHostDiagnostics? _diagnostics;
 
     public AvaloniaUiDispatcher()
-        : this(Dispatcher.UIThread, runtime: null)
+        : this(Dispatcher.UIThread, runtime: null, diagnostics: null)
     {
     }
 
     public AvaloniaUiDispatcher(IPresentationRuntime runtime)
-        : this(Dispatcher.UIThread, runtime)
+        : this(Dispatcher.UIThread, runtime, diagnostics: null)
     {
     }
 
     public AvaloniaUiDispatcher(Dispatcher dispatcher)
-        : this(dispatcher, runtime: null)
+        : this(dispatcher, runtime: null, diagnostics: null)
     {
     }
 
     public AvaloniaUiDispatcher(Dispatcher dispatcher, IPresentationRuntime? runtime)
+        : this(dispatcher, runtime, diagnostics: null)
+    {
+    }
+
+    public AvaloniaUiDispatcher(
+        Dispatcher dispatcher,
+        IPresentationRuntime? runtime,
+        IHostDiagnostics? diagnostics)
     {
         ArgumentNullException.ThrowIfNull(dispatcher);
 
         _dispatcher = dispatcher;
         _runtime = runtime;
+        _diagnostics = diagnostics;
     }
 
     public bool CheckAccess()
@@ -48,6 +59,8 @@ public sealed class AvaloniaUiDispatcher : IUiDispatcher
         var runtimeException = CreateRuntimeException();
         if (runtimeException is not null)
         {
+            WriteOperationRejectedDiagnostic(runtimeException);
+
             return ValueTask.FromException(runtimeException);
         }
 
@@ -61,6 +74,8 @@ public sealed class AvaloniaUiDispatcher : IUiDispatcher
             }
             catch (Exception exception)
             {
+                WriteCallbackFailedDiagnostic(exception);
+
                 return ValueTask.FromException(exception);
             }
         }
@@ -82,6 +97,8 @@ public sealed class AvaloniaUiDispatcher : IUiDispatcher
         var runtimeException = CreateRuntimeException();
         if (runtimeException is not null)
         {
+            WriteOperationRejectedDiagnostic(runtimeException);
+
             return ValueTask.FromException<T>(runtimeException);
         }
 
@@ -93,6 +110,8 @@ public sealed class AvaloniaUiDispatcher : IUiDispatcher
             }
             catch (Exception exception)
             {
+                WriteCallbackFailedDiagnostic(exception);
+
                 return ValueTask.FromException<T>(exception);
             }
         }
@@ -116,6 +135,8 @@ public sealed class AvaloniaUiDispatcher : IUiDispatcher
         var runtimeException = CreateRuntimeException();
         if (runtimeException is not null)
         {
+            WriteOperationRejectedDiagnostic(runtimeException);
+
             return ValueTask.FromException(runtimeException);
         }
 
@@ -127,6 +148,8 @@ public sealed class AvaloniaUiDispatcher : IUiDispatcher
             }
             catch (Exception exception)
             {
+                WriteCallbackFailedDiagnostic(exception);
+
                 return ValueTask.FromException(exception);
             }
         }
@@ -161,6 +184,7 @@ public sealed class AvaloniaUiDispatcher : IUiDispatcher
                     }
                     catch (Exception exception)
                     {
+                        WriteCallbackFailedDiagnostic(exception);
                         taskCompletion.TrySetException(exception);
                     }
                     finally
@@ -193,5 +217,23 @@ public sealed class AvaloniaUiDispatcher : IUiDispatcher
                     "Presentation runtime is not accepting UI dispatcher operations."),
             _ => null,
         };
+    }
+
+    private void WriteOperationRejectedDiagnostic(PresentationException exception)
+    {
+        _diagnostics?.Write(new HostDiagnosticRecord(
+            PresentationDiagnosticIds.DispatcherOperationRejected,
+            exception.Message,
+            HostDiagnosticSeverity.Warning,
+            ScopeId: _runtime?.PresentationScope?.Id));
+    }
+
+    private void WriteCallbackFailedDiagnostic(Exception exception)
+    {
+        _diagnostics?.Write(new HostDiagnosticRecord(
+            PresentationDiagnosticIds.DispatcherCallbackFailed,
+            exception.Message,
+            HostDiagnosticSeverity.Error,
+            ScopeId: _runtime?.PresentationScope?.Id));
     }
 }
