@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`bae2087 fix(Data): map pipeline timeout cancellations`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，587 tests passed
-- 当前状态：已完成 Data credential timeout cancellation result mapping
+- 当前提交：`2269e67 fix(Data): map credential timeout cancellations`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，588 tests passed
+- 当前状态：已完成 Data cache read timeout cancellation result mapping
 
 **最新实现检查点：**
 
@@ -248,6 +248,7 @@
 - [x] Data SignalR invoke timeout mapping
 - [x] Data pipeline timeout cancellation result mapping
 - [x] Data credential timeout cancellation result mapping
+- [x] Data cache read timeout cancellation result mapping
 
 ## 状态定义
 

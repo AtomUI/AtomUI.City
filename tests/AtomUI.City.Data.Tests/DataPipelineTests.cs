@@ -204,6 +204,28 @@ public sealed class DataPipelineTests
     }
 
     [Fact]
+    public async Task PipelineMapsCacheReadCancellationCausedByOperationTimeout()
+    {
+        var cache = new DelayingRequestCache();
+        var transport = new RecordingTransport(_ => DataResult<string>.Success("should-not-run"));
+        var pipeline = new DataRequestPipeline(transport, cache: cache);
+        var request = new DataRequest<string>(
+            "catalog",
+            "get-items",
+            DataTransportKind.Http)
+        {
+            Cache = DataCacheOptions.Enabled("items:v1"),
+            Resilience = new DataResilienceOptions { Timeout = TimeSpan.FromMilliseconds(10) },
+        };
+
+        var result = await pipeline.SendAsync(request);
+
+        Assert.Equal(DataResultStatus.Failed, result.Status);
+        Assert.Equal(DataErrorKind.Timeout, result.Error?.Kind);
+        Assert.Equal(0, transport.Attempts);
+    }
+
+    [Fact]
     public async Task PipelineWritesCacheWriteFailureDiagnosticAndReturnsTransportResult()
     {
         var diagnostics = new InMemoryDataDiagnostics();
@@ -857,6 +879,33 @@ public sealed class DataPipelineTests
                 throw _writeException;
             }
 
+            return ValueTask.CompletedTask;
+        }
+
+        public ValueTask InvalidateAsync(
+            DataCacheKey key,
+            CancellationToken cancellationToken = default)
+        {
+            return ValueTask.CompletedTask;
+        }
+    }
+
+    private sealed class DelayingRequestCache : IDataRequestCache
+    {
+        public async ValueTask<DataCacheLookup<TResponse>> TryGetAsync<TResponse>(
+            DataCacheKey key,
+            CancellationToken cancellationToken = default)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
+
+            return DataCacheLookup<TResponse>.Miss();
+        }
+
+        public ValueTask SetAsync<TResponse>(
+            DataCacheKey key,
+            TResponse? value,
+            CancellationToken cancellationToken = default)
+        {
             return ValueTask.CompletedTask;
         }
 
