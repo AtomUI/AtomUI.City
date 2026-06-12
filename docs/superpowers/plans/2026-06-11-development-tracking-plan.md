@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`2696ff6 feat(Presentation): add plugin unload cleanup coordinator`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，489 tests passed
-- 当前状态：已完成 Presentation view manifest generator foundation 实现
+- 当前提交：`0915125 feat(Generator): add presentation view manifest`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，490 tests passed
+- 当前状态：已完成 Presentation view plugin metadata and revoke 实现
 
 **最新实现检查点：**
 
@@ -151,6 +151,10 @@
 - [x] Generator Presentation view manifest deterministic ordering
 - [x] Generator Presentation duplicate ViewModel/ViewKey diagnostics
 - [x] Generator Presentation view contribution metadata
+- [x] Presentation ViewDescriptor PluginId metadata
+- [x] Presentation ViewForAttribute PluginId metadata
+- [x] Presentation ViewRegistry revoke by PluginId
+- [x] Generator Presentation view PluginId metadata
 
 ## 状态定义
 

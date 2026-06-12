@@ -38,6 +38,7 @@ public static class PresentationViewMetadataReader
             viewTypeName,
             viewModelTypeName!,
             ReadNamedString(attribute, "Key"),
+            ReadNamedString(attribute, "PluginId"),
             ReadNamedString(attribute, "ContributionId"));
     }
 

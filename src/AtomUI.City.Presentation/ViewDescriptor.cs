@@ -9,6 +9,7 @@ public sealed class ViewDescriptor
         Type viewType,
         string? viewKey,
         Func<ViewFactoryContext, object> viewFactory,
+        string? pluginId = null,
         string? contributionId = null)
     {
         ArgumentNullException.ThrowIfNull(viewModelType);
@@ -18,6 +19,7 @@ public sealed class ViewDescriptor
         ViewModelType = viewModelType;
         ViewType = viewType;
         ViewKey = string.IsNullOrWhiteSpace(viewKey) ? null : viewKey;
+        PluginId = string.IsNullOrWhiteSpace(pluginId) ? null : pluginId;
         ContributionId = string.IsNullOrWhiteSpace(contributionId) ? null : contributionId;
         _viewFactory = viewFactory;
     }
@@ -27,6 +29,8 @@ public sealed class ViewDescriptor
     public Type ViewType { get; }
 
     public string? ViewKey { get; }
+
+    public string? PluginId { get; }
 
     public string? ContributionId { get; }
 

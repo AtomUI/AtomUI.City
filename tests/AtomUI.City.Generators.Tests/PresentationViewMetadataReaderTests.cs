@@ -36,7 +36,7 @@ public sealed class PresentationViewMetadataReaderTests
             {
             }
 
-            [ViewFor(typeof(SettingsViewModel), Key = "settings", ContributionId = "plugin.settings")]
+            [ViewFor(typeof(SettingsViewModel), Key = "settings", PluginId = "com.company.sales", ContributionId = "plugin.settings")]
             public sealed class SettingsView
             {
             }
@@ -47,6 +47,7 @@ public sealed class PresentationViewMetadataReaderTests
         Assert.Equal("Sample.App.SettingsView", view.ViewTypeName);
         Assert.Equal("Sample.App.SettingsViewModel", view.ViewModelTypeName);
         Assert.Equal("settings", view.ViewKey);
+        Assert.Equal("com.company.sales", view.PluginId);
         Assert.Equal("plugin.settings", view.ContributionId);
     }
 
@@ -148,6 +149,8 @@ public sealed class PresentationViewMetadataReaderTests
             public System.Type ViewModelType { get; }
 
             public string? Key { get; init; }
+
+            public string? PluginId { get; init; }
 
             public string? ContributionId { get; init; }
         }

@@ -137,22 +137,56 @@ public sealed class ViewLocatorTests
     }
 
     [Fact]
-    public void ViewForAttributeStoresViewModelAndKey()
+    public void RegistryRevokesViewsByPluginId()
+    {
+        var registry = new ViewRegistry();
+        registry.Register(
+            new ViewDescriptor(
+                typeof(SettingsViewModel),
+                typeof(SettingsView),
+                viewKey: null,
+                _ => new SettingsView(),
+                pluginId: "com.company.sales",
+                contributionId: "plugin.settings"));
+        var hostDescriptor = new ViewDescriptor(
+            typeof(ProfileViewModel),
+            typeof(ProfileView),
+            viewKey: null,
+            _ => new ProfileView(),
+            pluginId: "com.company.host",
+            contributionId: "host.profile");
+        registry.Register(hostDescriptor);
+
+        var revoked = registry.RevokePlugin("com.company.sales");
+
+        Assert.Equal(1, revoked);
+        Assert.False(registry.TryLocate(typeof(SettingsViewModel), out _));
+        Assert.Same(hostDescriptor, registry.Locate(typeof(ProfileViewModel)));
+    }
+
+    [Fact]
+    public void ViewForAttributeStoresPluginContributionMetadata()
     {
         var attribute = new ViewForAttribute(typeof(SettingsViewModel))
         {
             Key = "compact",
+            PluginId = "com.company.sales",
             ContributionId = "plugin.settings",
         };
 
         Assert.Equal(typeof(SettingsViewModel), attribute.ViewModelType);
         Assert.Equal("compact", attribute.Key);
+        Assert.Equal("com.company.sales", attribute.PluginId);
         Assert.Equal("plugin.settings", attribute.ContributionId);
     }
 
     private sealed class SettingsViewModel;
 
+    private sealed class ProfileViewModel;
+
     private sealed class SettingsView;
+
+    private sealed class ProfileView;
 
     private sealed class CompactSettingsView;
 

@@ -6,6 +6,7 @@ public sealed class PresentationViewMetadata
         string viewTypeName,
         string viewModelTypeName,
         string? viewKey,
+        string? pluginId,
         string? contributionId)
     {
         if (string.IsNullOrWhiteSpace(viewTypeName))
@@ -21,6 +22,7 @@ public sealed class PresentationViewMetadata
         ViewTypeName = viewTypeName;
         ViewModelTypeName = viewModelTypeName;
         ViewKey = string.IsNullOrWhiteSpace(viewKey) ? null : viewKey;
+        PluginId = string.IsNullOrWhiteSpace(pluginId) ? null : pluginId;
         ContributionId = string.IsNullOrWhiteSpace(contributionId) ? null : contributionId;
     }
 
@@ -29,6 +31,8 @@ public sealed class PresentationViewMetadata
     public string ViewModelTypeName { get; }
 
     public string? ViewKey { get; }
+
+    public string? PluginId { get; }
 
     public string? ContributionId { get; }
 }

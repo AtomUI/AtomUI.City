@@ -14,5 +14,7 @@ public sealed class ViewForAttribute : Attribute
 
     public string? Key { get; init; }
 
+    public string? PluginId { get; init; }
+
     public string? ContributionId { get; init; }
 }

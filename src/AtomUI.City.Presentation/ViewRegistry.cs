@@ -34,12 +34,24 @@ public sealed class ViewRegistry : IViewLocator
         _descriptors.Add(key, descriptor);
     }
 
-    public void RevokeContribution(string contributionId)
+    public int RevokePlugin(string pluginId)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(pluginId);
+
+        return Revoke(descriptor => string.Equals(descriptor.PluginId, pluginId, StringComparison.Ordinal));
+    }
+
+    public int RevokeContribution(string contributionId)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(contributionId);
 
+        return Revoke(descriptor => string.Equals(descriptor.ContributionId, contributionId, StringComparison.Ordinal));
+    }
+
+    private int Revoke(Func<ViewDescriptor, bool> predicate)
+    {
         var revokedKeys = _descriptors
-            .Where(item => string.Equals(item.Value.ContributionId, contributionId, StringComparison.Ordinal))
+            .Where(item => predicate(item.Value))
             .Select(item => item.Key)
             .ToArray();
 
@@ -47,6 +59,8 @@ public sealed class ViewRegistry : IViewLocator
         {
             _descriptors.Remove(key);
         }
+
+        return revokedKeys.Length;
     }
 
     public bool TryLocate(Type viewModelType, out ViewDescriptor? descriptor)

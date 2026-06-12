@@ -58,11 +58,13 @@ public sealed class PresentationViewManifestBuilderTests
                 View(
                     "Sample.Plugin.SettingsView",
                     "Sample.Plugin.SettingsViewModel",
+                    pluginId: "com.company.sales",
                     contributionId: "plugin.settings.view"),
             ]);
 
         var view = Assert.Single(result.Manifest.Views);
 
+        Assert.Equal("com.company.sales", view.PluginId);
         Assert.Equal("plugin.settings.view", view.ContributionId);
     }
 
@@ -70,12 +72,14 @@ public sealed class PresentationViewManifestBuilderTests
         string viewTypeName,
         string viewModelTypeName,
         string? viewKey = null,
+        string? pluginId = null,
         string? contributionId = null)
     {
         return new PresentationViewMetadata(
             viewTypeName,
             viewModelTypeName,
             viewKey,
+            pluginId,
             contributionId);
     }
 }
