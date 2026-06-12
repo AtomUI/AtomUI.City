@@ -10,7 +10,8 @@ public sealed class PresentationViewMetadata
         string? viewKey,
         string? pluginId,
         string? contributionId,
-        Location? location = null)
+        Location? location = null,
+        IReadOnlyList<PresentationViewConstructorParameter>? constructorParameters = null)
     {
         if (string.IsNullOrWhiteSpace(viewTypeName))
         {
@@ -28,6 +29,7 @@ public sealed class PresentationViewMetadata
         PluginId = string.IsNullOrWhiteSpace(pluginId) ? null : pluginId;
         ContributionId = string.IsNullOrWhiteSpace(contributionId) ? null : contributionId;
         Location = location;
+        ConstructorParameters = constructorParameters?.ToArray() ?? [];
     }
 
     public string ViewTypeName { get; }
@@ -41,4 +43,6 @@ public sealed class PresentationViewMetadata
     public string? ContributionId { get; }
 
     public Location? Location { get; }
+
+    public IReadOnlyList<PresentationViewConstructorParameter> ConstructorParameters { get; }
 }

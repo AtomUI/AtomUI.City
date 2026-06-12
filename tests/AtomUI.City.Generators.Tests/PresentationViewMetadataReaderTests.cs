@@ -92,6 +92,41 @@ public sealed class PresentationViewMetadataReaderTests
             });
     }
 
+    [Fact]
+    public void ReadExtractsViewConstructorParameters()
+    {
+        var views = ReadViews(
+            """
+            using AtomUI.City.Presentation;
+
+            namespace Sample.App;
+
+            public sealed class SettingsService
+            {
+            }
+
+            public sealed class SettingsViewModel
+            {
+            }
+
+            [ViewFor(typeof(SettingsViewModel))]
+            public sealed class SettingsView
+            {
+                public SettingsView(SettingsService service)
+                {
+                    Service = service;
+                }
+
+                public SettingsService Service { get; }
+            }
+            """);
+
+        var view = Assert.Single(views);
+        var parameter = Assert.Single(view.ConstructorParameters);
+
+        Assert.Equal("Sample.App.SettingsService", parameter.TypeName);
+    }
+
     private static IReadOnlyList<PresentationViewMetadata> ReadViews(
         string source,
         string viewTypeName = "Sample.App.SettingsView")

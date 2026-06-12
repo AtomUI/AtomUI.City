@@ -140,6 +140,47 @@ public sealed class AtomUICityIncrementalGeneratorPresentationTests
         Assert.Empty(outputCompilation.GetDiagnostics().Where(diagnostic => diagnostic.Severity == DiagnosticSeverity.Error));
     }
 
+    [Fact]
+    public void GeneratedPresentationViewRegistrarCompilesViewsWithConstructorDependencies()
+    {
+        var compilation = CreateCompilation(
+            """
+            namespace Sample.App
+            {
+                public sealed class SettingsService
+                {
+                }
+
+                public sealed class SettingsViewModel
+                {
+                }
+
+                [AtomUI.City.Presentation.ViewFor(typeof(SettingsViewModel))]
+                public sealed class SettingsView
+                {
+                    public SettingsView(SettingsService service)
+                    {
+                        Service = service;
+                    }
+
+                    public SettingsService Service { get; }
+                }
+            }
+            """,
+            MetadataReference.CreateFromFile(typeof(AtomUI.City.Presentation.ViewForAttribute).Assembly.Location));
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new AtomUICityIncrementalGenerator());
+
+        driver = driver.RunGeneratorsAndUpdateCompilation(
+            compilation,
+            out var outputCompilation,
+            out var generatorDiagnostics);
+        var generatedSource = Assert.Single(Assert.Single(driver.GetRunResult().Results).GeneratedSources);
+
+        Assert.Empty(generatorDiagnostics);
+        Assert.Empty(outputCompilation.GetDiagnostics().Where(diagnostic => diagnostic.Severity == DiagnosticSeverity.Error));
+        Assert.Contains("context.Services.GetService(typeof(global::Sample.App.SettingsService))", generatedSource.SourceText.ToString(), StringComparison.Ordinal);
+    }
+
     private static CSharpCompilation CreateCompilation(
         string source,
         params MetadataReference[] additionalReferences)

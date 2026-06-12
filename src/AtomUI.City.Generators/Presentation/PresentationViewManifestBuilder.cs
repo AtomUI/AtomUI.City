@@ -42,7 +42,8 @@ public static class PresentationViewManifestBuilder
                 view.ViewModelTypeName,
                 view.ViewKey,
                 view.PluginId,
-                view.ContributionId))
+                view.ContributionId,
+                view.ConstructorParameters))
             .OrderBy(view => view.ViewModelTypeName, StringComparer.Ordinal)
             .ThenBy(view => view.ViewKey ?? string.Empty, StringComparer.Ordinal)
             .ThenBy(view => view.ViewTypeName, StringComparer.Ordinal)

@@ -7,7 +7,8 @@ public sealed class PresentationViewManifestEntry
         string viewModelTypeName,
         string? viewKey,
         string? pluginId,
-        string? contributionId)
+        string? contributionId,
+        IReadOnlyList<PresentationViewConstructorParameter>? constructorParameters = null)
     {
         if (string.IsNullOrWhiteSpace(viewTypeName))
         {
@@ -24,6 +25,7 @@ public sealed class PresentationViewManifestEntry
         ViewKey = string.IsNullOrWhiteSpace(viewKey) ? null : viewKey;
         PluginId = string.IsNullOrWhiteSpace(pluginId) ? null : pluginId;
         ContributionId = string.IsNullOrWhiteSpace(contributionId) ? null : contributionId;
+        ConstructorParameters = constructorParameters?.ToArray() ?? [];
     }
 
     public string ViewTypeName { get; }
@@ -35,4 +37,6 @@ public sealed class PresentationViewManifestEntry
     public string? PluginId { get; }
 
     public string? ContributionId { get; }
+
+    public IReadOnlyList<PresentationViewConstructorParameter> ConstructorParameters { get; }
 }

@@ -14,11 +14,12 @@ public static class PresentationViewMetadataReader
         }
 
         var viewTypeName = GetTypeName(type);
+        var constructorParameters = ReadConstructorParameters(type);
 
         return type
             .GetAttributes()
             .Where(attribute => string.Equals(GetAttributeTypeName(attribute), ViewForAttributeName, StringComparison.Ordinal))
-            .Select(attribute => ReadView(viewTypeName, attribute))
+            .Select(attribute => ReadView(viewTypeName, constructorParameters, attribute))
             .Where(view => view is not null)
             .Cast<PresentationViewMetadata>()
             .ToArray();
@@ -26,6 +27,7 @@ public static class PresentationViewMetadataReader
 
     private static PresentationViewMetadata? ReadView(
         string viewTypeName,
+        IReadOnlyList<PresentationViewConstructorParameter> constructorParameters,
         AttributeData attribute)
     {
         var viewModelTypeName = ReadConstructorTypeName(attribute, 0);
@@ -40,7 +42,25 @@ public static class PresentationViewMetadataReader
             ReadNamedString(attribute, "Key"),
             ReadNamedString(attribute, "PluginId"),
             ReadNamedString(attribute, "ContributionId"),
-            attribute.ApplicationSyntaxReference?.GetSyntax().GetLocation());
+            attribute.ApplicationSyntaxReference?.GetSyntax().GetLocation(),
+            constructorParameters);
+    }
+
+    private static IReadOnlyList<PresentationViewConstructorParameter> ReadConstructorParameters(INamedTypeSymbol type)
+    {
+        var constructor = type.InstanceConstructors
+            .Where(candidate => candidate.DeclaredAccessibility == Accessibility.Public)
+            .OrderByDescending(candidate => candidate.Parameters.Length)
+            .FirstOrDefault();
+
+        if (constructor is null || constructor.Parameters.Length == 0)
+        {
+            return [];
+        }
+
+        return constructor.Parameters
+            .Select(parameter => new PresentationViewConstructorParameter(GetTypeName(parameter.Type)))
+            .ToArray();
     }
 
     private static string? ReadConstructorTypeName(AttributeData attribute, int index)
@@ -71,7 +91,7 @@ public static class PresentationViewMetadataReader
         return attribute.AttributeClass is null ? null : GetTypeName(attribute.AttributeClass);
     }
 
-    private static string GetTypeName(INamedTypeSymbol type)
+    private static string GetTypeName(ITypeSymbol type)
     {
         return type.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
     }

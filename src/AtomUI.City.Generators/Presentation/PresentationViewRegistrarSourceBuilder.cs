@@ -46,12 +46,45 @@ public static class PresentationViewRegistrarSourceBuilder
         builder.Append("                typeof(").Append(ToGlobalTypeName(view.ViewModelTypeName)).AppendLine("),");
         builder.Append("                typeof(").Append(ToGlobalTypeName(view.ViewTypeName)).AppendLine("),");
         builder.Append("                viewKey: ").Append(ToStringLiteral(view.ViewKey)).AppendLine(",");
-        builder
-            .Append("                static context => new ")
-            .Append(ToGlobalTypeName(view.ViewTypeName))
-            .AppendLine("(),");
+        AppendViewFactory(builder, view);
         builder.Append("                pluginId: ").Append(ToStringLiteral(view.PluginId)).AppendLine(",");
         builder.Append("                contributionId: ").Append(ToStringLiteral(view.ContributionId)).AppendLine("));");
+    }
+
+    private static void AppendViewFactory(
+        StringBuilder builder,
+        PresentationViewManifestEntry view)
+    {
+        builder
+            .Append("                static context => new ")
+            .Append(ToGlobalTypeName(view.ViewTypeName));
+
+        if (view.ConstructorParameters.Count == 0)
+        {
+            builder.AppendLine("(),");
+            return;
+        }
+
+        builder.AppendLine("(");
+
+        for (var index = 0; index < view.ConstructorParameters.Count; index++)
+        {
+            var parameter = view.ConstructorParameters[index];
+            builder
+                .Append("                    ")
+                .Append(ToRequiredServiceExpression(parameter.TypeName));
+
+            builder.AppendLine(index == view.ConstructorParameters.Count - 1 ? string.Empty : ",");
+        }
+
+        builder.AppendLine("                ),");
+    }
+
+    private static string ToRequiredServiceExpression(string typeName)
+    {
+        var globalTypeName = ToGlobalTypeName(typeName);
+
+        return $"({globalTypeName})(context.Services.GetService(typeof({globalTypeName})) ?? throw new global::System.InvalidOperationException({ToStringLiteral($"Required service '{typeName}' was not registered.")}))";
     }
 
     private static string ToGlobalTypeName(string typeName)
