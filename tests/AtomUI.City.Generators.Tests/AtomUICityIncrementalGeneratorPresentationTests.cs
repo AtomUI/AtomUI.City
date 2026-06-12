@@ -1,4 +1,5 @@
 using AtomUI.City.Generators;
+using AtomUI.City.Generators.Diagnostics;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
@@ -54,6 +55,59 @@ public sealed class AtomUICityIncrementalGeneratorPresentationTests
         Assert.Contains("typeof(global::Sample.App.SettingsViewModel)", generatedSource.SourceText.ToString(), StringComparison.Ordinal);
         Assert.Contains("typeof(global::Sample.App.SettingsView)", generatedSource.SourceText.ToString(), StringComparison.Ordinal);
         Assert.Contains("@\"settings\"", generatedSource.SourceText.ToString(), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GeneratorReportsPresentationViewManifestDiagnostics()
+    {
+        var compilation = CreateCompilation(
+            """
+            namespace AtomUI.City.Presentation
+            {
+                [System.AttributeUsage(System.AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
+                public sealed class ViewForAttribute : System.Attribute
+                {
+                    public ViewForAttribute(System.Type viewModelType)
+                    {
+                        ViewModelType = viewModelType;
+                    }
+
+                    public System.Type ViewModelType { get; }
+
+                    public string? Key { get; init; }
+
+                    public string? PluginId { get; init; }
+
+                    public string? ContributionId { get; init; }
+                }
+            }
+
+            namespace Sample.App
+            {
+                public sealed class SettingsViewModel
+                {
+                }
+
+                [AtomUI.City.Presentation.ViewFor(typeof(SettingsViewModel))]
+                public sealed class SettingsView
+                {
+                }
+
+                [AtomUI.City.Presentation.ViewFor(typeof(SettingsViewModel))]
+                public sealed class AlternateSettingsView
+                {
+                }
+            }
+            """);
+        var driver = CSharpGeneratorDriver.Create(new AtomUICityIncrementalGenerator());
+
+        var runResult = driver.RunGenerators(compilation).GetRunResult();
+        var generatorResult = Assert.Single(runResult.Results);
+        var diagnostic = Assert.Single(generatorResult.Diagnostics);
+
+        Assert.Empty(generatorResult.GeneratedSources);
+        Assert.Equal(GeneratorDiagnosticIds.DuplicatePresentationView, diagnostic.Id);
+        Assert.Contains("Sample.App.SettingsViewModel", diagnostic.GetMessage(), StringComparison.Ordinal);
     }
 
     private static CSharpCompilation CreateCompilation(string source)

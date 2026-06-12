@@ -1,5 +1,6 @@
 using System.Text;
 using AtomUI.City.Generators.Common;
+using AtomUI.City.Generators.Diagnostics;
 using AtomUI.City.Generators.Presentation;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -35,6 +36,11 @@ public sealed class AtomUICityIncrementalGenerator : IIncrementalGenerator
                 var result = PresentationViewManifestBuilder.Build(views);
                 if (result.Diagnostics.Count > 0)
                 {
+                    foreach (var diagnostic in result.Diagnostics)
+                    {
+                        sourceContext.ReportDiagnostic(CreateDiagnostic(diagnostic));
+                    }
+
                     return;
                 }
 
@@ -54,5 +60,33 @@ public sealed class AtomUICityIncrementalGenerator : IIncrementalGenerator
         var symbol = context.SemanticModel.GetDeclaredSymbol(context.Node) as INamedTypeSymbol;
 
         return symbol is null ? [] : PresentationViewMetadataReader.Read(symbol);
+    }
+
+    private static Diagnostic CreateDiagnostic(GeneratorDiagnostic diagnostic)
+    {
+        var descriptor = new DiagnosticDescriptor(
+            diagnostic.Id,
+            diagnostic.Title,
+            diagnostic.Message,
+            "AtomUI.City.Generators",
+            ToDiagnosticSeverity(diagnostic.Severity),
+            isEnabledByDefault: true);
+
+        return Diagnostic.Create(descriptor, Location.None);
+    }
+
+    private static DiagnosticSeverity ToDiagnosticSeverity(GeneratorDiagnosticSeverity severity)
+    {
+        switch (severity)
+        {
+            case GeneratorDiagnosticSeverity.Info:
+                return DiagnosticSeverity.Info;
+            case GeneratorDiagnosticSeverity.Warning:
+                return DiagnosticSeverity.Warning;
+            case GeneratorDiagnosticSeverity.Error:
+                return DiagnosticSeverity.Error;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(severity), severity, "Unknown generator diagnostic severity.");
+        }
     }
 }
