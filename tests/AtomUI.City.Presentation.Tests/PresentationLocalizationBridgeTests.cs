@@ -1,0 +1,184 @@
+using System.Globalization;
+using AtomUI.City.Localization;
+using AtomUI.City.Presentation;
+using AtomUI.City.Threading;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace AtomUI.City.Presentation.Tests;
+
+public sealed class PresentationLocalizationBridgeTests
+{
+    [Fact]
+    public async Task ApplyCultureAsyncRunsAppliersOnUiDispatcherInOrder()
+    {
+        var dispatcher = new RecordingDispatcher();
+        var first = new RecordingCultureApplier("first", dispatcher);
+        var second = new RecordingCultureApplier("second", dispatcher);
+        var bridge = new PresentationLocalizationBridge(dispatcher, [first, second]);
+
+        var result = await bridge.ApplyCultureAsync(State("zh-CN"));
+
+        Assert.True(result.Succeeded);
+        Assert.Equal(1, dispatcher.PostCount);
+        Assert.Equal(["first:zh-CN"], first.AppliedCultures);
+        Assert.Equal(["second:zh-CN"], second.AppliedCultures);
+        Assert.True(first.WasOnDispatcher);
+        Assert.True(second.WasOnDispatcher);
+        Assert.True(first.AppliedBefore(second));
+    }
+
+    [Fact]
+    public async Task ApplyCultureAsyncStopsWhenApplierFails()
+    {
+        var dispatcher = new RecordingDispatcher();
+        var failing = new RecordingCultureApplier("failing", dispatcher)
+        {
+            Failure = new LocalizationError(
+                LocalizationErrorKind.PresentationApplyFailed,
+                "Resource dictionary apply failed."),
+        };
+        var skipped = new RecordingCultureApplier("skipped", dispatcher);
+        var bridge = new PresentationLocalizationBridge(dispatcher, [failing, skipped]);
+
+        var result = await bridge.ApplyCultureAsync(State("en-US"));
+
+        Assert.False(result.Succeeded);
+        Assert.Equal(failing.Failure, result.Error);
+        Assert.Equal(["failing:en-US"], failing.AppliedCultures);
+        Assert.Empty(skipped.AppliedCultures);
+    }
+
+    [Fact]
+    public async Task ServiceCollectionRegistersPresentationLocalizationBridge()
+    {
+        var services = new ServiceCollection();
+        var dispatcher = new RecordingDispatcher();
+        services.AddSingleton<IUiDispatcher>(dispatcher);
+        services.AddPresentationCultureApplier<RegisteredCultureApplier>();
+        services.AddPresentationLocalizationBridge();
+
+        var provider = services.BuildServiceProvider();
+        var bridge = provider.GetRequiredService<IPresentationLocalizationBridge>();
+
+        var result = await bridge.ApplyCultureAsync(State("ja-JP"));
+
+        Assert.True(result.Succeeded);
+        Assert.IsType<PresentationLocalizationBridge>(bridge);
+        var applier = provider.GetRequiredService<IEnumerable<IPresentationCultureApplier>>()
+            .OfType<RegisteredCultureApplier>()
+            .Single();
+        Assert.Equal(["ja-JP"], applier.AppliedCultures);
+    }
+
+    private static CultureState State(string cultureName)
+    {
+        var culture = CultureInfo.GetCultureInfo(cultureName);
+
+        return new CultureState(
+            culture,
+            culture,
+            [],
+            revision: 1,
+            loadedPackageIds: []);
+    }
+
+    private sealed class RegisteredCultureApplier : IPresentationCultureApplier
+    {
+        public List<string> AppliedCultures { get; } = [];
+
+        public ValueTask<LocalizationResult> ApplyCultureAsync(
+            CultureState state,
+            CancellationToken cancellationToken = default)
+        {
+            AppliedCultures.Add(state.CurrentCulture.Name);
+
+            return ValueTask.FromResult(LocalizationResult.Success());
+        }
+    }
+
+    private sealed class RecordingCultureApplier : IPresentationCultureApplier
+    {
+        private readonly string _name;
+        private readonly RecordingDispatcher _dispatcher;
+        private long _sequence;
+
+        public RecordingCultureApplier(string name, RecordingDispatcher dispatcher)
+        {
+            _name = name;
+            _dispatcher = dispatcher;
+        }
+
+        public List<string> AppliedCultures { get; } = [];
+
+        public LocalizationError? Failure { get; set; }
+
+        public bool WasOnDispatcher { get; private set; }
+
+        public ValueTask<LocalizationResult> ApplyCultureAsync(
+            CultureState state,
+            CancellationToken cancellationToken = default)
+        {
+            _sequence = _dispatcher.NextSequence();
+            WasOnDispatcher = _dispatcher.IsOnDispatcher;
+            AppliedCultures.Add($"{_name}:{state.CurrentCulture.Name}");
+
+            return ValueTask.FromResult(
+                Failure is null
+                    ? LocalizationResult.Success()
+                    : LocalizationResult.Failed(Failure));
+        }
+
+        public bool AppliedBefore(RecordingCultureApplier other)
+        {
+            return _sequence > 0 && _sequence < other._sequence;
+        }
+    }
+
+    private sealed class RecordingDispatcher : IUiDispatcher
+    {
+        private long _sequence;
+
+        public int PostCount { get; private set; }
+
+        public bool IsOnDispatcher { get; private set; }
+
+        public bool CheckAccess()
+        {
+            return IsOnDispatcher;
+        }
+
+        public ValueTask InvokeAsync(Action callback, CancellationToken cancellationToken = default)
+        {
+            callback();
+
+            return ValueTask.CompletedTask;
+        }
+
+        public ValueTask<T> InvokeAsync<T>(Func<T> callback, CancellationToken cancellationToken = default)
+        {
+            return ValueTask.FromResult(callback());
+        }
+
+        public async ValueTask PostAsync(
+            Func<CancellationToken, ValueTask> callback,
+            CancellationToken cancellationToken = default)
+        {
+            PostCount++;
+            IsOnDispatcher = true;
+
+            try
+            {
+                await callback(cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                IsOnDispatcher = false;
+            }
+        }
+
+        public long NextSequence()
+        {
+            return Interlocked.Increment(ref _sequence);
+        }
+    }
+}
