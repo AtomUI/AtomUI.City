@@ -162,6 +162,11 @@ public sealed class InMemoryEventBus : IEventBus
 
         if (cancellationToken.IsCancellationRequested)
         {
+            WriteDiagnostic(
+                EventDiagnosticIds.EventRejected,
+                $"Posted event '{descriptor.ContractId.Value}' was rejected because publication was canceled before acceptance.",
+                HostDiagnosticSeverity.Warning);
+
             return ValueTask.FromResult(
                 new EventPostResult(
                     eventId,
@@ -169,6 +174,11 @@ public sealed class InMemoryEventBus : IEventBus
                     Accepted: false,
                     "Publication was canceled before it was accepted."));
         }
+
+        WriteDiagnostic(
+            EventDiagnosticIds.EventAccepted,
+            $"Posted event '{descriptor.ContractId.Value}' was accepted.",
+            HostDiagnosticSeverity.Trace);
 
         _ = Task.Run(
             async () =>

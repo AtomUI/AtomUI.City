@@ -71,5 +71,33 @@ public sealed class EventDiagnosticsTests
         Assert.Contains(diagnostics.Records, record => record.Code == EventDiagnosticIds.EventDeliveryFailed);
     }
 
+    [Fact]
+    public async Task PostAsyncAcceptedPublicationWritesDiagnostic()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var eventBus = new InMemoryEventBus(diagnostics: diagnostics);
+
+        var result = await eventBus.PostAsync(new TestEvent("accepted"));
+
+        Assert.True(result.Accepted);
+        Assert.Contains(diagnostics.Records, record => record.Code == EventDiagnosticIds.EventAccepted);
+    }
+
+    [Fact]
+    public async Task PostAsyncRejectedPublicationWritesDiagnostic()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var eventBus = new InMemoryEventBus(diagnostics: diagnostics);
+        using var cancellation = new CancellationTokenSource();
+        await cancellation.CancelAsync();
+
+        var result = await eventBus.PostAsync(
+            new TestEvent("rejected"),
+            cancellationToken: cancellation.Token);
+
+        Assert.False(result.Accepted);
+        Assert.Contains(diagnostics.Records, record => record.Code == EventDiagnosticIds.EventRejected);
+    }
+
     private sealed record TestEvent(string Value);
 }
