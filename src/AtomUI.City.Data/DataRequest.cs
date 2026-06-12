@@ -30,6 +30,8 @@ public class DataRequest<TResponse>
     public DataAuthenticationOptions Authentication { get; init; } =
         DataAuthenticationOptions.Anonymous;
 
+    public DataCacheOptions Cache { get; init; } = DataCacheOptions.Disabled;
+
     public DataResilienceOptions Resilience { get; init; } = DataResilienceOptions.None;
 
     public LifecycleScope? ParentScope { get; init; }

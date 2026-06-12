@@ -73,6 +73,54 @@ public sealed class DataPipelineTests
     }
 
     [Fact]
+    public async Task PipelineReturnsCachedQueryResultWhenCacheHits()
+    {
+        var cache = new RecordingRequestCache();
+        var transport = new RecordingTransport(_ => DataResult<string>.Success("transport"));
+        var pipeline = new DataRequestPipeline(transport, cache: cache);
+        var request = new DataRequest<string>(
+            "catalog",
+            "get-items",
+            DataTransportKind.Http)
+        {
+            Cache = DataCacheOptions.Enabled("items:v1"),
+        };
+        cache.Store(DataCacheKey.Create(request, "Anonymous"), "cached");
+
+        var result = await pipeline.SendAsync(request);
+
+        Assert.True(result.Succeeded);
+        Assert.Equal("cached", result.Value);
+        Assert.Equal(0, transport.Attempts);
+        Assert.Equal(1, cache.Reads);
+    }
+
+    [Fact]
+    public async Task PipelineWritesSuccessfulQueryResultToCacheWhenCacheMisses()
+    {
+        var cache = new RecordingRequestCache();
+        var transport = new RecordingTransport(_ => DataResult<string>.Success("transport"));
+        var pipeline = new DataRequestPipeline(transport, cache: cache);
+        var request = new DataRequest<string>(
+            "catalog",
+            "get-items",
+            DataTransportKind.Http)
+        {
+            Cache = DataCacheOptions.Enabled("items:v1"),
+        };
+
+        var result = await pipeline.SendAsync(request);
+
+        var key = DataCacheKey.Create(request, "Anonymous");
+        Assert.True(result.Succeeded);
+        Assert.Equal("transport", result.Value);
+        Assert.Equal(1, transport.Attempts);
+        Assert.Equal(1, cache.Reads);
+        Assert.Equal(1, cache.Writes);
+        Assert.Equal("transport", cache.Get<string>(key));
+    }
+
+    [Fact]
     public async Task PipelineSelectsTransportByRequestKind()
     {
         var httpTransport = new RecordingTransport(_ => DataResult<string>.Success("http"));
@@ -405,6 +453,52 @@ public sealed class DataPipelineTests
             CancellationToken cancellationToken = default)
         {
             throw _exception;
+        }
+    }
+
+    private sealed class RecordingRequestCache : IDataRequestCache
+    {
+        private readonly Dictionary<DataCacheKey, object?> _entries = new();
+
+        public int Reads { get; private set; }
+
+        public int Writes { get; private set; }
+
+        public void Store<TResponse>(DataCacheKey key, TResponse value)
+        {
+            _entries[key] = value;
+        }
+
+        public TResponse? Get<TResponse>(DataCacheKey key)
+        {
+            return _entries.TryGetValue(key, out var value) && value is TResponse response
+                ? response
+                : default;
+        }
+
+        public ValueTask<DataCacheLookup<TResponse>> TryGetAsync<TResponse>(
+            DataCacheKey key,
+            CancellationToken cancellationToken = default)
+        {
+            Reads++;
+
+            if (_entries.TryGetValue(key, out var value) && value is TResponse response)
+            {
+                return ValueTask.FromResult(DataCacheLookup<TResponse>.Hit(response));
+            }
+
+            return ValueTask.FromResult(DataCacheLookup<TResponse>.Miss());
+        }
+
+        public ValueTask SetAsync<TResponse>(
+            DataCacheKey key,
+            TResponse? value,
+            CancellationToken cancellationToken = default)
+        {
+            Writes++;
+            _entries[key] = value;
+
+            return ValueTask.CompletedTask;
         }
     }
 }

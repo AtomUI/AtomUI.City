@@ -7,25 +7,29 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
     private readonly IReadOnlyDictionary<DataTransportKind, IRequestResponseTransport> _transports;
     private readonly IDataCredentialProvider? _credentialProvider;
     private readonly IDataDiagnostics? _diagnostics;
+    private readonly IDataRequestCache? _cache;
 
     public DataRequestPipeline(
         IRequestResponseTransport transport,
         IDataCredentialProvider? credentialProvider = null,
-        IDataDiagnostics? diagnostics = null)
-        : this([transport], credentialProvider, diagnostics)
+        IDataDiagnostics? diagnostics = null,
+        IDataRequestCache? cache = null)
+        : this([transport], credentialProvider, diagnostics, cache)
     {
     }
 
     public DataRequestPipeline(
         IEnumerable<IRequestResponseTransport> transports,
         IDataCredentialProvider? credentialProvider = null,
-        IDataDiagnostics? diagnostics = null)
+        IDataDiagnostics? diagnostics = null,
+        IDataRequestCache? cache = null)
     {
         ArgumentNullException.ThrowIfNull(transports);
 
         _transports = transports.ToDictionary(transport => transport.Kind);
         _credentialProvider = credentialProvider;
         _diagnostics = diagnostics;
+        _cache = cache;
     }
 
     public async ValueTask<DataResult<TResponse>> SendAsync<TResponse>(
@@ -57,6 +61,18 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
             WriteRequestResultDiagnostic(context, credentialResult);
 
             return credentialResult;
+        }
+
+        var cacheKey = CreateCacheKey(request, context);
+        if (cacheKey is not null)
+        {
+            var cachedResult = await ReadCacheAsync<TResponse>(cacheKey, operationToken).ConfigureAwait(false);
+            if (cachedResult is not null)
+            {
+                WriteRequestResultDiagnostic(context, cachedResult);
+
+                return cachedResult;
+            }
         }
 
         var maxAttempts = GetMaxAttempts(request);
@@ -92,6 +108,7 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
 
                 if (result.Succeeded || !ShouldRetry(request, result, attempt, maxAttempts))
                 {
+                    await WriteCacheAsync(cacheKey, result, operationToken).ConfigureAwait(false);
                     WriteRequestResultDiagnostic(context, result);
 
                     return result;
@@ -267,6 +284,71 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
         return request.AccessMode != DataAccessMode.Mutation
             || request.Resilience.AllowMutationRetry
             || !string.IsNullOrWhiteSpace(request.IdempotencyKey);
+    }
+
+    private DataCacheKey? CreateCacheKey<TResponse>(
+        DataRequest<TResponse> request,
+        DataRequestContext context)
+    {
+        if (_cache is null || request.AccessMode != DataAccessMode.Query || !request.Cache.IsEnabled)
+        {
+            return null;
+        }
+
+        return DataCacheKey.Create(request, GetAuthenticationScheme(request, context));
+    }
+
+    private static string GetAuthenticationScheme<TResponse>(
+        DataRequest<TResponse> request,
+        DataRequestContext context)
+    {
+        return context.Credential?.Scheme ?? request.Authentication.Mode.ToString();
+    }
+
+    private async ValueTask<DataResult<TResponse>?> ReadCacheAsync<TResponse>(
+        DataCacheKey cacheKey,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var lookup = await _cache!
+                .TryGetAsync<TResponse>(cacheKey, cancellationToken)
+                .ConfigureAwait(false);
+
+            return lookup.IsHit ? DataResult<TResponse>.Success(lookup.Value!) : null;
+        }
+        catch (OperationCanceledException)
+        {
+            return DataResult<TResponse>.Cancelled();
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private async ValueTask WriteCacheAsync<TResponse>(
+        DataCacheKey? cacheKey,
+        DataResult<TResponse> result,
+        CancellationToken cancellationToken)
+    {
+        if (cacheKey is null || !result.Succeeded)
+        {
+            return;
+        }
+
+        try
+        {
+            await _cache!
+                .SetAsync(cacheKey, result.Value, cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch
+        {
+        }
     }
 
     private void WriteDiagnostic(string code, string message)
