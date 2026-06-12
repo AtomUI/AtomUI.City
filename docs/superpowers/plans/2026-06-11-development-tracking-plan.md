@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`7581248 fix(State): copy collection change notifications`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，534 tests passed
-- 当前状态：已完成 State collection no-op and batch failure coverage
+- 当前提交：`c5a613e test(State): cover collection no-op updates`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，536 tests passed
+- 当前状态：已完成 EventBus subscription error policy handling
 
 **最新实现检查点：**
 
@@ -193,6 +193,9 @@
 - [x] State collection changed event args defensive copy
 - [x] State collection no-op update coverage
 - [x] State collection batch failure atomicity coverage
+- [x] EventBus subscription error policy configuration
+- [x] EventBus stop publication error policy
+- [x] EventBus fail publisher error policy
 
 ## 状态定义
 

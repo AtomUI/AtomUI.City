@@ -29,5 +29,47 @@ public sealed class EventDiagnosticsTests
         Assert.Contains(diagnostics.Records, record => record.Code == EventDiagnosticIds.EventDeliveryFailed);
     }
 
+    [Fact]
+    public async Task StopPublicationErrorPolicySkipsLaterHandlers()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var eventBus = new InMemoryEventBus(diagnostics: diagnostics);
+        var laterHandlerCalled = false;
+
+        eventBus.Subscribe<TestEvent>(
+            _ => throw new InvalidOperationException("boom"),
+            EventSubscriptionOptions.Serialized.WithErrorPolicy(EventErrorPolicy.StopPublication));
+        eventBus.Subscribe<TestEvent>(_ =>
+        {
+            laterHandlerCalled = true;
+            return ValueTask.CompletedTask;
+        });
+
+        var result = await eventBus.PublishAsync(new TestEvent("failure"));
+
+        Assert.False(result.Succeeded);
+        Assert.False(laterHandlerCalled);
+        Assert.Equal(1, result.DeliveredCount);
+        Assert.Equal(1, result.FailedCount);
+        Assert.Contains(diagnostics.Records, record => record.Code == EventDiagnosticIds.EventDeliveryFailed);
+    }
+
+    [Fact]
+    public async Task FailPublisherErrorPolicyPropagatesHandlerFailure()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var eventBus = new InMemoryEventBus(diagnostics: diagnostics);
+
+        eventBus.Subscribe<TestEvent>(
+            _ => throw new InvalidOperationException("boom"),
+            EventSubscriptionOptions.Serialized.WithErrorPolicy(EventErrorPolicy.FailPublisher));
+
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+            async () => await eventBus.PublishAsync(new TestEvent("failure")));
+
+        Assert.Equal("boom", exception.Message);
+        Assert.Contains(diagnostics.Records, record => record.Code == EventDiagnosticIds.EventDeliveryFailed);
+    }
+
     private sealed record TestEvent(string Value);
 }

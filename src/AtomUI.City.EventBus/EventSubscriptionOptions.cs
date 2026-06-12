@@ -47,4 +47,12 @@ public sealed class EventSubscriptionOptions
             uiDispatcher: null,
             EventErrorPolicy.ContinueAndReport);
     }
+
+    public EventSubscriptionOptions WithErrorPolicy(EventErrorPolicy errorPolicy)
+    {
+        return new EventSubscriptionOptions(
+            DispatchPolicy,
+            UiDispatcher,
+            errorPolicy);
+    }
 }

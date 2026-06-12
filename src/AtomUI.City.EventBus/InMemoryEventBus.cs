@@ -481,6 +481,11 @@ public sealed class InMemoryEventBus : IEventBus
                         $"Event handler '{Id}' failed: {exception.Message}",
                         HostDiagnosticSeverity.Error));
 
+                if (Options.ErrorPolicy == EventErrorPolicy.FailPublisher)
+                {
+                    throw;
+                }
+
                 return new EventDeliveryResult(
                     Id,
                     Options.DispatchPolicy,
