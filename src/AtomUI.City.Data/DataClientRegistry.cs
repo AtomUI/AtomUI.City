@@ -3,7 +3,13 @@ namespace AtomUI.City.Data;
 public sealed class DataClientRegistry : IDataClientFactory
 {
     private readonly Dictionary<Type, IDataClient> _clients = [];
+    private readonly IDataDiagnostics? _diagnostics;
     private readonly object _syncRoot = new();
+
+    public DataClientRegistry(IDataDiagnostics? diagnostics = null)
+    {
+        _diagnostics = diagnostics;
+    }
 
     public void Register<TClient>(TClient client)
         where TClient : class, IDataClient
@@ -36,6 +42,12 @@ public sealed class DataClientRegistry : IDataClientFactory
             }
         }
 
-        throw new KeyNotFoundException($"Data client '{typeof(TClient).FullName}' is not registered.");
+        var clientTypeName = typeof(TClient).FullName;
+        _diagnostics?.Write(new DataDiagnosticRecord(
+            DataDiagnosticIds.ClientMissing,
+            $"Data client '{clientTypeName}' is not registered.",
+            DataDiagnosticSeverity.Warning));
+
+        throw new KeyNotFoundException($"Data client '{clientTypeName}' is not registered.");
     }
 }

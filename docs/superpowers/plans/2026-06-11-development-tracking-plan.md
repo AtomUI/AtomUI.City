@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`87d9111 feat(Data): register connection manager`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，561 tests passed
-- 当前状态：已完成 Data typed client unregister
+- 当前提交：`2e982f3 feat(Data): unregister typed clients`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，562 tests passed
+- 当前状态：已完成 Data missing client diagnostic
 
 **最新实现检查点：**
 
@@ -224,6 +224,7 @@
 - [x] Data connection stopped diagnostic
 - [x] Data connection manager DI registration
 - [x] Data typed client unregister
+- [x] Data missing client diagnostic
 
 ## 状态定义
 

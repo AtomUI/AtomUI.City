@@ -27,6 +27,21 @@ public sealed class DataClientContractTests
     }
 
     [Fact]
+    public void DataClientRegistryWritesMissingClientDiagnostic()
+    {
+        var diagnostics = new InMemoryDataDiagnostics();
+        var registry = new DataClientRegistry(diagnostics);
+
+        Assert.Throws<KeyNotFoundException>(
+            () => registry.GetRequiredClient<IInventoryClient>());
+
+        var record = Assert.Single(
+            diagnostics.Records,
+            record => record.Code == DataDiagnosticIds.ClientMissing);
+        Assert.Contains(nameof(IInventoryClient), record.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void DataClientRegistryUnregistersTypedClient()
     {
         var registry = new DataClientRegistry();
