@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`9fdeb51 fix(EventBus): drain in-flight subscriptions`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，542 tests passed
-- 当前状态：已完成 EventBus typed handler subscription overloads
+- 当前提交：`ed98d02 feat(EventBus): add typed handler subscriptions`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，543 tests passed
+- 当前状态：已完成 EventBus DI registration
 
 **最新实现检查点：**
 
@@ -202,6 +202,7 @@
 - [x] EventBus subscription in-flight drain
 - [x] EventBus typed handler subscription overload
 - [x] EventBus owned typed handler subscription overload
+- [x] EventBus DI registration
 
 ## 状态定义
 
