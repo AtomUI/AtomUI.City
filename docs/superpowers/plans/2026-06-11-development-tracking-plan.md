@@ -5,8 +5,8 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`6ed41fa feat(Presentation): add route outlet diagnostics`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，443 tests passed
+- 当前提交：`e217f62 feat(Presentation): add visual lifecycle diagnostics`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，445 tests passed
 - 当前状态：已进入 Localization / Presentation culture bridge 集成实现阶段
 
 **最新实现检查点：**
@@ -100,6 +100,8 @@
 - [x] Presentation RouteOutlet commit result diagnostics
 - [x] Presentation visual lifecycle adapter execution diagnostics
 - [x] Presentation visual lifecycle adapter failure diagnostics
+- [x] Presentation resource dictionary revoke diagnostics
+- [x] Presentation resource dictionary revoke failure diagnostics
 
 ## 状态定义
 

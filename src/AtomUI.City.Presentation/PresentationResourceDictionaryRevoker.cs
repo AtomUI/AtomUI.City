@@ -1,3 +1,4 @@
+using AtomUI.City.Diagnostics;
 using AtomUI.City.Localization;
 using AtomUI.City.Threading;
 
@@ -7,16 +8,26 @@ public sealed class PresentationResourceDictionaryRevoker : IPresentationResourc
 {
     private readonly IUiDispatcher _dispatcher;
     private readonly IReadOnlyList<IPresentationResourceDictionaryTarget> _targets;
+    private readonly IHostDiagnostics? _diagnostics;
 
     public PresentationResourceDictionaryRevoker(
         IUiDispatcher dispatcher,
         IEnumerable<IPresentationResourceDictionaryTarget> targets)
+        : this(dispatcher, targets, diagnostics: null)
+    {
+    }
+
+    public PresentationResourceDictionaryRevoker(
+        IUiDispatcher dispatcher,
+        IEnumerable<IPresentationResourceDictionaryTarget> targets,
+        IHostDiagnostics? diagnostics)
     {
         ArgumentNullException.ThrowIfNull(dispatcher);
         ArgumentNullException.ThrowIfNull(targets);
 
         _dispatcher = dispatcher;
         _targets = targets.ToArray();
+        _diagnostics = diagnostics;
     }
 
     public async ValueTask<LocalizationResult> RevokeAsync(
@@ -64,6 +75,33 @@ public sealed class PresentationResourceDictionaryRevoker : IPresentationResourc
                     exception));
         }
 
+        WriteRevocationDiagnostic(revocation, result);
+
         return result;
+    }
+
+    private void WriteRevocationDiagnostic(
+        PresentationResourceDictionaryRevocation revocation,
+        LocalizationResult result)
+    {
+        if (result.Succeeded)
+        {
+            _diagnostics?.Write(new HostDiagnosticRecord(
+                PresentationDiagnosticIds.ResourceDictionaryRevoked,
+                $"Presentation resource dictionary revoked plugin '{revocation.PluginId}' contribution '{NormalizeContributionId(revocation.ContributionId)}'.",
+                HostDiagnosticSeverity.Info));
+
+            return;
+        }
+
+        _diagnostics?.Write(new HostDiagnosticRecord(
+            PresentationDiagnosticIds.ResourceDictionaryRevokeFailed,
+            $"Presentation resource dictionary failed to revoke plugin '{revocation.PluginId}' contribution '{NormalizeContributionId(revocation.ContributionId)}': {result.Error?.Message}",
+            HostDiagnosticSeverity.Error));
+    }
+
+    private static string NormalizeContributionId(string? contributionId)
+    {
+        return string.IsNullOrWhiteSpace(contributionId) ? "<all>" : contributionId;
     }
 }

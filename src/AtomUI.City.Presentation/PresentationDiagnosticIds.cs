@@ -17,4 +17,6 @@ public static class PresentationDiagnosticIds
     public const string OutletCommitFailed = "AUCPRS013";
     public const string VisualLifecycleAdapterExecuted = "AUCPRS014";
     public const string VisualLifecycleAdapterFailed = "AUCPRS015";
+    public const string ResourceDictionaryRevoked = "AUCPRS016";
+    public const string ResourceDictionaryRevokeFailed = "AUCPRS017";
 }

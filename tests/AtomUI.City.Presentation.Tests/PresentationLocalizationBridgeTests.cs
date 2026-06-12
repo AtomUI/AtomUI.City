@@ -1,4 +1,5 @@
 using System.Globalization;
+using AtomUI.City.Diagnostics;
 using AtomUI.City.Localization;
 using AtomUI.City.Presentation;
 using AtomUI.City.Threading;
@@ -179,6 +180,61 @@ public sealed class PresentationLocalizationBridgeTests
         Assert.Equal([true], target.RevokeDispatcherAccess);
     }
 
+    [Fact]
+    public async Task ResourceDictionaryRevokerRecordsRevokedDiagnostics()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var dispatcher = new RecordingDispatcher();
+        var target = new RecordingResourceDictionaryTarget(dispatcher);
+        var revoker = new PresentationResourceDictionaryRevoker(
+            dispatcher,
+            [target],
+            diagnostics);
+
+        await revoker.RevokeAsync(
+            new PresentationResourceDictionaryRevocation(
+                "plugin.orders",
+                contributionId: "plugin.orders.resources"));
+
+        Assert.Contains(
+            diagnostics.Records,
+            record =>
+                record.Code == PresentationDiagnosticIds.ResourceDictionaryRevoked &&
+                record.Severity == HostDiagnosticSeverity.Info &&
+                record.Message.Contains("plugin.orders", StringComparison.Ordinal) &&
+                record.Message.Contains("plugin.orders.resources", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task ResourceDictionaryRevokerRecordsRevokeFailureDiagnostics()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var dispatcher = new RecordingDispatcher();
+        var target = new RecordingResourceDictionaryTarget(dispatcher)
+        {
+            RevokeFailure = new LocalizationError(
+                LocalizationErrorKind.PresentationApplyFailed,
+                "Resource dictionary revoke failed."),
+        };
+        var revoker = new PresentationResourceDictionaryRevoker(
+            dispatcher,
+            [target],
+            diagnostics);
+
+        await revoker.RevokeAsync(
+            new PresentationResourceDictionaryRevocation(
+                "plugin.orders",
+                contributionId: "plugin.orders.resources"));
+
+        Assert.Contains(
+            diagnostics.Records,
+            record =>
+                record.Code == PresentationDiagnosticIds.ResourceDictionaryRevokeFailed &&
+                record.Severity == HostDiagnosticSeverity.Error &&
+                record.Message.Contains("plugin.orders", StringComparison.Ordinal) &&
+                record.Message.Contains("Resource dictionary revoke failed.", StringComparison.Ordinal));
+    }
+
     private static CultureState State(
         string cultureName,
         string? uiCultureName = null,
@@ -255,6 +311,8 @@ public sealed class PresentationLocalizationBridgeTests
 
         public List<bool> RevokeDispatcherAccess { get; } = [];
 
+        public LocalizationError? RevokeFailure { get; init; }
+
         public ValueTask<LocalizationResult> ApplyResourcesAsync(
             CultureState state,
             CancellationToken cancellationToken = default)
@@ -274,7 +332,10 @@ public sealed class PresentationLocalizationBridgeTests
             RevokedContributionIds.Add(revocation.ContributionId);
             RevokeDispatcherAccess.Add(_dispatcher.IsOnDispatcher);
 
-            return ValueTask.FromResult(LocalizationResult.Success());
+            return ValueTask.FromResult(
+                RevokeFailure is null
+                    ? LocalizationResult.Success()
+                    : LocalizationResult.Failed(RevokeFailure));
         }
     }
 
