@@ -12,6 +12,7 @@ public sealed class GeneratorDiagnosticTests
         Assert.Equal("AUCGEN003", GeneratorDiagnosticIds.CircularModuleDependency);
         Assert.Equal("AUCGEN004", GeneratorDiagnosticIds.DuplicateRoute);
         Assert.Equal("AUCGEN005", GeneratorDiagnosticIds.InvalidManifestInput);
+        Assert.Equal("AUCGEN006", GeneratorDiagnosticIds.DuplicatePresentationView);
     }
 
     [Fact]

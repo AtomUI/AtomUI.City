@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`cbe3b76 feat(Presentation): add active plugin view registry`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，482 tests passed
-- 当前状态：已完成 Presentation plugin unload cleanup coordinator 实现
+- 当前提交：`2696ff6 feat(Presentation): add plugin unload cleanup coordinator`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，489 tests passed
+- 当前状态：已完成 Presentation view manifest generator foundation 实现
 
 **最新实现检查点：**
 
@@ -146,6 +146,11 @@
 - [x] Presentation plugin unload cleanup stops when active views remain
 - [x] Presentation plugin unload cleanup records resource dictionary failure
 - [x] Presentation plugin unload cleanup diagnostics
+- [x] Generator Presentation ViewFor metadata reader
+- [x] Generator Presentation view manifest model
+- [x] Generator Presentation view manifest deterministic ordering
+- [x] Generator Presentation duplicate ViewModel/ViewKey diagnostics
+- [x] Generator Presentation view contribution metadata
 
 ## 状态定义
 

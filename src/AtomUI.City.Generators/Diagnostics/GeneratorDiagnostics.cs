@@ -32,6 +32,12 @@ public static class GeneratorDiagnostics
         "Generator manifest input is invalid or incomplete.",
         GeneratorDiagnosticSeverity.Error);
 
+    public static readonly GeneratorDiagnosticDefinition DuplicatePresentationView = new GeneratorDiagnosticDefinition(
+        GeneratorDiagnosticIds.DuplicatePresentationView,
+        "Duplicate presentation view",
+        "A view model can only have one presentation view for each view key.",
+        GeneratorDiagnosticSeverity.Error);
+
     public static IReadOnlyList<GeneratorDiagnosticDefinition> All { get; } = new[]
     {
         DynamicDiscoveryNotAllowed,
@@ -39,5 +45,6 @@ public static class GeneratorDiagnostics
         CircularModuleDependency,
         DuplicateRoute,
         InvalidManifestInput,
+        DuplicatePresentationView,
     };
 }
