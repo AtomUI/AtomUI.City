@@ -5,8 +5,8 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`e217f62 feat(Presentation): add visual lifecycle diagnostics`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，445 tests passed
+- 当前提交：`0869c30 feat(Presentation): add resource revoke diagnostics`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，447 tests passed
 - 当前状态：已进入 Localization / Presentation culture bridge 集成实现阶段
 
 **最新实现检查点：**
@@ -102,6 +102,8 @@
 - [x] Presentation visual lifecycle adapter failure diagnostics
 - [x] Presentation resource dictionary revoke diagnostics
 - [x] Presentation resource dictionary revoke failure diagnostics
+- [x] Presentation resource dictionary apply diagnostics
+- [x] Presentation resource dictionary apply failure diagnostics
 
 ## 状态定义
 

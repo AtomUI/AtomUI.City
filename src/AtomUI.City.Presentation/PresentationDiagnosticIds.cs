@@ -19,4 +19,6 @@ public static class PresentationDiagnosticIds
     public const string VisualLifecycleAdapterFailed = "AUCPRS015";
     public const string ResourceDictionaryRevoked = "AUCPRS016";
     public const string ResourceDictionaryRevokeFailed = "AUCPRS017";
+    public const string ResourceDictionaryApplied = "AUCPRS018";
+    public const string ResourceDictionaryApplyFailed = "AUCPRS019";
 }

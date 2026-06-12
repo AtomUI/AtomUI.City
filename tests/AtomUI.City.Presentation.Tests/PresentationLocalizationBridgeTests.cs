@@ -155,6 +155,51 @@ public sealed class PresentationLocalizationBridgeTests
     }
 
     [Fact]
+    public async Task ResourceDictionaryApplierRecordsAppliedDiagnostics()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var dispatcher = new RecordingDispatcher();
+        var target = new RecordingResourceDictionaryTarget(dispatcher);
+        var applier = new CultureResourceDictionaryApplier([target], diagnostics);
+
+        await applier.ApplyCultureAsync(
+            State("zh-CN", loadedPackageIds: ["Host.zh-CN", "Orders.zh-CN"]));
+
+        Assert.Contains(
+            diagnostics.Records,
+            record =>
+                record.Code == PresentationDiagnosticIds.ResourceDictionaryApplied &&
+                record.Severity == HostDiagnosticSeverity.Info &&
+                record.Message.Contains("zh-CN", StringComparison.Ordinal) &&
+                record.Message.Contains("Host.zh-CN", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task ResourceDictionaryApplierRecordsApplyFailureDiagnostics()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var dispatcher = new RecordingDispatcher();
+        var target = new RecordingResourceDictionaryTarget(dispatcher)
+        {
+            ApplyFailure = new LocalizationError(
+                LocalizationErrorKind.PresentationApplyFailed,
+                "Resource dictionary apply failed."),
+        };
+        var applier = new CultureResourceDictionaryApplier([target], diagnostics);
+
+        await applier.ApplyCultureAsync(
+            State("zh-CN", loadedPackageIds: ["Host.zh-CN", "Orders.zh-CN"]));
+
+        Assert.Contains(
+            diagnostics.Records,
+            record =>
+                record.Code == PresentationDiagnosticIds.ResourceDictionaryApplyFailed &&
+                record.Severity == HostDiagnosticSeverity.Error &&
+                record.Message.Contains("zh-CN", StringComparison.Ordinal) &&
+                record.Message.Contains("Resource dictionary apply failed.", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public async Task ServiceCollectionRevokesResourceDictionaryTargets()
     {
         var services = new ServiceCollection();
@@ -311,6 +356,8 @@ public sealed class PresentationLocalizationBridgeTests
 
         public List<bool> RevokeDispatcherAccess { get; } = [];
 
+        public LocalizationError? ApplyFailure { get; init; }
+
         public LocalizationError? RevokeFailure { get; init; }
 
         public ValueTask<LocalizationResult> ApplyResourcesAsync(
@@ -321,7 +368,10 @@ public sealed class PresentationLocalizationBridgeTests
             AppliedPackageIds.Add(state.LoadedPackageIds.ToArray());
             DispatcherAccess.Add(_dispatcher.IsOnDispatcher);
 
-            return ValueTask.FromResult(LocalizationResult.Success());
+            return ValueTask.FromResult(
+                ApplyFailure is null
+                    ? LocalizationResult.Success()
+                    : LocalizationResult.Failed(ApplyFailure));
         }
 
         public ValueTask<LocalizationResult> RevokeResourcesAsync(
