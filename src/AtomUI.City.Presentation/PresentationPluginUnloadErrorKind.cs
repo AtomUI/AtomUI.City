@@ -4,6 +4,7 @@ public enum PresentationPluginUnloadErrorKind
 {
     ActiveViewsRemaining,
     InteractionHandlerRevokeFailed,
+    ViewDescriptorRevokeFailed,
     ResourceDictionaryRevokeFailed,
     ResourceContributionRevokeFailed,
 }

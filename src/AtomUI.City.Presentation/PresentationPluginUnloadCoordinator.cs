@@ -6,6 +6,7 @@ public sealed class PresentationPluginUnloadCoordinator : IPresentationPluginUnl
 {
     private readonly IActivePluginViewRegistry _activeViews;
     private readonly IInteractionHandlerRegistry _interactionHandlers;
+    private readonly IViewRegistry _views;
     private readonly IPresentationResourceRegistry _resources;
     private readonly IPresentationResourceDictionaryRevoker _resourceDictionaries;
     private readonly IHostDiagnostics? _diagnostics;
@@ -13,17 +14,20 @@ public sealed class PresentationPluginUnloadCoordinator : IPresentationPluginUnl
     public PresentationPluginUnloadCoordinator(
         IActivePluginViewRegistry activeViews,
         IInteractionHandlerRegistry interactionHandlers,
+        IViewRegistry views,
         IPresentationResourceRegistry resources,
         IPresentationResourceDictionaryRevoker resourceDictionaries,
         IHostDiagnostics? diagnostics = null)
     {
         ArgumentNullException.ThrowIfNull(activeViews);
         ArgumentNullException.ThrowIfNull(interactionHandlers);
+        ArgumentNullException.ThrowIfNull(views);
         ArgumentNullException.ThrowIfNull(resources);
         ArgumentNullException.ThrowIfNull(resourceDictionaries);
 
         _activeViews = activeViews;
         _interactionHandlers = interactionHandlers;
+        _views = views;
         _resources = resources;
         _resourceDictionaries = resourceDictionaries;
         _diagnostics = diagnostics;
@@ -48,12 +52,14 @@ public sealed class PresentationPluginUnloadCoordinator : IPresentationPluginUnl
                 request,
                 closedViewCount,
                 revokedInteractionHandlerCount: 0,
+                revokedViewDescriptorCount: 0,
                 revokedResourceContributionCount: 0,
                 resourceDictionariesRevoked: false,
                 errors);
         }
 
         var revokedInteractionHandlerCount = RevokeInteractionHandlers(request, errors);
+        var revokedViewDescriptorCount = RevokeViewDescriptors(request, errors);
         var resourceDictionaryResult = await _resourceDictionaries
             .RevokeAsync(
                 new PresentationResourceDictionaryRevocation(
@@ -76,6 +82,7 @@ public sealed class PresentationPluginUnloadCoordinator : IPresentationPluginUnl
             request,
             closedViewCount,
             revokedInteractionHandlerCount,
+            revokedViewDescriptorCount,
             revokedResourceContributionCount,
             resourceDictionaryResult.Succeeded,
             errors);
@@ -146,10 +153,32 @@ public sealed class PresentationPluginUnloadCoordinator : IPresentationPluginUnl
         }
     }
 
+    private int RevokeViewDescriptors(
+        PresentationPluginUnloadRequest request,
+        ICollection<PresentationPluginUnloadError> errors)
+    {
+        try
+        {
+            return request.ContributionId is null
+                ? _views.RevokePlugin(request.PluginId)
+                : _views.RevokeContribution(request.ContributionId);
+        }
+        catch (Exception exception)
+        {
+            errors.Add(new PresentationPluginUnloadError(
+                PresentationPluginUnloadErrorKind.ViewDescriptorRevokeFailed,
+                exception.Message,
+                exception));
+
+            return 0;
+        }
+    }
+
     private PresentationPluginUnloadResult Complete(
         PresentationPluginUnloadRequest request,
         int closedViewCount,
         int revokedInteractionHandlerCount,
+        int revokedViewDescriptorCount,
         int revokedResourceContributionCount,
         bool resourceDictionariesRevoked,
         IReadOnlyList<PresentationPluginUnloadError> errors)
@@ -159,6 +188,7 @@ public sealed class PresentationPluginUnloadCoordinator : IPresentationPluginUnl
             request.ContributionId,
             closedViewCount,
             revokedInteractionHandlerCount,
+            revokedViewDescriptorCount,
             revokedResourceContributionCount,
             resourceDictionariesRevoked,
             errors);
@@ -175,7 +205,7 @@ public sealed class PresentationPluginUnloadCoordinator : IPresentationPluginUnl
         {
             _diagnostics?.Write(new HostDiagnosticRecord(
                 PresentationDiagnosticIds.PluginUnloadCleanupCompleted,
-                $"Presentation plugin unload cleanup completed plugin '{result.PluginId}' contribution '{contributionId}' closed views '{result.ClosedViewCount}' revoked interaction handlers '{result.RevokedInteractionHandlerCount}' revoked resource contributions '{result.RevokedResourceContributionCount}'.",
+                $"Presentation plugin unload cleanup completed plugin '{result.PluginId}' contribution '{contributionId}' closed views '{result.ClosedViewCount}' revoked interaction handlers '{result.RevokedInteractionHandlerCount}' revoked view descriptors '{result.RevokedViewDescriptorCount}' revoked resource contributions '{result.RevokedResourceContributionCount}'.",
                 HostDiagnosticSeverity.Info));
 
             return;

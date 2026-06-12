@@ -7,6 +7,7 @@ public sealed class PresentationPluginUnloadResult
         string? contributionId,
         int closedViewCount,
         int revokedInteractionHandlerCount,
+        int revokedViewDescriptorCount,
         int revokedResourceContributionCount,
         bool resourceDictionariesRevoked,
         IReadOnlyList<PresentationPluginUnloadError> errors)
@@ -18,6 +19,7 @@ public sealed class PresentationPluginUnloadResult
         ContributionId = string.IsNullOrWhiteSpace(contributionId) ? null : contributionId;
         ClosedViewCount = closedViewCount;
         RevokedInteractionHandlerCount = revokedInteractionHandlerCount;
+        RevokedViewDescriptorCount = revokedViewDescriptorCount;
         RevokedResourceContributionCount = revokedResourceContributionCount;
         ResourceDictionariesRevoked = resourceDictionariesRevoked;
         Errors = errors.ToArray();
@@ -30,6 +32,8 @@ public sealed class PresentationPluginUnloadResult
     public int ClosedViewCount { get; }
 
     public int RevokedInteractionHandlerCount { get; }
+
+    public int RevokedViewDescriptorCount { get; }
 
     public int RevokedResourceContributionCount { get; }
 

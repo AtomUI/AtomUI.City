@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`76b2b39 feat(Presentation): add plugin view metadata`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，492 tests passed
-- 当前状态：已完成 Generator Presentation plugin view metadata validation 实现
+- 当前提交：`d393276 feat(Generator): validate presentation plugin views`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，494 tests passed
+- 当前状态：已完成 Presentation plugin unload view registry cleanup 实现
 
 **最新实现检查点：**
 
@@ -156,6 +156,9 @@
 - [x] Presentation ViewRegistry revoke by PluginId
 - [x] Generator Presentation view PluginId metadata
 - [x] Generator Presentation plugin view requires PluginId and ContributionId pair
+- [x] Presentation ViewRegistry DI registration
+- [x] Presentation plugin unload cleanup revokes View descriptors
+- [x] Presentation plugin unload cleanup records View descriptor revoke failure
 
 ## 状态定义
 

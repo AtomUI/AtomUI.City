@@ -2,7 +2,7 @@ using AtomUI.City.Diagnostics;
 
 namespace AtomUI.City.Presentation;
 
-public sealed class ViewRegistry : IViewLocator
+public sealed class ViewRegistry : IViewRegistry
 {
     private readonly Dictionary<ViewRegistrationKey, ViewDescriptor> _descriptors = new();
     private readonly IHostDiagnostics? _diagnostics;

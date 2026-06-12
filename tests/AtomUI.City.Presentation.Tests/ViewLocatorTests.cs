@@ -1,10 +1,25 @@
 using AtomUI.City.Diagnostics;
 using AtomUI.City.Presentation;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AtomUI.City.Presentation.Tests;
 
 public sealed class ViewLocatorTests
 {
+    [Fact]
+    public void ServiceCollectionRegistersViewRegistry()
+    {
+        var services = new ServiceCollection();
+
+        services.AddViewRegistry();
+
+        using var provider = services.BuildServiceProvider();
+        var registry = provider.GetRequiredService<IViewRegistry>();
+
+        Assert.Same(provider.GetRequiredService<ViewRegistry>(), registry);
+        Assert.Same(provider.GetRequiredService<IViewLocator>(), registry);
+    }
+
     [Fact]
     public void RegistryLocatesDefaultViewForViewModel()
     {

@@ -14,6 +14,7 @@ public static class PresentationPluginUnloadCoordinatorServiceCollectionExtensio
             serviceProvider => new PresentationPluginUnloadCoordinator(
                 serviceProvider.GetRequiredService<IActivePluginViewRegistry>(),
                 serviceProvider.GetRequiredService<IInteractionHandlerRegistry>(),
+                serviceProvider.GetRequiredService<IViewRegistry>(),
                 serviceProvider.GetRequiredService<IPresentationResourceRegistry>(),
                 serviceProvider.GetRequiredService<IPresentationResourceDictionaryRevoker>(),
                 serviceProvider.GetService<IHostDiagnostics>()));
