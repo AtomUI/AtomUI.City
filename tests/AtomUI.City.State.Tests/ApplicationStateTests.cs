@@ -98,6 +98,26 @@ public sealed class ApplicationStateTests
     }
 
     [Fact]
+    public void ApplicationStateTypeMismatchRecordsDiagnostics()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var registry = new ApplicationStateRegistry(diagnostics);
+        var stringKey = new StateKey<string>("AtomUI.City.Tests.Theme");
+        var intKey = new StateKey<int>(stringKey.Name);
+        registry.Add(StateDefinition.Create(stringKey, "light"));
+
+        var exception = Assert.Throws<InvalidOperationException>(
+            () => registry.Get(intKey));
+
+        Assert.Contains(stringKey.Name, exception.Message, StringComparison.Ordinal);
+        var record = Assert.Single(diagnostics.Records);
+        Assert.Equal(StateDiagnosticIds.ApplicationStateNotRegistered, record.Code);
+        Assert.Equal(HostDiagnosticSeverity.Warning, record.Severity);
+        Assert.Contains(stringKey.Name, record.Message, StringComparison.Ordinal);
+        Assert.Contains(typeof(int).FullName!, record.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void DuplicateApplicationStateRegistrationRecordsDiagnostics()
     {
         var diagnostics = new InMemoryHostDiagnostics();

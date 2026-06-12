@@ -106,6 +106,7 @@ public sealed class ApplicationStateRegistry :
             return typedRegistration;
         }
 
+        WriteNotRegisteredDiagnostic(key.Name, typeof(T));
         var message = $"State '{key.Name}' is not registered with value type '{typeof(T).FullName}'.";
 
         throw new InvalidOperationException(message);
