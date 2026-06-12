@@ -30,6 +30,23 @@ public sealed class DataRequestCacheTests
         Assert.False(lookup.IsHit);
     }
 
+    [Fact]
+    public async Task InMemoryCacheWritesInvalidationDiagnostic()
+    {
+        var diagnostics = new InMemoryDataDiagnostics();
+        var cache = new InMemoryDataRequestCache(diagnostics);
+        var key = CreateKey("items:v1");
+
+        await cache.InvalidateAsync(key);
+
+        var record = Assert.Single(
+            diagnostics.Records,
+            record => record.Code == DataDiagnosticIds.CacheInvalidated);
+        Assert.Equal("catalog", record.ClientId);
+        Assert.Equal("get-items", record.OperationName);
+        Assert.Equal(DataTransportKind.Http, record.TransportKind);
+    }
+
     private static DataCacheKey CreateKey(string requestFingerprint)
     {
         return new DataCacheKey(

@@ -5,6 +5,12 @@ namespace AtomUI.City.Data;
 public sealed class InMemoryDataRequestCache : IDataRequestCache
 {
     private readonly ConcurrentDictionary<DataCacheKey, object?> _entries = new();
+    private readonly IDataDiagnostics? _diagnostics;
+
+    public InMemoryDataRequestCache(IDataDiagnostics? diagnostics = null)
+    {
+        _diagnostics = diagnostics;
+    }
 
     public ValueTask<DataCacheLookup<TResponse>> TryGetAsync<TResponse>(
         DataCacheKey key,
@@ -42,6 +48,13 @@ public sealed class InMemoryDataRequestCache : IDataRequestCache
         cancellationToken.ThrowIfCancellationRequested();
 
         _entries.TryRemove(key, out _);
+        _diagnostics?.Write(new DataDiagnosticRecord(
+            DataDiagnosticIds.CacheInvalidated,
+            $"Data operation '{key.OperationName}' cache entry invalidated.",
+            DataDiagnosticSeverity.Info,
+            ClientId: key.ClientId,
+            OperationName: key.OperationName,
+            TransportKind: key.TransportKind));
 
         return ValueTask.CompletedTask;
     }
