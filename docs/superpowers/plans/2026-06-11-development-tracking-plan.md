@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`aa8b134 feat(EventBus): add service registration`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，544 tests passed
-- 当前状态：已完成 EventBus contract DI registration
+- 当前提交：`554cda1 feat(EventBus): add contract registration`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，545 tests passed
+- 当前状态：已完成 EventBus default contract descriptor registration
 
 **最新实现检查点：**
 
@@ -204,6 +204,7 @@
 - [x] EventBus owned typed handler subscription overload
 - [x] EventBus DI registration
 - [x] EventBus contract DI registration
+- [x] EventBus default contract descriptor registration
 
 ## 状态定义
 

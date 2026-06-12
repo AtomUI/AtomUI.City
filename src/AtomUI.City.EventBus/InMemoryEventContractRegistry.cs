@@ -12,22 +12,7 @@ public sealed class InMemoryEventContractRegistry : IEventContractRegistry
 
         lock (_syncRoot)
         {
-            if (_byContractId.TryGetValue(descriptor.ContractId, out var existingContract)
-                && existingContract.EventType != descriptor.EventType)
-            {
-                throw new InvalidOperationException(
-                    $"Event contract id '{descriptor.ContractId.Value}' is already registered for '{existingContract.EventType.FullName}'.");
-            }
-
-            if (_byEventType.TryGetValue(descriptor.EventType, out var existingType)
-                && existingType.ContractId != descriptor.ContractId)
-            {
-                throw new InvalidOperationException(
-                    $"Event type '{descriptor.EventType.FullName}' is already registered as '{existingType.ContractId.Value}'.");
-            }
-
-            _byContractId[descriptor.ContractId] = descriptor;
-            _byEventType[descriptor.EventType] = descriptor;
+            RegisterCore(descriptor);
         }
     }
 
@@ -41,8 +26,31 @@ public sealed class InMemoryEventContractRegistry : IEventContractRegistry
             {
                 return descriptor;
             }
+
+            descriptor = EventContractDescriptor.DefaultShared<TEvent>();
+            RegisterCore(descriptor);
+
+            return descriptor;
+        }
+    }
+
+    private void RegisterCore(EventContractDescriptor descriptor)
+    {
+        if (_byContractId.TryGetValue(descriptor.ContractId, out var existingContract)
+            && existingContract.EventType != descriptor.EventType)
+        {
+            throw new InvalidOperationException(
+                $"Event contract id '{descriptor.ContractId.Value}' is already registered for '{existingContract.EventType.FullName}'.");
         }
 
-        return EventContractDescriptor.DefaultShared<TEvent>();
+        if (_byEventType.TryGetValue(descriptor.EventType, out var existingType)
+            && existingType.ContractId != descriptor.ContractId)
+        {
+            throw new InvalidOperationException(
+                $"Event type '{descriptor.EventType.FullName}' is already registered as '{existingType.ContractId.Value}'.");
+        }
+
+        _byContractId[descriptor.ContractId] = descriptor;
+        _byEventType[descriptor.EventType] = descriptor;
     }
 }

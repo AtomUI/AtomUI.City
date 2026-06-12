@@ -41,6 +41,20 @@ public sealed class EventContractRegistryTests
         Assert.Equal(typeof(TestEvent), descriptor.EventType);
     }
 
+    [Fact]
+    public void ContractRegistryKeepsDefaultDescriptorMappingStable()
+    {
+        var registry = new InMemoryEventContractRegistry();
+        var descriptor = registry.GetOrCreate<TestEvent>();
+        var changedContractId = new EventContractId("atomui.city.tests.changed.v1");
+
+        var exception = Assert.Throws<InvalidOperationException>(
+            () => registry.Register(EventContractDescriptor.Shared<TestEvent>(changedContractId, typeof(TestEvent).Assembly)));
+
+        Assert.Contains(typeof(TestEvent).FullName!, exception.Message, StringComparison.Ordinal);
+        Assert.Equal(descriptor.ContractId, registry.GetOrCreate<TestEvent>().ContractId);
+    }
+
     private sealed record TestEvent(string Value);
 
     private sealed record OtherEvent(string Value);
