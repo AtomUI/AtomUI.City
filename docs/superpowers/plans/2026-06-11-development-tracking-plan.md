@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`10b667f feat(Data): include retry error diagnostics`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，575 tests passed
-- 当前状态：已完成 Data stale suppression diagnostic
+- 当前提交：`07e84e3 feat(Data): diagnose stale result suppression`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，576 tests passed
+- 当前状态：已完成 Data gRPC transport cancellation mapping
 
 **最新实现检查点：**
 
@@ -237,6 +237,7 @@
 - [x] Data request retry diagnostic metadata
 - [x] Data request retry diagnostic error kind
 - [x] Data stale suppression diagnostic
+- [x] Data gRPC transport cancellation mapping
 
 ## 状态定义
 

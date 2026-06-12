@@ -42,4 +42,21 @@ public sealed class GrpcDataTransportTests
         Assert.False(result.Succeeded);
         Assert.Equal(expectedError, result.Error?.Kind);
     }
+
+    [Fact]
+    public async Task GrpcTransportMapsCancellation()
+    {
+        var transport = new GrpcDataTransport();
+        var request = new GrpcDataRequest<string>(
+            "catalog",
+            "get-items",
+            (_, _) => throw new OperationCanceledException());
+
+        var result = await transport.SendAsync(
+            request,
+            DataRequestContext.Create(request, CancellationToken.None));
+
+        Assert.Equal(DataResultStatus.Cancelled, result.Status);
+        Assert.Equal(DataErrorKind.Cancelled, result.Error?.Kind);
+    }
 }

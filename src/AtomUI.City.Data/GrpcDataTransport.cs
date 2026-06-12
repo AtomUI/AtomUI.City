@@ -20,12 +20,19 @@ public sealed class GrpcDataTransport : IRequestResponseTransport
                     "gRPC transport requires a gRPC data request."));
         }
 
-        var callResult = await grpcRequest
-            .Invoker(new GrpcRequestContext(context), cancellationToken)
-            .ConfigureAwait(false);
+        try
+        {
+            var callResult = await grpcRequest
+                .Invoker(new GrpcRequestContext(context), cancellationToken)
+                .ConfigureAwait(false);
 
-        return callResult.Succeeded
-            ? DataResult<TResponse>.Success(callResult.Value!)
-            : DataResult<TResponse>.Failed(DataErrorMapper.FromGrpcStatus(callResult.StatusCode, callResult.Detail));
+            return callResult.Succeeded
+                ? DataResult<TResponse>.Success(callResult.Value!)
+                : DataResult<TResponse>.Failed(DataErrorMapper.FromGrpcStatus(callResult.StatusCode, callResult.Detail));
+        }
+        catch (OperationCanceledException)
+        {
+            return DataResult<TResponse>.Cancelled();
+        }
     }
 }
