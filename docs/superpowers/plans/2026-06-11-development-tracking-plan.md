@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`930e6d8 feat(State): add scope dispose diagnostics`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，514 tests passed
-- 当前状态：已完成 State disposed scope subscription diagnostics
+- 当前提交：`f8b41bf feat(State): add disposed scope diagnostics`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，515 tests passed
+- 当前状态：已完成 State computed dispose lifecycle guard
 
 **最新实现检查点：**
 
@@ -176,6 +176,7 @@
 - [x] State queued subscription option
 - [x] State scope dispose failure diagnostics
 - [x] State disposed scope subscription diagnostics
+- [x] State computed dispose lifecycle guard
 
 ## 状态定义
 

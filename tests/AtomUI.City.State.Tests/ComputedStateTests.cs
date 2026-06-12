@@ -81,4 +81,21 @@ public sealed class ComputedStateTests
         Assert.Equal(HostDiagnosticSeverity.Error, record.Severity);
         Assert.Contains("bad compute", record.Message, StringComparison.Ordinal);
     }
+
+    [Fact]
+    public void DisposedComputedStateRejectsReadsAndSubscriptionsWithoutComputing()
+    {
+        var computeCount = 0;
+        var computed = new ComputedState<int>(() =>
+        {
+            computeCount++;
+            return 1;
+        });
+
+        computed.Dispose();
+
+        Assert.Throws<ObjectDisposedException>(() => computed.Value);
+        Assert.Throws<ObjectDisposedException>(() => computed.OnChange(_ => { }));
+        Assert.Equal(0, computeCount);
+    }
 }

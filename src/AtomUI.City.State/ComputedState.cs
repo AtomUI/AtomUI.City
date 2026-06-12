@@ -41,6 +41,7 @@ public sealed class ComputedState<T> : IComputedState<T>, IDisposable
         {
             lock (_syncRoot)
             {
+                ThrowIfDisposed();
                 EnsureValue();
 
                 return _value!;
@@ -70,8 +71,8 @@ public sealed class ComputedState<T> : IComputedState<T>, IDisposable
 
         lock (_syncRoot)
         {
-            EnsureValue();
             ThrowIfDisposed();
+            EnsureValue();
 
             var subscription = new StateSubscription(
                 args => handler((StateChangedEventArgs<T>)args),
