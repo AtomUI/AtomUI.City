@@ -129,7 +129,34 @@ public sealed class PresentationLocalizationBridgeTests
         Assert.Equal([true, true], target.DispatcherAccess);
     }
 
-    private static CultureState State(string cultureName, string? uiCultureName = null)
+    [Fact]
+    public async Task ServiceCollectionBridgeAppliesResourceDictionaryTargets()
+    {
+        var services = new ServiceCollection();
+        var dispatcher = new RecordingDispatcher();
+        services.AddSingleton(dispatcher);
+        services.AddSingleton<IUiDispatcher>(dispatcher);
+        services.AddPresentationResourceDictionaryTarget<RecordingResourceDictionaryTarget>();
+        services.AddPresentationLocalizationBridge();
+        var provider = services.BuildServiceProvider();
+        var bridge = provider.GetRequiredService<IPresentationLocalizationBridge>();
+
+        var result = await bridge.ApplyCultureAsync(
+            State("zh-CN", loadedPackageIds: ["Host.zh-CN", "Orders.zh-CN"]));
+
+        Assert.True(result.Succeeded);
+        var target = provider.GetRequiredService<IEnumerable<IPresentationResourceDictionaryTarget>>()
+            .OfType<RecordingResourceDictionaryTarget>()
+            .Single();
+        Assert.Equal(["zh-CN"], target.AppliedCultures);
+        Assert.Equal([["Host.zh-CN", "Orders.zh-CN"]], target.AppliedPackageIds);
+        Assert.Equal([true], target.DispatcherAccess);
+    }
+
+    private static CultureState State(
+        string cultureName,
+        string? uiCultureName = null,
+        IReadOnlyList<string>? loadedPackageIds = null)
     {
         var culture = CultureInfo.GetCultureInfo(cultureName);
         var uiCulture = CultureInfo.GetCultureInfo(uiCultureName ?? cultureName);
@@ -139,7 +166,7 @@ public sealed class PresentationLocalizationBridgeTests
             uiCulture,
             [],
             revision: 1,
-            loadedPackageIds: []);
+            loadedPackageIds: loadedPackageIds ?? []);
     }
 
     private sealed class RegisteredCultureApplier : IPresentationCultureApplier
@@ -175,6 +202,33 @@ public sealed class PresentationLocalizationBridgeTests
             CancellationToken cancellationToken = default)
         {
             AppliedDirections.Add(direction);
+            DispatcherAccess.Add(_dispatcher.IsOnDispatcher);
+
+            return ValueTask.FromResult(LocalizationResult.Success());
+        }
+    }
+
+    private sealed class RecordingResourceDictionaryTarget : IPresentationResourceDictionaryTarget
+    {
+        private readonly RecordingDispatcher _dispatcher;
+
+        public RecordingResourceDictionaryTarget(RecordingDispatcher dispatcher)
+        {
+            _dispatcher = dispatcher;
+        }
+
+        public List<string> AppliedCultures { get; } = [];
+
+        public List<IReadOnlyList<string>> AppliedPackageIds { get; } = [];
+
+        public List<bool> DispatcherAccess { get; } = [];
+
+        public ValueTask<LocalizationResult> ApplyResourcesAsync(
+            CultureState state,
+            CancellationToken cancellationToken = default)
+        {
+            AppliedCultures.Add(state.CurrentCulture.Name);
+            AppliedPackageIds.Add(state.LoadedPackageIds.ToArray());
             DispatcherAccess.Add(_dispatcher.IsOnDispatcher);
 
             return ValueTask.FromResult(LocalizationResult.Success());

@@ -12,6 +12,7 @@ public static class PresentationLocalizationServiceCollectionExtensions
 
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IPresentationCultureApplier, CurrentThreadCultureApplier>());
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IPresentationCultureApplier, CultureFlowDirectionApplier>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IPresentationCultureApplier, CultureResourceDictionaryApplier>());
         services.TryAddSingleton<PresentationLocalizationBridge>();
         services.TryAddSingleton<IPresentationLocalizationBridge>(
             serviceProvider => serviceProvider.GetRequiredService<PresentationLocalizationBridge>());
@@ -35,6 +36,16 @@ public static class PresentationLocalizationServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IPresentationFlowDirectionTarget, TTarget>());
+
+        return services;
+    }
+
+    public static IServiceCollection AddPresentationResourceDictionaryTarget<TTarget>(this IServiceCollection services)
+        where TTarget : class, IPresentationResourceDictionaryTarget
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IPresentationResourceDictionaryTarget, TTarget>());
 
         return services;
     }
