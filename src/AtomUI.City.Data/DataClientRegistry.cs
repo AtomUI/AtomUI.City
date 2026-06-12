@@ -20,6 +20,12 @@ public sealed class DataClientRegistry : IDataClientFactory
         {
             _clients[typeof(TClient)] = client;
         }
+
+        _diagnostics?.Write(new DataDiagnosticRecord(
+            DataDiagnosticIds.ClientRegistered,
+            $"Data client '{typeof(TClient).FullName}' registered.",
+            DataDiagnosticSeverity.Info,
+            ClientId: client.ClientId));
     }
 
     public bool Unregister<TClient>()

@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`40a6d23 feat(Data): diagnose connection starts`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，568 tests passed
-- 当前状态：已完成 Data connection registration rejection diagnostic
+- 当前提交：`85c0d05 feat(Data): diagnose connection registration rejections`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，569 tests passed
+- 当前状态：已完成 Data client registration diagnostic
 
 **最新实现检查点：**
 
@@ -231,6 +231,7 @@
 - [x] Data connection start failure diagnostic
 - [x] Data connection started diagnostic
 - [x] Data connection registration rejection diagnostic
+- [x] Data client registration diagnostic
 
 ## 状态定义
 
