@@ -116,7 +116,8 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
 
                 WriteDiagnostic(
                     DataDiagnosticIds.RequestRetry,
-                    $"Data operation '{request.OperationName}' retry attempt {attempt}.");
+                    $"Data operation '{request.OperationName}' retry attempt {attempt}.",
+                    context);
             }
             catch (OperationCanceledException) when (timeoutCancellation.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
             {
@@ -377,9 +378,20 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
         }
     }
 
-    private void WriteDiagnostic(string code, string message)
+    private void WriteDiagnostic(
+        string code,
+        string message,
+        DataRequestContext context)
     {
-        _diagnostics?.Write(new DataDiagnosticRecord(code, message, DataDiagnosticSeverity.Trace));
+        _diagnostics?.Write(new DataDiagnosticRecord(
+            code,
+            message,
+            DataDiagnosticSeverity.Trace,
+            context.OperationId,
+            context.ClientId,
+            context.OperationName,
+            context.TransportKind,
+            context.Attempt));
     }
 
     private void WriteCacheDiagnostic(

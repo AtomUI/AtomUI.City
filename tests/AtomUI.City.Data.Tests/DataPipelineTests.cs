@@ -392,6 +392,37 @@ public sealed class DataPipelineTests
     }
 
     [Fact]
+    public async Task PipelineWritesRetryDiagnosticWithRequestMetadata()
+    {
+        var diagnostics = new InMemoryDataDiagnostics();
+        var transport = new RecordingTransport(context =>
+        {
+            return context.Attempt == 1
+                ? DataResult<string>.Failed(new DataError(DataErrorKind.NetworkUnavailable, "network"))
+                : DataResult<string>.Success("retried");
+        });
+        var pipeline = new DataRequestPipeline(transport, diagnostics: diagnostics);
+        var request = new DataRequest<string>(
+            "catalog",
+            "get-items",
+            DataTransportKind.Http)
+        {
+            Resilience = new DataResilienceOptions { MaxRetryAttempts = 1 },
+        };
+
+        await pipeline.SendAsync(request);
+
+        var record = Assert.Single(
+            diagnostics.Records,
+            record => record.Code == DataDiagnosticIds.RequestRetry);
+        Assert.Equal("catalog", record.ClientId);
+        Assert.Equal("get-items", record.OperationName);
+        Assert.Equal(DataTransportKind.Http, record.TransportKind);
+        Assert.Equal(1, record.Attempt);
+        Assert.NotEqual(Guid.Empty, record.OperationId);
+    }
+
+    [Fact]
     public async Task PipelineDoesNotRetryMutationWithoutIdempotency()
     {
         var transport = new RecordingTransport(_ =>
