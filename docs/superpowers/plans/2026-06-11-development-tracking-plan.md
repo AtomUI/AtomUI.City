@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`c96d5a3 feat(Presentation): add interaction handler revocation`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，460 tests passed
-- 当前状态：已进入 Presentation validation visual state 集成实现阶段
+- 当前提交：`05419b0 feat(Presentation): add validation visual state binding`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，466 tests passed
+- 当前状态：已进入 Presentation command binding 集成实现阶段
 
 **最新实现检查点：**
 
@@ -121,6 +121,13 @@
 - [x] Presentation validation visual state UI dispatcher application
 - [x] Presentation validation visual state diagnostics
 - [x] Presentation validation visual state failure diagnostics
+- [x] Presentation command source target contract
+- [x] Presentation command binding initial CanExecute state
+- [x] Presentation command binding CanExecute refresh
+- [x] Presentation command binding execution request
+- [x] Presentation command binding async executing state
+- [x] Presentation command binding disposal through ActivationScope
+- [x] Presentation command binding diagnostics
 
 ## 状态定义
 

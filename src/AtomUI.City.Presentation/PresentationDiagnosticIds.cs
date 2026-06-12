@@ -27,4 +27,6 @@ public static class PresentationDiagnosticIds
     public const string InteractionHandlerRevoked = "AUCPRS023";
     public const string ValidationVisualStateApplied = "AUCPRS024";
     public const string ValidationVisualStateApplyFailed = "AUCPRS025";
+    public const string CommandStateApplied = "AUCPRS026";
+    public const string CommandStateApplyFailed = "AUCPRS027";
 }
