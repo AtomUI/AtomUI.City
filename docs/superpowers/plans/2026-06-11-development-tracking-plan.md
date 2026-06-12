@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`0db0b7a fix(EventBus): stabilize default contract mappings`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，547 tests passed
-- 当前状态：已完成 Data request completed/failed diagnostics
+- 当前提交：`d025fb1 feat(Data): add request result diagnostics`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，548 tests passed
+- 当前状态：已完成 Data credential failure diagnostics
 
 **最新实现检查点：**
 
@@ -207,6 +207,7 @@
 - [x] EventBus default contract descriptor registration
 - [x] Data request completed diagnostic
 - [x] Data request failed diagnostic
+- [x] Data credential failure diagnostic
 
 ## 状态定义
 

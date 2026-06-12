@@ -54,6 +54,8 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
         var credentialResult = await ResolveCredentialAsync(request, context, operationToken).ConfigureAwait(false);
         if (credentialResult is not null)
         {
+            WriteRequestResultDiagnostic(context, credentialResult);
+
             return credentialResult;
         }
 

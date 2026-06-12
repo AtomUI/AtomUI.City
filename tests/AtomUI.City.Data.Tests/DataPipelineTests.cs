@@ -160,6 +160,33 @@ public sealed class DataPipelineTests
     }
 
     [Fact]
+    public async Task PipelineWritesFailedDiagnosticWhenCredentialResolutionFails()
+    {
+        var diagnostics = new InMemoryDataDiagnostics();
+        var credentials = new RecordingCredentialProvider(DataCredentialResult.Required("login required"));
+        var transport = new RecordingTransport(_ => DataResult<string>.Success("should-not-run"));
+        var pipeline = new DataRequestPipeline(transport, credentialProvider: credentials, diagnostics);
+        var request = new DataRequest<string>(
+            "catalog",
+            "secure-items",
+            DataTransportKind.Http)
+        {
+            Authentication = DataAuthenticationOptions.Bearer(),
+        };
+
+        await pipeline.SendAsync(request);
+
+        var record = Assert.Single(
+            diagnostics.Records,
+            record => record.Code == DataDiagnosticIds.RequestFailed);
+        Assert.Equal("catalog", record.ClientId);
+        Assert.Equal("secure-items", record.OperationName);
+        Assert.Equal(DataTransportKind.Http, record.TransportKind);
+        Assert.Equal(0, record.Attempt);
+        Assert.Equal(DataErrorKind.AuthenticationRequired, record.ErrorKind);
+    }
+
+    [Fact]
     public async Task PipelineMapsCredentialProviderCancellation()
     {
         var credentials = new ThrowingCredentialProvider(new OperationCanceledException());
