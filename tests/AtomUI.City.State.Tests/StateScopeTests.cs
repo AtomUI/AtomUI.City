@@ -57,6 +57,23 @@ public sealed class StateScopeTests
         Assert.Contains("bad dispose", record.Message, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void StateScopeRecordsDisposeFailuresForSubscriptionsAddedAfterDisposal()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var scope = new StateScope("activation", diagnostics);
+        scope.Dispose();
+
+        scope.Add(new TestSubscription(() => throw new InvalidOperationException("late dispose")));
+
+        Assert.Equal(StateScopeState.Disposed, scope.State);
+        var record = Assert.Single(diagnostics.Records);
+        Assert.Equal("AUCSTA009", record.Code);
+        Assert.Equal(HostDiagnosticSeverity.Error, record.Severity);
+        Assert.Contains(scope.Id, record.Message, StringComparison.Ordinal);
+        Assert.Contains("late dispose", record.Message, StringComparison.Ordinal);
+    }
+
     private sealed class TestSubscription : IStateSubscription
     {
         private readonly Action _dispose;

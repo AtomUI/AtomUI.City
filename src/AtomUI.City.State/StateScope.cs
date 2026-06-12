@@ -26,7 +26,7 @@ public sealed class StateScope : IStateScope
 
         if (_disposed)
         {
-            subscription.Dispose();
+            DisposeSubscription(subscription);
             return;
         }
 
@@ -45,14 +45,7 @@ public sealed class StateScope : IStateScope
 
         for (var i = _subscriptions.Count - 1; i >= 0; i--)
         {
-            try
-            {
-                _subscriptions[i].Dispose();
-            }
-            catch (Exception exception)
-            {
-                WriteDisposeFailedDiagnostic(exception);
-            }
+            DisposeSubscription(_subscriptions[i]);
         }
 
         _subscriptions.Clear();
@@ -65,5 +58,17 @@ public sealed class StateScope : IStateScope
             StateDiagnosticIds.StateScopeDisposeFailed,
             $"State scope '{Id}' subscription disposal failed: {exception.Message}",
             HostDiagnosticSeverity.Error));
+    }
+
+    private void DisposeSubscription(IDisposable subscription)
+    {
+        try
+        {
+            subscription.Dispose();
+        }
+        catch (Exception exception)
+        {
+            WriteDisposeFailedDiagnostic(exception);
+        }
     }
 }

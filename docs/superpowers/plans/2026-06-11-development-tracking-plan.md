@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`bab3454 feat(State): add queued subscription option`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，513 tests passed
-- 当前状态：已完成 State scope dispose failure diagnostics
+- 当前提交：`930e6d8 feat(State): add scope dispose diagnostics`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，514 tests passed
+- 当前状态：已完成 State disposed scope subscription diagnostics
 
 **最新实现检查点：**
 
@@ -175,6 +175,7 @@
 - [x] State background subscription option
 - [x] State queued subscription option
 - [x] State scope dispose failure diagnostics
+- [x] State disposed scope subscription diagnostics
 
 ## 状态定义
 
