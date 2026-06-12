@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`7dd45f9 feat(Presentation): add interaction handler registry`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，456 tests passed
-- 当前状态：已进入 Presentation plugin interaction handler revocation 实现阶段
+- 当前提交：`c96d5a3 feat(Presentation): add interaction handler revocation`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，460 tests passed
+- 当前状态：已进入 Presentation validation visual state 集成实现阶段
 
 **最新实现检查点：**
 
@@ -116,6 +116,11 @@
 - [x] Presentation plugin interaction handler revoke by ContributionId
 - [x] Presentation plugin interaction handler revocation cancels pending requests
 - [x] Presentation plugin interaction handler revoke diagnostics
+- [x] Presentation validation visual state target contract
+- [x] Presentation validation visual state snapshot
+- [x] Presentation validation visual state UI dispatcher application
+- [x] Presentation validation visual state diagnostics
+- [x] Presentation validation visual state failure diagnostics
 
 ## 状态定义
 

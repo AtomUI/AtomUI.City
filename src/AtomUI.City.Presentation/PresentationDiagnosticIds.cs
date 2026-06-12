@@ -25,4 +25,6 @@ public static class PresentationDiagnosticIds
     public const string InteractionNotHandled = "AUCPRS021";
     public const string InteractionFailed = "AUCPRS022";
     public const string InteractionHandlerRevoked = "AUCPRS023";
+    public const string ValidationVisualStateApplied = "AUCPRS024";
+    public const string ValidationVisualStateApplyFailed = "AUCPRS025";
 }
