@@ -8,4 +8,6 @@ public enum PresentationError
     BindingFailed,
     OutletNotFound,
     OutletCommitFailed,
+    RuntimeNotReady,
+    RuntimeStopping,
 }

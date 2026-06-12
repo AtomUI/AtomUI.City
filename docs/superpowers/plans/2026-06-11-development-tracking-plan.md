@@ -5,8 +5,8 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`1861913 feat(Presentation): add resource dictionary revoker`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，420 tests passed
+- 当前提交：`bd17c01 feat(Presentation): add Avalonia UI dispatcher`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，425 tests passed
 - 当前状态：已进入 Localization / Presentation culture bridge 集成实现阶段
 
 **最新实现检查点：**
@@ -76,6 +76,11 @@
 - [x] Presentation Avalonia UI dispatcher adapter
 - [x] Presentation Avalonia UI dispatcher DI registration
 - [x] Presentation Avalonia UI dispatcher cancellation handling
+- [x] Presentation runtime state contract
+- [x] Presentation runtime PresentationScope creation
+- [x] Presentation runtime WindowScope creation
+- [x] Presentation runtime stopping rejects new windows
+- [x] Presentation runtime DI registration
 
 ## 状态定义
 
