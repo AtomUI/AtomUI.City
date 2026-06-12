@@ -72,6 +72,23 @@ public sealed class StateThreadingTests
         Assert.Equal(1, dispatcher.InvokeCount);
     }
 
+    [Fact]
+    public void BackgroundSubscriptionUsesBackgroundDispatchPolicy()
+    {
+        var state = new WritableState<int>(0);
+        var observed = 0;
+        var options = StateSubscriptionOptions.Background();
+
+        state.OnChange(
+            args => observed = args.NewValue,
+            options);
+
+        state.SetValue(9);
+
+        Assert.Equal(9, observed);
+        Assert.Equal(StateDispatchPolicy.Background, options.DispatchPolicy);
+    }
+
     private sealed class RecordingDispatcher : IUiDispatcher
     {
         public int InvokeCount { get; private set; }

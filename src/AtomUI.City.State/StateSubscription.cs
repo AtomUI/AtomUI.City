@@ -83,4 +83,11 @@ public sealed class StateSubscriptionOptions
             StateDispatchPolicy.Dispatcher,
             dispatcher);
     }
+
+    public static StateSubscriptionOptions Background()
+    {
+        return new StateSubscriptionOptions(
+            StateDispatchPolicy.Background,
+            dispatcher: null);
+    }
 }

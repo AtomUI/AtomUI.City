@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`3193781 feat(State): add snapshot restore diagnostics`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，510 tests passed
-- 当前状态：已完成 State duplicate registration diagnostics
+- 当前提交：`94214be feat(State): add duplicate registration diagnostics`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，511 tests passed
+- 当前状态：已完成 State background subscription option
 
 **最新实现检查点：**
 
@@ -172,6 +172,7 @@
 - [x] State writable update failure diagnostics
 - [x] State snapshot restore failure diagnostics
 - [x] State duplicate registration diagnostics
+- [x] State background subscription option
 
 ## 状态定义
 
