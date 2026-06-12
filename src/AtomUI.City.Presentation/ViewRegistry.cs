@@ -1,8 +1,22 @@
+using AtomUI.City.Diagnostics;
+
 namespace AtomUI.City.Presentation;
 
 public sealed class ViewRegistry : IViewLocator
 {
     private readonly Dictionary<ViewRegistrationKey, ViewDescriptor> _descriptors = new();
+    private readonly IHostDiagnostics? _diagnostics;
+
+    public ViewRegistry()
+    {
+    }
+
+    public ViewRegistry(IHostDiagnostics diagnostics)
+    {
+        ArgumentNullException.ThrowIfNull(diagnostics);
+
+        _diagnostics = diagnostics;
+    }
 
     public void Register(ViewDescriptor descriptor)
     {
@@ -47,9 +61,20 @@ public sealed class ViewRegistry : IViewLocator
     {
         ArgumentNullException.ThrowIfNull(viewModelType);
 
-        return _descriptors.TryGetValue(
+        var located = _descriptors.TryGetValue(
             ViewRegistrationKey.Create(viewModelType, viewKey),
             out descriptor);
+
+        if (located && descriptor is not null)
+        {
+            WriteMatchedDiagnostic(viewModelType, viewKey, descriptor);
+        }
+        else
+        {
+            WriteFailedDiagnostic(viewModelType, viewKey);
+        }
+
+        return located;
     }
 
     public ViewDescriptor Locate(Type viewModelType, string? viewKey = null)
@@ -72,5 +97,29 @@ public sealed class ViewRegistry : IViewLocator
                 viewModelType,
                 string.IsNullOrWhiteSpace(viewKey) ? string.Empty : viewKey);
         }
+    }
+
+    private void WriteMatchedDiagnostic(
+        Type viewModelType,
+        string? viewKey,
+        ViewDescriptor descriptor)
+    {
+        _diagnostics?.Write(new HostDiagnosticRecord(
+            PresentationDiagnosticIds.ViewLocatorMatched,
+            $"View locator matched view model '{viewModelType.FullName}' to view '{descriptor.ViewType.FullName}' with key '{NormalizeViewKey(viewKey)}'.",
+            HostDiagnosticSeverity.Info));
+    }
+
+    private void WriteFailedDiagnostic(Type viewModelType, string? viewKey)
+    {
+        _diagnostics?.Write(new HostDiagnosticRecord(
+            PresentationDiagnosticIds.ViewLocatorFailed,
+            $"View locator failed for view model '{viewModelType.FullName}' with key '{NormalizeViewKey(viewKey)}'.",
+            HostDiagnosticSeverity.Warning));
+    }
+
+    private static string NormalizeViewKey(string? viewKey)
+    {
+        return string.IsNullOrWhiteSpace(viewKey) ? "<default>" : viewKey;
     }
 }

@@ -1,3 +1,4 @@
+using AtomUI.City.Diagnostics;
 using AtomUI.City.Presentation;
 
 namespace AtomUI.City.Presentation.Tests;
@@ -74,6 +75,46 @@ public sealed class ViewLocatorTests
             () => registry.Locate(typeof(SettingsViewModel)));
 
         Assert.Equal(PresentationError.ViewNotFound, exception.Error);
+    }
+
+    [Fact]
+    public void RegistryRecordsLocateHitDiagnostics()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var registry = new ViewRegistry(diagnostics);
+        var descriptor = new ViewDescriptor(
+            typeof(SettingsViewModel),
+            typeof(SettingsView),
+            viewKey: null,
+            _ => new SettingsView());
+        registry.Register(descriptor);
+
+        var located = registry.Locate(typeof(SettingsViewModel));
+
+        Assert.Same(descriptor, located);
+        Assert.Contains(
+            diagnostics.Records,
+            record =>
+                record.Code == PresentationDiagnosticIds.ViewLocatorMatched &&
+                record.Severity == HostDiagnosticSeverity.Info &&
+                record.Message.Contains(typeof(SettingsViewModel).FullName!, StringComparison.Ordinal) &&
+                record.Message.Contains(typeof(SettingsView).FullName!, StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void RegistryRecordsLocateFailureDiagnostics()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var registry = new ViewRegistry(diagnostics);
+
+        Assert.Throws<PresentationException>(() => registry.Locate(typeof(SettingsViewModel)));
+
+        Assert.Contains(
+            diagnostics.Records,
+            record =>
+                record.Code == PresentationDiagnosticIds.ViewLocatorFailed &&
+                record.Severity == HostDiagnosticSeverity.Warning &&
+                record.Message.Contains(typeof(SettingsViewModel).FullName!, StringComparison.Ordinal));
     }
 
     [Fact]
