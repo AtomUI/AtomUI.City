@@ -96,4 +96,22 @@ public sealed class ApplicationStateTests
         Assert.Equal(HostDiagnosticSeverity.Warning, record.Severity);
         Assert.Contains(key.Name, record.Message, StringComparison.Ordinal);
     }
+
+    [Fact]
+    public void DuplicateApplicationStateRegistrationRecordsDiagnostics()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var registry = new ApplicationStateRegistry(diagnostics);
+        var key = new StateKey<string>("AtomUI.City.Tests.Theme");
+        registry.Add(StateDefinition.Create(key, "light"));
+
+        var exception = Assert.Throws<InvalidOperationException>(
+            () => registry.Add(StateDefinition.Create(key, "dark")));
+
+        Assert.Contains(key.Name, exception.Message, StringComparison.Ordinal);
+        var record = Assert.Single(diagnostics.Records);
+        Assert.Equal("AUCSTA008", record.Code);
+        Assert.Equal(HostDiagnosticSeverity.Warning, record.Severity);
+        Assert.Contains(key.Name, record.Message, StringComparison.Ordinal);
+    }
 }

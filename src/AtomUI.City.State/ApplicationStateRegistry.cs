@@ -21,6 +21,7 @@ public sealed class ApplicationStateRegistry :
 
         if (_registrations.ContainsKey(definition.Key.Name))
         {
+            WriteAlreadyRegisteredDiagnostic(definition.Key.Name, typeof(T));
             throw new InvalidOperationException($"State '{definition.Key.Name}' is already registered.");
         }
 
@@ -127,6 +128,14 @@ public sealed class ApplicationStateRegistry :
         _diagnostics?.Write(new HostDiagnosticRecord(
             StateDiagnosticIds.ApplicationStateNotRegistered,
             $"Application state '{stateName}' with value type '{valueType.FullName}' is not registered.",
+            HostDiagnosticSeverity.Warning));
+    }
+
+    private void WriteAlreadyRegisteredDiagnostic(string stateName, Type valueType)
+    {
+        _diagnostics?.Write(new HostDiagnosticRecord(
+            StateDiagnosticIds.ApplicationStateAlreadyRegistered,
+            $"Application state '{stateName}' with value type '{valueType.FullName}' is already registered.",
             HostDiagnosticSeverity.Warning));
     }
 
