@@ -18,7 +18,7 @@ public sealed class StateCollectionChangedEventArgs<TKey, TItem> : StateChangedE
             throw new ArgumentException("State collection change list cannot be empty.", nameof(changes));
         }
 
-        Changes = changes;
+        Changes = changes.ToArray();
     }
 
     public StateCollectionChange<TKey, TItem> Change => Changes[0];

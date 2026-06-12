@@ -312,4 +312,28 @@ public sealed class StateCollectionTests
         var item = Assert.Single(snapshot.Items);
         Assert.Equal("settings", item.Key);
     }
+
+    [Fact]
+    public void ChangedEventArgsCopiesChangesFromConstructorInput()
+    {
+        var changes = new List<StateCollectionChange<string, int>>
+        {
+            new(
+                StateCollectionChangeKind.Added,
+                "settings",
+                HasOldItem: false,
+                OldItem: default,
+                HasNewItem: true,
+                NewItem: 1,
+                CollectionVersion: 1,
+                ItemVersion: 1),
+        };
+        var args = new StateCollectionChangedEventArgs<string, int>(changes);
+
+        changes.Clear();
+
+        var change = Assert.Single(args.Changes);
+        Assert.Equal("settings", change.Key);
+        Assert.Equal(1, args.Version);
+    }
 }

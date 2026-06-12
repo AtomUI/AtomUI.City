@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`419de45 fix(State): skip unchanged collection snapshot restore`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，528 tests passed
-- 当前状态：已完成 State collection snapshot defensive copy
+- 当前提交：`650d39c fix(State): copy collection snapshot items`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，529 tests passed
+- 当前状态：已完成 State collection changed event args defensive copy
 
 **最新实现检查点：**
 
@@ -190,6 +190,7 @@
 - [x] State collection empty snapshot restore
 - [x] State collection unchanged snapshot restore guard
 - [x] State collection snapshot defensive copy
+- [x] State collection changed event args defensive copy
 
 ## 状态定义
 
