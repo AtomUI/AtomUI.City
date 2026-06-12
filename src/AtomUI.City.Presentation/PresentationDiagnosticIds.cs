@@ -8,4 +8,6 @@ public static class PresentationDiagnosticIds
     public const string DispatcherCallbackFailed = "AUCPRS004";
     public const string ViewLocatorMatched = "AUCPRS005";
     public const string ViewLocatorFailed = "AUCPRS006";
+    public const string ViewCreated = "AUCPRS007";
+    public const string ViewCreationFailed = "AUCPRS008";
 }

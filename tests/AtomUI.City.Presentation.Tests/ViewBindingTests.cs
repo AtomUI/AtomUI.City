@@ -1,3 +1,4 @@
+using AtomUI.City.Diagnostics;
 using AtomUI.City.Presentation;
 using AtomUI.City.Threading;
 
@@ -37,6 +38,53 @@ public sealed class ViewBindingTests
             async () => await factory.CreateAsync(descriptor));
 
         Assert.Equal(PresentationError.ViewCreationFailed, exception.Error);
+    }
+
+    [Fact]
+    public async Task ViewFactoryRecordsCreationDiagnostics()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var dispatcher = new RecordingDispatcher();
+        var descriptor = new ViewDescriptor(
+            typeof(SettingsViewModel),
+            typeof(SettingsView),
+            viewKey: null,
+            _ => new SettingsView());
+        var factory = new ViewFactory(dispatcher, diagnostics);
+
+        await factory.CreateAsync(descriptor);
+
+        Assert.Contains(
+            diagnostics.Records,
+            record =>
+                record.Code == PresentationDiagnosticIds.ViewCreated &&
+                record.Severity == HostDiagnosticSeverity.Info &&
+                record.Message.Contains(typeof(SettingsViewModel).FullName!, StringComparison.Ordinal) &&
+                record.Message.Contains(typeof(SettingsView).FullName!, StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task ViewFactoryRecordsCreationFailureDiagnostics()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var dispatcher = new RecordingDispatcher();
+        var descriptor = new ViewDescriptor(
+            typeof(SettingsViewModel),
+            typeof(SettingsView),
+            viewKey: null,
+            _ => new object());
+        var factory = new ViewFactory(dispatcher, diagnostics);
+
+        await Assert.ThrowsAsync<PresentationException>(
+            async () => await factory.CreateAsync(descriptor));
+
+        Assert.Contains(
+            diagnostics.Records,
+            record =>
+                record.Code == PresentationDiagnosticIds.ViewCreationFailed &&
+                record.Severity == HostDiagnosticSeverity.Error &&
+                record.Message.Contains(typeof(SettingsViewModel).FullName!, StringComparison.Ordinal) &&
+                record.Message.Contains(typeof(SettingsView).FullName!, StringComparison.Ordinal));
     }
 
     [Fact]
