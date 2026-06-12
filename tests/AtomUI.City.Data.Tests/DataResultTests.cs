@@ -53,6 +53,15 @@ public sealed class DataResultTests
     }
 
     [Fact]
+    public void HttpStatusMappingPreservesServiceUnavailable()
+    {
+        var error = DataErrorMapper.FromHttpStatusCode(HttpStatusCode.ServiceUnavailable);
+
+        Assert.Equal(DataErrorKind.ServiceUnavailable, error.Kind);
+        Assert.Equal("Errors.ServiceUnavailable", error.MessageKey);
+    }
+
+    [Fact]
     public void CancelledResultIsNotFailure()
     {
         var result = DataResult<string>.Cancelled();

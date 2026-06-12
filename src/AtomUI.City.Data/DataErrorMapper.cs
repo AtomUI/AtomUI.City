@@ -14,6 +14,7 @@ public static class DataErrorMapper
             HttpStatusCode.NotFound => DataErrorKind.NotFound,
             HttpStatusCode.Conflict => DataErrorKind.Conflict,
             HttpStatusCode.RequestTimeout => DataErrorKind.Timeout,
+            HttpStatusCode.ServiceUnavailable => DataErrorKind.ServiceUnavailable,
             >= HttpStatusCode.InternalServerError => DataErrorKind.ServerError,
             _ => DataErrorKind.TransportError,
         };
@@ -55,6 +56,7 @@ public static class DataErrorMapper
             DataErrorKind.AuthorizationForbidden => "Errors.AuthorizationForbidden",
             DataErrorKind.NotFound => "Errors.NotFound",
             DataErrorKind.Timeout => "Errors.Timeout",
+            DataErrorKind.ServiceUnavailable => "Errors.ServiceUnavailable",
             DataErrorKind.ServerError => "Errors.ServerError",
             _ => null,
         };
