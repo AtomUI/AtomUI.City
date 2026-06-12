@@ -19,6 +19,7 @@ public static class DataDiagnosticIds
     public const string ConnectionRegistrationRejected = "AUCDATA015";
     public const string ClientRegistered = "AUCDATA016";
     public const string ClientUnregistered = "AUCDATA017";
+    public const string ClientUnregistrationMissing = "AUCDATA018";
 }
 
 public sealed record DataDiagnosticRecord(

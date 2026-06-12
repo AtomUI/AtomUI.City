@@ -42,6 +42,11 @@ public sealed class DataClientRegistry : IDataClientFactory
 
         if (removedClient is null)
         {
+            _diagnostics?.Write(new DataDiagnosticRecord(
+                DataDiagnosticIds.ClientUnregistrationMissing,
+                $"Data client '{typeof(TClient).FullName}' could not be unregistered because it is not registered.",
+                DataDiagnosticSeverity.Warning));
+
             return false;
         }
 

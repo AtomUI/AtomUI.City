@@ -90,6 +90,22 @@ public sealed class DataClientContractTests
         Assert.Contains(nameof(IInventoryClient), record.Message, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void DataClientRegistryWritesMissingUnregistrationDiagnostic()
+    {
+        var diagnostics = new InMemoryDataDiagnostics();
+        var registry = new DataClientRegistry(diagnostics);
+
+        var removed = registry.Unregister<IInventoryClient>();
+
+        Assert.False(removed);
+        var record = Assert.Single(
+            diagnostics.Records,
+            record => record.Code == DataDiagnosticIds.ClientUnregistrationMissing);
+        Assert.Equal(DataDiagnosticSeverity.Warning, record.Severity);
+        Assert.Contains(nameof(IInventoryClient), record.Message, StringComparison.Ordinal);
+    }
+
     private interface IInventoryClient : IDataClient;
 
     private sealed class InventoryClient : IInventoryClient

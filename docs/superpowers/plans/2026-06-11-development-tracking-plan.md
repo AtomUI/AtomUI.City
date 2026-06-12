@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`cdeb7b1 feat(Data): diagnose client registrations`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，570 tests passed
-- 当前状态：已完成 Data client unregistration diagnostic
+- 当前提交：`3d82c3a feat(Data): diagnose client unregistrations`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，571 tests passed
+- 当前状态：已完成 Data client unregistration missing diagnostic
 
 **最新实现检查点：**
 
@@ -233,6 +233,7 @@
 - [x] Data connection registration rejection diagnostic
 - [x] Data client registration diagnostic
 - [x] Data client unregistration diagnostic
+- [x] Data client unregistration missing diagnostic
 
 ## 状态定义
 
