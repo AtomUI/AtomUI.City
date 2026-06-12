@@ -66,7 +66,7 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
         var cacheKey = CreateCacheKey(request, context);
         if (cacheKey is not null)
         {
-            var cachedResult = await ReadCacheAsync<TResponse>(cacheKey, operationToken).ConfigureAwait(false);
+            var cachedResult = await ReadCacheAsync<TResponse>(cacheKey, context, operationToken).ConfigureAwait(false);
             if (cachedResult is not null)
             {
                 WriteRequestResultDiagnostic(context, cachedResult);
@@ -108,7 +108,7 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
 
                 if (result.Succeeded || !ShouldRetry(request, result, attempt, maxAttempts))
                 {
-                    await WriteCacheAsync(cacheKey, result, operationToken).ConfigureAwait(false);
+                    await WriteCacheAsync(cacheKey, result, context, operationToken).ConfigureAwait(false);
                     WriteRequestResultDiagnostic(context, result);
 
                     return result;
@@ -307,6 +307,7 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
 
     private async ValueTask<DataResult<TResponse>?> ReadCacheAsync<TResponse>(
         DataCacheKey cacheKey,
+        DataRequestContext context,
         CancellationToken cancellationToken)
     {
         try
@@ -321,8 +322,13 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
         {
             return DataResult<TResponse>.Cancelled();
         }
-        catch
+        catch (Exception exception)
         {
+            WriteCacheDiagnostic(
+                DataDiagnosticIds.CacheReadFailed,
+                $"Data operation '{context.OperationName}' cache read failed: {exception.Message}",
+                context);
+
             return null;
         }
     }
@@ -330,6 +336,7 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
     private async ValueTask WriteCacheAsync<TResponse>(
         DataCacheKey? cacheKey,
         DataResult<TResponse> result,
+        DataRequestContext context,
         CancellationToken cancellationToken)
     {
         if (cacheKey is null || !result.Succeeded)
@@ -346,14 +353,34 @@ public sealed class DataRequestPipeline : IDataRequestPipeline
         catch (OperationCanceledException)
         {
         }
-        catch
+        catch (Exception exception)
         {
+            WriteCacheDiagnostic(
+                DataDiagnosticIds.CacheWriteFailed,
+                $"Data operation '{context.OperationName}' cache write failed: {exception.Message}",
+                context);
         }
     }
 
     private void WriteDiagnostic(string code, string message)
     {
         _diagnostics?.Write(new DataDiagnosticRecord(code, message, DataDiagnosticSeverity.Trace));
+    }
+
+    private void WriteCacheDiagnostic(
+        string code,
+        string message,
+        DataRequestContext context)
+    {
+        _diagnostics?.Write(new DataDiagnosticRecord(
+            code,
+            message,
+            DataDiagnosticSeverity.Warning,
+            context.OperationId,
+            context.ClientId,
+            context.OperationName,
+            context.TransportKind,
+            context.Attempt));
     }
 
     private void WriteRequestResultDiagnostic<TResponse>(

@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`f3b3783 fix(Data): diagnose credential resolution failures`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，550 tests passed
-- 当前状态：已完成 Data request cache hit/write
+- 当前提交：`690da8e feat(Data): add request cache pipeline`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，552 tests passed
+- 当前状态：已完成 Data cache failure diagnostics
 
 **最新实现检查点：**
 
@@ -211,6 +211,8 @@
 - [x] Data request cache contract
 - [x] Data request cache hit
 - [x] Data request cache write
+- [x] Data cache read failure diagnostic
+- [x] Data cache write failure diagnostic
 
 ## 状态定义
 

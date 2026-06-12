@@ -121,6 +121,63 @@ public sealed class DataPipelineTests
     }
 
     [Fact]
+    public async Task PipelineWritesCacheReadFailureDiagnosticAndContinuesToTransport()
+    {
+        var diagnostics = new InMemoryDataDiagnostics();
+        var cache = new ThrowingRequestCache(readException: new InvalidOperationException("cache offline"));
+        var transport = new RecordingTransport(_ => DataResult<string>.Success("transport"));
+        var pipeline = new DataRequestPipeline(transport, diagnostics: diagnostics, cache: cache);
+        var request = new DataRequest<string>(
+            "catalog",
+            "get-items",
+            DataTransportKind.Http)
+        {
+            Cache = DataCacheOptions.Enabled("items:v1"),
+        };
+
+        var result = await pipeline.SendAsync(request);
+
+        var record = Assert.Single(
+            diagnostics.Records,
+            record => record.Code == DataDiagnosticIds.CacheReadFailed);
+        Assert.True(result.Succeeded);
+        Assert.Equal("transport", result.Value);
+        Assert.Equal(1, transport.Attempts);
+        Assert.Equal("catalog", record.ClientId);
+        Assert.Equal("get-items", record.OperationName);
+        Assert.Equal(DataTransportKind.Http, record.TransportKind);
+    }
+
+    [Fact]
+    public async Task PipelineWritesCacheWriteFailureDiagnosticAndReturnsTransportResult()
+    {
+        var diagnostics = new InMemoryDataDiagnostics();
+        var cache = new ThrowingRequestCache(writeException: new InvalidOperationException("cache readonly"));
+        var transport = new RecordingTransport(_ => DataResult<string>.Success("transport"));
+        var pipeline = new DataRequestPipeline(transport, diagnostics: diagnostics, cache: cache);
+        var request = new DataRequest<string>(
+            "catalog",
+            "get-items",
+            DataTransportKind.Http)
+        {
+            Cache = DataCacheOptions.Enabled("items:v1"),
+        };
+
+        var result = await pipeline.SendAsync(request);
+
+        var record = Assert.Single(
+            diagnostics.Records,
+            record => record.Code == DataDiagnosticIds.CacheWriteFailed);
+        Assert.True(result.Succeeded);
+        Assert.Equal("transport", result.Value);
+        Assert.Equal(1, transport.Attempts);
+        Assert.Equal("catalog", record.ClientId);
+        Assert.Equal("get-items", record.OperationName);
+        Assert.Equal(DataTransportKind.Http, record.TransportKind);
+        Assert.Equal(1, record.Attempt);
+    }
+
+    [Fact]
     public async Task PipelineSelectsTransportByRequestKind()
     {
         var httpTransport = new RecordingTransport(_ => DataResult<string>.Success("http"));
@@ -453,6 +510,43 @@ public sealed class DataPipelineTests
             CancellationToken cancellationToken = default)
         {
             throw _exception;
+        }
+    }
+
+    private sealed class ThrowingRequestCache : IDataRequestCache
+    {
+        private readonly Exception? _readException;
+        private readonly Exception? _writeException;
+
+        public ThrowingRequestCache(Exception? readException = null, Exception? writeException = null)
+        {
+            _readException = readException;
+            _writeException = writeException;
+        }
+
+        public ValueTask<DataCacheLookup<TResponse>> TryGetAsync<TResponse>(
+            DataCacheKey key,
+            CancellationToken cancellationToken = default)
+        {
+            if (_readException is not null)
+            {
+                throw _readException;
+            }
+
+            return ValueTask.FromResult(DataCacheLookup<TResponse>.Miss());
+        }
+
+        public ValueTask SetAsync<TResponse>(
+            DataCacheKey key,
+            TResponse? value,
+            CancellationToken cancellationToken = default)
+        {
+            if (_writeException is not null)
+            {
+                throw _writeException;
+            }
+
+            return ValueTask.CompletedTask;
         }
     }
 

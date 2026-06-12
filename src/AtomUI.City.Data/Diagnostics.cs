@@ -7,6 +7,8 @@ public static class DataDiagnosticIds
     public const string ConnectionStopped = "AUCDATA003";
     public const string RequestCompleted = "AUCDATA004";
     public const string RequestFailed = "AUCDATA005";
+    public const string CacheReadFailed = "AUCDATA006";
+    public const string CacheWriteFailed = "AUCDATA007";
 }
 
 public sealed record DataDiagnosticRecord(
