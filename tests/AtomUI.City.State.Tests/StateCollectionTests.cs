@@ -296,4 +296,20 @@ public sealed class StateCollectionTests
         Assert.Equal(1, collection.Items["settings"]);
         Assert.Empty(notifications);
     }
+
+    [Fact]
+    public void SnapshotCopiesItemsFromConstructorInput()
+    {
+        var items = new List<StateCollectionSnapshotEntry<string, int>>
+        {
+            new("settings", 1, ItemVersion: 1),
+        };
+        var snapshot = new StateCollectionSnapshot<string, int>(collectionVersion: 1, items);
+
+        items.Add(new StateCollectionSnapshotEntry<string, int>("layout", 2, ItemVersion: 1));
+
+        Assert.Equal(1, snapshot.ItemCount);
+        var item = Assert.Single(snapshot.Items);
+        Assert.Equal("settings", item.Key);
+    }
 }
