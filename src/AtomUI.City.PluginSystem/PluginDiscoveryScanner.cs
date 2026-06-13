@@ -83,6 +83,17 @@ public static class PluginDiscoveryScanner
                 continue;
             }
 
+            if (!string.Equals(manifest.PackageId, installation.PackageId, StringComparison.Ordinal))
+            {
+                diagnostics.Add(new PluginDiagnostic(
+                    PluginDiagnosticIds.PluginPackageIdMismatch,
+                    $"Install record package id '{installation.PackageId}' does not match manifest package id '{manifest.PackageId}'.",
+                    installation.PluginId,
+                    "packageId",
+                    installRecordPath));
+                continue;
+            }
+
             plugins.Add(PluginDescriptor.FromManifest(manifest, installation.RootPath));
         }
 
