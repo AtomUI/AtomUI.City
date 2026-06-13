@@ -17,7 +17,7 @@ public sealed class ServiceRegistrationMetadata
 
         ImplementationTypeName = implementationTypeName;
         Lifetime = lifetime;
-        ExposedServiceTypeNames = exposedServiceTypeNames ?? throw new ArgumentNullException(nameof(exposedServiceTypeNames));
+        ExposedServiceTypeNames = Array.AsReadOnly((exposedServiceTypeNames ?? throw new ArgumentNullException(nameof(exposedServiceTypeNames))).ToArray());
         Replace = replace;
         TryAdd = tryAdd;
         Key = key;

@@ -35,6 +35,39 @@ public sealed class ServiceRegistrationManifestBuilderTests
         Assert.Empty(result.Manifest.Registrations);
     }
 
+    [Fact]
+    public void BuildReturnsReadonlyServiceRegistrationCollections()
+    {
+        var result = ServiceRegistrationManifestBuilder.Build(
+            [
+                Registration("Sample.App.SystemClock", ServiceRegistrationLifetime.Singleton, "Sample.App.IClock"),
+            ]);
+        var registrations = Assert.IsAssignableFrom<IList<ServiceRegistrationMetadata>>(result.Manifest.Registrations);
+        var diagnostics = Assert.IsAssignableFrom<IList<GeneratorDiagnostic>>(result.Diagnostics);
+
+        Assert.Throws<NotSupportedException>(() => registrations[0] = Registration("Sample.App.ChangedClock", ServiceRegistrationLifetime.Singleton, "Sample.App.IClock"));
+        Assert.Throws<NotSupportedException>(() => diagnostics.Add(new GeneratorDiagnostic(GeneratorDiagnostics.InvalidManifestInput, "Changed")));
+        Assert.Equal("Sample.App.SystemClock", result.Manifest.Registrations[0].ImplementationTypeName);
+        Assert.Empty(result.Diagnostics);
+    }
+
+    [Fact]
+    public void ServiceRegistrationMetadataExposedServicesRejectExternalMutation()
+    {
+        var exposedServices = new List<string> { "Sample.App.IClock" };
+        var registration = new ServiceRegistrationMetadata(
+            "Sample.App.SystemClock",
+            ServiceRegistrationLifetime.Singleton,
+            exposedServices,
+            replace: false,
+            tryAdd: false,
+            key: null);
+        var exposed = Assert.IsAssignableFrom<IList<string>>(registration.ExposedServiceTypeNames);
+
+        Assert.Throws<NotSupportedException>(() => exposed[0] = "Sample.App.IChangedClock");
+        Assert.Equal("Sample.App.IClock", registration.ExposedServiceTypeNames[0]);
+    }
+
     private static ServiceRegistrationMetadata Registration(
         string implementationTypeName,
         ServiceRegistrationLifetime lifetime,

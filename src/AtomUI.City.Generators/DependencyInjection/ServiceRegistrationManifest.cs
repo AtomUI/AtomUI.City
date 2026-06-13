@@ -4,7 +4,7 @@ public sealed class ServiceRegistrationManifest
 {
     public ServiceRegistrationManifest(IReadOnlyList<ServiceRegistrationMetadata> registrations)
     {
-        Registrations = registrations ?? throw new ArgumentNullException(nameof(registrations));
+        Registrations = Array.AsReadOnly((registrations ?? throw new ArgumentNullException(nameof(registrations))).ToArray());
     }
 
     public IReadOnlyList<ServiceRegistrationMetadata> Registrations { get; }
