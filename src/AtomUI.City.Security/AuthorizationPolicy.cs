@@ -11,7 +11,7 @@ public sealed class AuthorizationPolicy
         ArgumentNullException.ThrowIfNull(requirements);
 
         Name = name;
-        Requirements = requirements.ToArray();
+        Requirements = Array.AsReadOnly(requirements.ToArray());
         ContributionId = contributionId;
     }
 

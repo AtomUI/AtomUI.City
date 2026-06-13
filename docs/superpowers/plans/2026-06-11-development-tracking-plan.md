@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`aefcc25 fix(Routing): protect route collections`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，615 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
-- 当前状态：已完成 Routing template readonly collections
+- 当前提交：`d771de0 fix(Routing): protect route template collections`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，616 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
+- 当前状态：已完成 Security policy requirements readonly collection
 
 **最新实现检查点：**
 
@@ -272,6 +272,7 @@
 - [x] PluginManifest readonly nested collections
 - [x] Routing descriptor and graph readonly collections
 - [x] Routing template readonly collections
+- [x] Security policy requirements readonly collection
 
 ## 状态定义
 
