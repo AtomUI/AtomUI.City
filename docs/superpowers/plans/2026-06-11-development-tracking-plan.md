@@ -5,12 +5,13 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`4fc7be8 fix(PluginSystem): report discovered package mismatches`
-- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter DiscoveryScannerReportsInvalidManifestFields` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，57 tests passed
-- 当前状态：已完成 PluginSystem discovery manifest validation diagnostics
+- 当前提交：`1ff0cfd fix(PluginSystem): validate discovered manifests`
+- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter DiscoveryScannerReportsMissingInstallRecords` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，58 tests passed
+- 当前状态：已完成 PluginSystem discovery missing install record diagnostic
 
 **最新实现检查点：**
 
+- [x] PluginSystem discovery missing install record diagnostic
 - [x] PluginSystem discovery manifest validation diagnostics
 - [x] PluginSystem discovery install record package id mismatch diagnostic
 - [x] PluginSystem discovery invalid manifest JSON diagnostic

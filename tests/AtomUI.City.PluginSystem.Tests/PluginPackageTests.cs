@@ -203,6 +203,26 @@ public sealed class PluginPackageTests
     }
 
     [Fact]
+    public void DiscoveryScannerReportsMissingInstallRecords()
+    {
+        using var workspace = new PluginTestWorkspace();
+        var pluginsRoot = workspace.CreateDirectory("plugins");
+        var installedVersionPath = Path.Combine(pluginsRoot, "installed", "com.company.broken", "1.0.0");
+        Directory.CreateDirectory(installedVersionPath);
+        var installRecordPath = Path.Combine(installedVersionPath, "install.json");
+
+        var discovery = PluginDiscoveryScanner.DiscoverInstalled(pluginsRoot);
+
+        Assert.False(discovery.Succeeded);
+        Assert.Empty(discovery.Plugins);
+        Assert.Contains(
+            discovery.Diagnostics,
+            diagnostic => diagnostic.Code == PluginDiagnosticIds.MissingInstallRecord
+                && diagnostic.Field == "installRecord"
+                && diagnostic.Path == installRecordPath);
+    }
+
+    [Fact]
     public async Task DiscoveryScannerReportsInstallRecordVersionMismatch()
     {
         using var workspace = new PluginTestWorkspace();

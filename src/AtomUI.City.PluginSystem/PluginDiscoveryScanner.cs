@@ -19,6 +19,16 @@ public static class PluginDiscoveryScanner
 
         foreach (var installRecordPath in EnumerateInstallRecords(installedRoot))
         {
+            if (!File.Exists(installRecordPath))
+            {
+                diagnostics.Add(new PluginDiagnostic(
+                    PluginDiagnosticIds.MissingInstallRecord,
+                    $"Plugin install record '{installRecordPath}' was not found.",
+                    Field: "installRecord",
+                    Path: installRecordPath));
+                continue;
+            }
+
             PluginInstallation installation;
             try
             {
@@ -116,10 +126,7 @@ public static class PluginDiscoveryScanner
                 var installRecordPath = Path.Combine(
                     versionDirectory,
                     PluginPackagePaths.InstallRecordFileName);
-                if (File.Exists(installRecordPath))
-                {
-                    yield return installRecordPath;
-                }
+                yield return installRecordPath;
             }
         }
     }
