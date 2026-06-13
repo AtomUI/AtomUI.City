@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`e2266b2 fix(Mvvm): protect validation collections`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，631 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
-- 当前状态：已完成 Testing source generation test case readonly collections
+- 当前提交：`c568f60 fix(Testing): protect source generation test case collections`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，632 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
+- 当前状态：已完成 Testing diagnostics readonly entries
 
 **最新实现检查点：**
 
@@ -288,6 +288,7 @@
 - [x] Presentation validation visual state readonly snapshot
 - [x] MVVM validation scope readonly collections
 - [x] Testing source generation test case readonly collections
+- [x] Testing diagnostics readonly entries
 
 ## 状态定义
 

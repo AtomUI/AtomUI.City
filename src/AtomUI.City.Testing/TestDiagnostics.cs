@@ -1,10 +1,18 @@
+using System.Collections.ObjectModel;
+
 namespace AtomUI.City.Testing;
 
 public sealed class TestDiagnostics
 {
     private readonly List<TestDiagnosticEntry> _entries = [];
+    private readonly ReadOnlyCollection<TestDiagnosticEntry> _readOnlyEntries;
 
-    public IReadOnlyList<TestDiagnosticEntry> Entries => _entries;
+    public TestDiagnostics()
+    {
+        _readOnlyEntries = new ReadOnlyCollection<TestDiagnosticEntry>(_entries);
+    }
+
+    public IReadOnlyList<TestDiagnosticEntry> Entries => _readOnlyEntries;
 
     public void Add(string code, string message, TestLayer? layer = null)
     {

@@ -62,6 +62,20 @@ public sealed class SharedTestUtilitiesTests
         Assert.True(diagnostics.Contains("CITY1002"));
     }
 
+    [Fact]
+    public void TestDiagnosticsEntriesRejectExternalMutation()
+    {
+        var diagnostics = new TestDiagnostics();
+
+        diagnostics.Add("CITY1001", "first");
+        var entries = Assert.IsAssignableFrom<IList<TestDiagnosticEntry>>(diagnostics.Entries);
+
+        Assert.Throws<NotSupportedException>(() => entries.Add(new TestDiagnosticEntry("CITY1002", "second")));
+        Assert.Single(diagnostics.Entries);
+        Assert.True(diagnostics.Contains("CITY1001"));
+        Assert.False(diagnostics.Contains("CITY1002"));
+    }
+
     private sealed class DelegateDisposable : IDisposable
     {
         private readonly Action _dispose;
