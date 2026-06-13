@@ -5,14 +5,16 @@ namespace AtomUI.City.DependencyInjection;
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
 public sealed class ScopedServiceAttribute : Attribute
 {
+    private readonly Type[] _serviceTypes;
+
     public ScopedServiceAttribute(params Type[] serviceTypes)
     {
-        ServiceTypes = serviceTypes ?? throw new ArgumentNullException(nameof(serviceTypes));
+        _serviceTypes = (serviceTypes ?? throw new ArgumentNullException(nameof(serviceTypes))).ToArray();
     }
 
     public ServiceLifetime Lifetime => ServiceLifetime.Scoped;
 
-    public Type[] ServiceTypes { get; }
+    public Type[] ServiceTypes => _serviceTypes.ToArray();
 
     public bool Replace { get; set; }
 

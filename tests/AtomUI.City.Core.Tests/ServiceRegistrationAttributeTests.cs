@@ -39,6 +39,25 @@ public sealed class ServiceRegistrationAttributeTests
     }
 
     [Fact]
+    public void ServiceTypeAttributesRejectExternalArrayMutation()
+    {
+        Type[] scopedTypes = [typeof(IClock)];
+        Type[] exposedTypes = [typeof(IClock)];
+        var scoped = new ScopedServiceAttribute(scopedTypes);
+        var exposed = new ExposeServicesAttribute(exposedTypes);
+        var scopedServiceTypes = scoped.ServiceTypes;
+        var exposedServiceTypes = exposed.ServiceTypes;
+
+        scopedTypes[0] = typeof(ISystemClock);
+        exposedTypes[0] = typeof(ISystemClock);
+        scopedServiceTypes[0] = typeof(ISystemClock);
+        exposedServiceTypes[0] = typeof(ISystemClock);
+
+        Assert.Equal(typeof(IClock), scoped.ServiceTypes[0]);
+        Assert.Equal(typeof(IClock), exposed.ServiceTypes[0]);
+    }
+
+    [Fact]
     public void DependencyMarkerInterfacesAreEmptyContracts()
     {
         Assert.True(typeof(ISingletonDependency).IsInterface);
