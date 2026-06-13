@@ -4,6 +4,8 @@ namespace AtomUI.City.Hosting;
 
 public sealed class ApplicationContext : IApplicationContext
 {
+    private IReadOnlyList<string> _startupArguments = Array.AsReadOnly(Array.Empty<string>());
+
     private sealed class NullServiceProvider : IServiceProvider
     {
         public static readonly NullServiceProvider Instance = new();
@@ -28,7 +30,16 @@ public sealed class ApplicationContext : IApplicationContext
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
         "AtomUI.City.Application");
 
-    public IReadOnlyList<string> StartupArguments { get; internal set; } = Array.Empty<string>();
+    public IReadOnlyList<string> StartupArguments
+    {
+        get => _startupArguments;
+        internal set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _startupArguments = Array.AsReadOnly(value.ToArray());
+        }
+    }
 
     public IConfiguration Configuration { get; internal set; } = new ConfigurationBuilder().Build();
 
