@@ -44,6 +44,23 @@ public sealed class DataResultTests
     }
 
     [Fact]
+    public void DataErrorMessageArgumentsRejectExternalMutation()
+    {
+        var arguments = new List<object?> { "settings.write" };
+        var error = new DataError(
+            DataErrorKind.AuthorizationForbidden,
+            "Permission 'settings.write' is required.",
+            MessageKey: "Errors.AuthorizationForbidden",
+            MessageArguments: arguments);
+        var exposedArguments = Assert.IsAssignableFrom<IList<object?>>(error.MessageArguments);
+
+        arguments[0] = "changed";
+
+        Assert.Throws<NotSupportedException>(() => exposedArguments[0] = "changed");
+        Assert.Equal("settings.write", error.MessageArguments![0]);
+    }
+
+    [Fact]
     public void HttpStatusMappingIncludesLocalizableMessageKey()
     {
         var error = DataErrorMapper.FromHttpStatusCode(HttpStatusCode.Forbidden);
