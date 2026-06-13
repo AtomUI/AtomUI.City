@@ -44,6 +44,31 @@ public static class PluginDiscoveryScanner
                 continue;
             }
 
+            var installedVersionPath = Path.GetDirectoryName(installRecordPath)!;
+            var expectedRootPath = Path.Combine(installedVersionPath, PluginPackagePaths.RuntimeRootDirectoryName);
+            if (!AreSamePath(installation.RootPath, expectedRootPath))
+            {
+                diagnostics.Add(new PluginDiagnostic(
+                    PluginDiagnosticIds.InvalidInstallRecord,
+                    $"Plugin install record root path '{installation.RootPath}' must match '{expectedRootPath}'.",
+                    installation.PluginId,
+                    "rootPath",
+                    installRecordPath));
+                continue;
+            }
+
+            var expectedManifestPath = PluginPackagePaths.GetManifestPath(installation.RootPath);
+            if (!AreSamePath(installation.ManifestPath, expectedManifestPath))
+            {
+                diagnostics.Add(new PluginDiagnostic(
+                    PluginDiagnosticIds.InvalidInstallRecord,
+                    $"Plugin install record manifest path '{installation.ManifestPath}' must match '{expectedManifestPath}'.",
+                    installation.PluginId,
+                    "manifestPath",
+                    installRecordPath));
+                continue;
+            }
+
             if (!File.Exists(installation.ManifestPath))
             {
                 diagnostics.Add(new PluginDiagnostic(
@@ -129,6 +154,17 @@ public static class PluginDiscoveryScanner
                 yield return installRecordPath;
             }
         }
+    }
+
+    private static bool AreSamePath(string left, string right)
+    {
+        return string.Equals(NormalizePath(left), NormalizePath(right), StringComparison.Ordinal);
+    }
+
+    private static string NormalizePath(string path)
+    {
+        return Path.GetFullPath(path)
+            .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
     }
 }
 

@@ -252,6 +252,73 @@ public sealed class PluginPackageTests
     }
 
     [Fact]
+    public async Task DiscoveryScannerRejectsInstallRecordsOutsideInstalledVersionPath()
+    {
+        using var workspace = new PluginTestWorkspace();
+        workspace.WriteStandardManifest();
+        var pluginsRoot = workspace.CreateDirectory("plugins");
+        var installedVersionPath = Path.Combine(pluginsRoot, "installed", "com.company.sales", "1.0.0");
+        var installRecordPath = Path.Combine(installedVersionPath, "install.json");
+        Directory.CreateDirectory(installedVersionPath);
+        await File.WriteAllTextAsync(
+            installRecordPath,
+            $$"""
+            {
+              "pluginId": "com.company.sales",
+              "packageId": "Company.Sales.Plugin",
+              "version": "1.0.0",
+              "rootPath": "{{workspace.Root}}",
+              "manifestPath": "{{workspace.ManifestPath}}"
+            }
+            """);
+
+        var discovery = PluginDiscoveryScanner.DiscoverInstalled(pluginsRoot);
+
+        Assert.False(discovery.Succeeded);
+        Assert.Empty(discovery.Plugins);
+        Assert.Contains(
+            discovery.Diagnostics,
+            diagnostic => diagnostic.Code == PluginDiagnosticIds.InvalidInstallRecord
+                && diagnostic.PluginId == "com.company.sales"
+                && diagnostic.Field == "rootPath"
+                && diagnostic.Path == installRecordPath);
+    }
+
+    [Fact]
+    public async Task DiscoveryScannerRejectsInstallRecordsWithManifestPathOutsideRuntimeRoot()
+    {
+        using var workspace = new PluginTestWorkspace();
+        workspace.WriteStandardManifest();
+        var pluginsRoot = workspace.CreateDirectory("plugins");
+        var installedVersionPath = Path.Combine(pluginsRoot, "installed", "com.company.sales", "1.0.0");
+        var installedRootPath = Path.Combine(installedVersionPath, "root");
+        var installRecordPath = Path.Combine(installedVersionPath, "install.json");
+        Directory.CreateDirectory(installedRootPath);
+        await File.WriteAllTextAsync(
+            installRecordPath,
+            $$"""
+            {
+              "pluginId": "com.company.sales",
+              "packageId": "Company.Sales.Plugin",
+              "version": "1.0.0",
+              "rootPath": "{{installedRootPath}}",
+              "manifestPath": "{{workspace.ManifestPath}}"
+            }
+            """);
+
+        var discovery = PluginDiscoveryScanner.DiscoverInstalled(pluginsRoot);
+
+        Assert.False(discovery.Succeeded);
+        Assert.Empty(discovery.Plugins);
+        Assert.Contains(
+            discovery.Diagnostics,
+            diagnostic => diagnostic.Code == PluginDiagnosticIds.InvalidInstallRecord
+                && diagnostic.PluginId == "com.company.sales"
+                && diagnostic.Field == "manifestPath"
+                && diagnostic.Path == installRecordPath);
+    }
+
+    [Fact]
     public async Task DiscoveryScannerReportsInstallRecordVersionMismatch()
     {
         using var workspace = new PluginTestWorkspace();
