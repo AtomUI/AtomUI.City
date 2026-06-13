@@ -38,6 +38,25 @@ public sealed class ValidationScopeTests
     }
 
     [Fact]
+    public void ValidationCollectionsRejectExternalMutation()
+    {
+        var scope = new ValidationScope();
+
+        scope.SetInvalid("Name", "Name is required.");
+        var errors = Assert.IsAssignableFrom<IDictionary<string, IReadOnlyList<string>>>(scope.Errors);
+        var messages = Assert.IsAssignableFrom<IDictionary<string, IReadOnlyList<ValidationMessage>>>(scope.Messages);
+        var errorMessages = Assert.IsAssignableFrom<IList<string>>(scope.Errors["Name"]);
+        var validationMessages = Assert.IsAssignableFrom<IList<ValidationMessage>>(scope.Messages["Name"]);
+
+        Assert.Throws<NotSupportedException>(() => errors["Other"] = ["Changed"]);
+        Assert.Throws<NotSupportedException>(() => messages["Other"] = [new ValidationMessage("Other", "Changed")]);
+        Assert.Throws<NotSupportedException>(() => errorMessages[0] = "Changed");
+        Assert.Throws<NotSupportedException>(() => validationMessages[0] = new ValidationMessage("Name", "Changed"));
+        Assert.Equal("Name is required.", scope.Errors["Name"][0]);
+        Assert.Equal("Name is required.", scope.Messages["Name"][0].Message);
+    }
+
+    [Fact]
     public void ValidationFailureIsDistinctFromInvalidState()
     {
         var scope = new ValidationScope();
