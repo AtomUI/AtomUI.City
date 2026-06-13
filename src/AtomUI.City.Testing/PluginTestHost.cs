@@ -14,7 +14,7 @@ public sealed class PluginTestHost : IDisposable, IAsyncDisposable
 
     public TestHost Host { get; }
 
-    public IReadOnlyCollection<PluginTestRecord> Records => _records.Values;
+    public IReadOnlyCollection<PluginTestRecord> Records => Array.AsReadOnly(_records.Values.ToArray());
 
     public static PluginTestHostBuilder CreateBuilder()
     {

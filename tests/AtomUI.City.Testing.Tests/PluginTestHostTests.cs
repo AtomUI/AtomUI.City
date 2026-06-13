@@ -35,4 +35,24 @@ public sealed class PluginTestHostTests
         Assert.Equal(PluginTestState.Inactive, (await host.DeactivateAsync("Sample.Plugin")).State);
         Assert.Equal(PluginTestState.Unloaded, (await host.UnloadAsync("Sample.Plugin")).State);
     }
+
+    [Fact]
+    public async Task RecordsExposeStableSnapshot()
+    {
+        await using var host = PluginTestHost
+            .CreateBuilder()
+            .UsePlugin("First.Plugin", "1.0.0")
+            .UsePlugin("Second.Plugin", "1.0.0")
+            .Build();
+
+        await host.InstallAsync("First.Plugin");
+
+        var records = host.Records;
+
+        await host.InstallAsync("Second.Plugin");
+
+        var record = Assert.Single(records);
+        Assert.Equal("First.Plugin", record.Id);
+        Assert.Equal(2, host.Records.Count);
+    }
 }

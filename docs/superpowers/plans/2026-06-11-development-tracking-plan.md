@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`99a3b96 fix(Cli): protect envelope data`
-- 当前测试：`dotnet test tests/AtomUI.City.Data.Tests/AtomUI.City.Data.Tests.csproj --no-restore --filter DataErrorInitMessageArgumentsRejectExternalMutation` 通过；`dotnet test tests/AtomUI.City.Data.Tests/AtomUI.City.Data.Tests.csproj --no-restore` 通过，99 tests passed
-- 当前状态：已完成 DataError init readonly message arguments
+- 当前提交：`6c79d46 fix(Data): protect error init arguments`
+- 当前测试：`dotnet test tests/AtomUI.City.Testing.Tests/AtomUI.City.Testing.Tests.csproj --no-restore --filter RecordsExposeStableSnapshot` 通过；`dotnet test tests/AtomUI.City.Testing.Tests/AtomUI.City.Testing.Tests.csproj --no-restore` 通过，28 tests passed
+- 当前状态：已完成 Testing plugin host readonly records snapshot
 
 **最新实现检查点：**
 
@@ -313,6 +313,7 @@
 - [x] Security registry/provider readonly collections
 - [x] CLI envelope readonly data snapshot
 - [x] DataError init readonly message arguments
+- [x] Testing plugin host readonly records snapshot
 
 ## 状态定义
 
