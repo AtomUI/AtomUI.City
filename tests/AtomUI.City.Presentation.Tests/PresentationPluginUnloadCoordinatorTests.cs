@@ -8,6 +8,30 @@ namespace AtomUI.City.Presentation.Tests;
 public sealed class PresentationPluginUnloadCoordinatorTests
 {
     [Fact]
+    public void UnloadResultErrorsRejectExternalListMutation()
+    {
+        var result = new PresentationPluginUnloadResult(
+            "com.company.sales",
+            contributionId: null,
+            closedViewCount: 0,
+            revokedInteractionHandlerCount: 0,
+            revokedViewDescriptorCount: 0,
+            revokedResourceContributionCount: 0,
+            resourceDictionariesRevoked: false,
+            [
+                new PresentationPluginUnloadError(
+                    PresentationPluginUnloadErrorKind.ActiveViewsRemaining,
+                    "Active views remain"),
+            ]);
+        var errors = Assert.IsAssignableFrom<IList<PresentationPluginUnloadError>>(result.Errors);
+
+        Assert.Throws<NotSupportedException>(() => errors[0] = new PresentationPluginUnloadError(
+            PresentationPluginUnloadErrorKind.ResourceDictionaryRevokeFailed,
+            "Changed"));
+        Assert.Equal(PresentationPluginUnloadErrorKind.ActiveViewsRemaining, result.Errors[0].Kind);
+    }
+
+    [Fact]
     public void ServiceCollectionRegistersPresentationPluginUnloadCoordinator()
     {
         var services = new ServiceCollection();

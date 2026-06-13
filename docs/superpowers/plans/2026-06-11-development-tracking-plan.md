@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`7bae5d9 fix(Templates): protect plan collections`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，619 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
-- 当前状态：已完成 Template render diagnostics readonly collection
+- 当前提交：`524e2f6 fix(Templates): protect render diagnostics`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，620 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
+- 当前状态：已完成 Presentation plugin unload result readonly errors
 
 **最新实现检查点：**
 
@@ -276,6 +276,7 @@
 - [x] CLI envelope diagnostics readonly collection
 - [x] Template plan readonly collections
 - [x] Template render diagnostics readonly collection
+- [x] Presentation plugin unload result readonly errors
 
 ## 状态定义
 

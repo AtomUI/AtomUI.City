@@ -22,7 +22,7 @@ public sealed class PresentationPluginUnloadResult
         RevokedViewDescriptorCount = revokedViewDescriptorCount;
         RevokedResourceContributionCount = revokedResourceContributionCount;
         ResourceDictionariesRevoked = resourceDictionariesRevoked;
-        Errors = errors.ToArray();
+        Errors = Array.AsReadOnly(errors.ToArray());
     }
 
     public string PluginId { get; }
