@@ -13,7 +13,7 @@ public sealed class CliEnvelope
         Success = success;
         ExitCode = exitCode;
         Diagnostics = Array.AsReadOnly(diagnostics.ToArray());
-        Data = data ?? new Dictionary<string, object?>();
+        Data = NormalizeData(data);
     }
 
     public string SchemaVersion { get; } = "1.0";
@@ -43,5 +43,22 @@ public sealed class CliEnvelope
         params CliDiagnostic[] diagnostics)
     {
         return new CliEnvelope(command, success: false, exitCode, diagnostics, data: new Dictionary<string, object?>());
+    }
+
+    private static object NormalizeData(object? data)
+    {
+        if (data is null)
+        {
+            return new System.Collections.ObjectModel.ReadOnlyDictionary<string, object?>(
+                new Dictionary<string, object?>(StringComparer.Ordinal));
+        }
+
+        if (data is IReadOnlyDictionary<string, object?> dictionary)
+        {
+            return new System.Collections.ObjectModel.ReadOnlyDictionary<string, object?>(
+                new Dictionary<string, object?>(dictionary, StringComparer.Ordinal));
+        }
+
+        return data;
     }
 }

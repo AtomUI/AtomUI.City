@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`355e658 fix(Routing): protect matcher results`
-- 当前测试：`dotnet test tests/AtomUI.City.Security.Tests/AtomUI.City.Security.Tests.csproj --no-restore --filter "PermissionsRejectsExternalListMutation|PoliciesRejectsExternalListMutation"` 通过；`dotnet test tests/AtomUI.City.Security.Tests/AtomUI.City.Security.Tests.csproj --no-restore` 通过，40 tests passed
-- 当前状态：已完成 Security registry/provider readonly collections
+- 当前提交：`aef6964 fix(Security): protect registry collections`
+- 当前测试：`dotnet test tests/AtomUI.City.Cli.Tests/AtomUI.City.Cli.Tests.csproj --no-restore --filter "EnvelopeCopiesDictionaryDataSnapshot|EnvelopeDictionaryDataRejectsExternalMutation"` 通过；`dotnet test tests/AtomUI.City.Cli.Tests/AtomUI.City.Cli.Tests.csproj --no-restore` 通过，17 tests passed
+- 当前状态：已完成 CLI envelope readonly data snapshot
 
 **最新实现检查点：**
 
@@ -311,6 +311,7 @@
 - [x] Routing route reference readonly bound parameters
 - [x] Routing matcher readonly match collection
 - [x] Security registry/provider readonly collections
+- [x] CLI envelope readonly data snapshot
 
 ## 状态定义
 

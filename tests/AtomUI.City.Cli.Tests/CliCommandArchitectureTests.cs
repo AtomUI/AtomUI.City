@@ -62,4 +62,30 @@ public sealed class CliCommandArchitectureTests
         Assert.Equal("AUCCLI0001", envelope.Diagnostics[0].Code);
         Assert.Equal("AUCCLI0002", envelope.Diagnostics[1].Code);
     }
+
+    [Fact]
+    public void EnvelopeCopiesDictionaryDataSnapshot()
+    {
+        var data = new Dictionary<string, object?> { ["path"] = "source" };
+        var envelope = CliEnvelope.Succeeded("atomui city inspect", data);
+
+        data["path"] = "changed";
+        data["extra"] = true;
+
+        var envelopeData = Assert.IsAssignableFrom<IReadOnlyDictionary<string, object?>>(envelope.Data);
+        Assert.Equal("source", envelopeData["path"]);
+        Assert.False(envelopeData.ContainsKey("extra"));
+    }
+
+    [Fact]
+    public void EnvelopeDictionaryDataRejectsExternalMutation()
+    {
+        var envelope = CliEnvelope.Succeeded(
+            "atomui city inspect",
+            new Dictionary<string, object?> { ["path"] = "source" });
+
+        var envelopeData = Assert.IsAssignableFrom<IDictionary<string, object?>>(envelope.Data);
+
+        Assert.Throws<NotSupportedException>(() => envelopeData["path"] = "changed");
+    }
 }
