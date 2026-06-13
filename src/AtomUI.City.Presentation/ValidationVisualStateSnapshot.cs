@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using AtomUI.City.Mvvm;
 
 namespace AtomUI.City.Presentation;
@@ -42,9 +43,9 @@ public sealed class ValidationVisualStateSnapshot
 
         foreach (var item in values)
         {
-            copy[item.Key] = item.Value.ToArray();
+            copy[item.Key] = Array.AsReadOnly(item.Value.ToArray());
         }
 
-        return copy;
+        return new ReadOnlyDictionary<string, IReadOnlyList<T>>(copy);
     }
 }

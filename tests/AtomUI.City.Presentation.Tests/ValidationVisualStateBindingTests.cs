@@ -30,6 +30,23 @@ public sealed class ValidationVisualStateBindingTests
     }
 
     [Fact]
+    public void SnapshotCollectionsRejectExternalMutation()
+    {
+        var scope = new ValidationScope();
+        scope.SetInvalid("Name", "Name is required.");
+        var snapshot = ValidationVisualStateSnapshot.From(scope);
+        var errors = Assert.IsAssignableFrom<IDictionary<string, IReadOnlyList<string>>>(snapshot.Errors);
+        var errorMessages = Assert.IsAssignableFrom<IList<string>>(snapshot.Errors["Name"]);
+        var validationMessages = Assert.IsAssignableFrom<IList<ValidationMessage>>(snapshot.Messages["Name"]);
+
+        Assert.Throws<NotSupportedException>(() => errors["Other"] = ["Changed"]);
+        Assert.Throws<NotSupportedException>(() => errorMessages[0] = "Changed");
+        Assert.Throws<NotSupportedException>(() => validationMessages[0] = new ValidationMessage("Name", "Changed"));
+        Assert.Equal("Name is required.", snapshot.Errors["Name"][0]);
+        Assert.Equal("Name is required.", snapshot.Messages["Name"][0].Message);
+    }
+
+    [Fact]
     public async Task ApplyAsyncMapsFailedScopeExceptionToTarget()
     {
         var binding = new ValidationVisualStateBinding(new RecordingDispatcher());
