@@ -94,7 +94,7 @@ public static class PluginManifestValidator
             Path.IsPathRooted(value);
     }
 
-    private static bool IsInvalidPackageRelativePath(string path)
+    internal static bool IsInvalidPackageRelativePath(string path)
     {
         if (string.IsNullOrWhiteSpace(path) ||
             path.Contains('\\') ||

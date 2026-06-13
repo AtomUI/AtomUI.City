@@ -42,6 +42,11 @@ public static class PluginPackageLayoutValidator
 
         foreach (var contribution in manifest.Contributions.Where(contribution => contribution.Required))
         {
+            if (PluginManifestValidator.IsInvalidPackageRelativePath(contribution.Path))
+            {
+                continue;
+            }
+
             var contributionPath = PluginPackagePaths.CombinePackagePath(packageRoot, contribution.Path);
             if (File.Exists(contributionPath))
             {

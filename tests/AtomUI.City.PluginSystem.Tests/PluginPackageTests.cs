@@ -30,6 +30,22 @@ public sealed class PluginPackageTests
     }
 
     [Fact]
+    public void PackageLayoutValidatorDoesNotProbeInvalidContributionPaths()
+    {
+        using var workspace = new PluginTestWorkspace();
+        workspace.WriteStandardManifest(requiredContributionPath: "../routes.json");
+        workspace.CopyMainAssembly("Company.Sales.Plugin.dll");
+
+        var result = PluginPackageLayoutValidator.Validate(workspace.Root);
+
+        Assert.False(result.Succeeded);
+        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == PluginDiagnosticIds.InvalidContributionPath);
+        Assert.DoesNotContain(
+            result.Diagnostics,
+            diagnostic => diagnostic.Code == PluginDiagnosticIds.RequiredContributionManifestNotFound);
+    }
+
+    [Fact]
     public async Task InstallerInstallsPackageIntoVersionedRuntimeRoot()
     {
         using var workspace = new PluginTestWorkspace();

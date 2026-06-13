@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`1d95f3e fix(PluginSystem): clean staging on extraction failure`
-- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter InstallerDeletesStagingWhenDirectoryInstallIsCancelled` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，41 tests passed
-- 当前状态：已完成 PluginSystem directory install cancellation staging cleanup
+- 当前提交：`410e25e fix(PluginSystem): clean staging on install cancellation`
+- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter PackageLayoutValidatorDoesNotProbeInvalidContributionPaths` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，42 tests passed
+- 当前状态：已完成 PluginSystem layout invalid contribution path probe guard
 
 **最新实现检查点：**
 
@@ -326,6 +326,7 @@
 - [x] PluginSystem manifest target framework path validation
 - [x] PluginSystem package extraction failure staging cleanup
 - [x] PluginSystem directory install cancellation staging cleanup
+- [x] PluginSystem layout invalid contribution path probe guard
 
 ## 状态定义
 
