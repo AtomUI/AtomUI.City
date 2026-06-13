@@ -11,7 +11,7 @@ public sealed class InMemoryHostDiagnostics : IHostDiagnostics
         {
             lock (_syncRoot)
             {
-                return _records.ToArray();
+                return Array.AsReadOnly(_records.ToArray());
             }
         }
     }

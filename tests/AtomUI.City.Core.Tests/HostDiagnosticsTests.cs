@@ -31,4 +31,18 @@ public sealed class HostDiagnosticsTests
 
         Assert.Equal(["TEST001", "TEST002"], diagnostics.Records.Select(record => record.Code));
     }
+
+    [Fact]
+    public void InMemoryDiagnosticsRecordsSnapshotRejectsExternalListMutation()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        diagnostics.Write(new HostDiagnosticRecord("TEST001", "First", HostDiagnosticSeverity.Info));
+        var records = Assert.IsAssignableFrom<IList<HostDiagnosticRecord>>(diagnostics.Records);
+
+        Assert.Throws<NotSupportedException>(() => records[0] = new HostDiagnosticRecord(
+            "TEST999",
+            "Changed",
+            HostDiagnosticSeverity.Error));
+        Assert.Equal("TEST001", diagnostics.Records[0].Code);
+    }
 }
