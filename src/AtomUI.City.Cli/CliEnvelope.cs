@@ -53,12 +53,31 @@ public sealed class CliEnvelope
                 new Dictionary<string, object?>(StringComparer.Ordinal));
         }
 
-        if (data is IReadOnlyDictionary<string, object?> dictionary)
+        return NormalizeValue(data) ?? new System.Collections.ObjectModel.ReadOnlyDictionary<string, object?>(
+            new Dictionary<string, object?>(StringComparer.Ordinal));
+    }
+
+    private static object? NormalizeValue(object? value)
+    {
+        if (value is null or string)
         {
-            return new System.Collections.ObjectModel.ReadOnlyDictionary<string, object?>(
-                new Dictionary<string, object?>(dictionary, StringComparer.Ordinal));
+            return value;
         }
 
-        return data;
+        if (value is IReadOnlyDictionary<string, object?> dictionary)
+        {
+            return new System.Collections.ObjectModel.ReadOnlyDictionary<string, object?>(
+                dictionary.ToDictionary(
+                    pair => pair.Key,
+                    pair => NormalizeValue(pair.Value),
+                    StringComparer.Ordinal));
+        }
+
+        if (value is IReadOnlyList<object?> list)
+        {
+            return Array.AsReadOnly(list.Select(NormalizeValue).ToArray());
+        }
+
+        return value;
     }
 }

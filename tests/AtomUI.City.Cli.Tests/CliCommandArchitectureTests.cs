@@ -88,4 +88,21 @@ public sealed class CliCommandArchitectureTests
 
         Assert.Throws<NotSupportedException>(() => envelopeData["path"] = "changed");
     }
+
+    [Fact]
+    public void EnvelopeCopiesNestedCollectionDataSnapshot()
+    {
+        object?[] projects = ["src/App/App.csproj"];
+        var envelope = CliEnvelope.Succeeded(
+            "atomui city inspect",
+            new Dictionary<string, object?> { ["projects"] = projects });
+
+        projects[0] = "changed";
+
+        var envelopeData = Assert.IsAssignableFrom<IReadOnlyDictionary<string, object?>>(envelope.Data);
+        var envelopeProjects = Assert.IsAssignableFrom<IList<object?>>(envelopeData["projects"]);
+
+        Assert.Throws<NotSupportedException>(() => envelopeProjects[0] = "changed");
+        Assert.Equal("src/App/App.csproj", envelopeProjects[0]);
+    }
 }
