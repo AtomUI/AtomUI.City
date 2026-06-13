@@ -25,7 +25,7 @@ public sealed class PresentationViewManifestEntry
         ViewKey = string.IsNullOrWhiteSpace(viewKey) ? null : viewKey;
         PluginId = string.IsNullOrWhiteSpace(pluginId) ? null : pluginId;
         ContributionId = string.IsNullOrWhiteSpace(contributionId) ? null : contributionId;
-        ConstructorParameters = constructorParameters?.ToArray() ?? [];
+        ConstructorParameters = Array.AsReadOnly(constructorParameters?.ToArray() ?? []);
     }
 
     public string ViewTypeName { get; }

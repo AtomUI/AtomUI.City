@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`82088e9 fix(Generator): protect modularity collections`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，644 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
-- 当前状态：已完成 Generator dependency injection readonly collections
+- 当前提交：`1320423 fix(Generator): protect dependency injection collections`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，646 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
+- 当前状态：已完成 Generator presentation readonly collections
 
 **最新实现检查点：**
 
@@ -297,6 +297,7 @@
 - [x] Generator routing readonly collections
 - [x] Generator modularity readonly collections
 - [x] Generator dependency injection readonly collections
+- [x] Generator presentation readonly collections
 
 ## 状态定义
 

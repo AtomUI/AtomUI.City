@@ -4,7 +4,7 @@ public sealed class PresentationViewManifest
 {
     public PresentationViewManifest(IReadOnlyList<PresentationViewManifestEntry> views)
     {
-        Views = views ?? throw new ArgumentNullException(nameof(views));
+        Views = Array.AsReadOnly((views ?? throw new ArgumentNullException(nameof(views))).ToArray());
     }
 
     public IReadOnlyList<PresentationViewManifestEntry> Views { get; }

@@ -29,7 +29,7 @@ public sealed class PresentationViewMetadata
         PluginId = string.IsNullOrWhiteSpace(pluginId) ? null : pluginId;
         ContributionId = string.IsNullOrWhiteSpace(contributionId) ? null : contributionId;
         Location = location;
-        ConstructorParameters = constructorParameters?.ToArray() ?? [];
+        ConstructorParameters = Array.AsReadOnly(constructorParameters?.ToArray() ?? []);
     }
 
     public string ViewTypeName { get; }

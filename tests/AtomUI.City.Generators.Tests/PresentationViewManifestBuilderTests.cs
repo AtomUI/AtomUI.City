@@ -104,6 +104,53 @@ public sealed class PresentationViewManifestBuilderTests
         Assert.Empty(result.Manifest.Views);
     }
 
+    [Fact]
+    public void BuildReturnsReadonlyPresentationViewCollections()
+    {
+        var result = PresentationViewManifestBuilder.Build(
+            [
+                View("Sample.App.SettingsView", "Sample.App.SettingsViewModel"),
+            ]);
+        var views = Assert.IsAssignableFrom<IList<PresentationViewManifestEntry>>(result.Manifest.Views);
+        var diagnostics = Assert.IsAssignableFrom<IList<GeneratorDiagnostic>>(result.Diagnostics);
+
+        Assert.Throws<NotSupportedException>(() => views[0] = new PresentationViewManifestEntry("Sample.App.ChangedView", "Sample.App.ChangedViewModel", null, null, null));
+        Assert.Throws<NotSupportedException>(() => diagnostics.Add(new GeneratorDiagnostic(GeneratorDiagnostics.InvalidManifestInput, "Changed")));
+        Assert.Equal("Sample.App.SettingsView", result.Manifest.Views[0].ViewTypeName);
+        Assert.Empty(result.Diagnostics);
+    }
+
+    [Fact]
+    public void PresentationViewConstructorParametersRejectExternalMutation()
+    {
+        var constructorParameters = new List<PresentationViewConstructorParameter>
+        {
+            new("Sample.App.IClock"),
+        };
+        var metadata = new PresentationViewMetadata(
+            "Sample.App.SettingsView",
+            "Sample.App.SettingsViewModel",
+            viewKey: null,
+            pluginId: null,
+            contributionId: null,
+            location: null,
+            constructorParameters);
+        var manifestEntry = new PresentationViewManifestEntry(
+            "Sample.App.SettingsView",
+            "Sample.App.SettingsViewModel",
+            viewKey: null,
+            pluginId: null,
+            contributionId: null,
+            constructorParameters);
+        var metadataParameters = Assert.IsAssignableFrom<IList<PresentationViewConstructorParameter>>(metadata.ConstructorParameters);
+        var manifestParameters = Assert.IsAssignableFrom<IList<PresentationViewConstructorParameter>>(manifestEntry.ConstructorParameters);
+
+        Assert.Throws<NotSupportedException>(() => metadataParameters[0] = new PresentationViewConstructorParameter("Sample.App.IChangedClock"));
+        Assert.Throws<NotSupportedException>(() => manifestParameters[0] = new PresentationViewConstructorParameter("Sample.App.IChangedClock"));
+        Assert.Equal("Sample.App.IClock", metadata.ConstructorParameters[0].TypeName);
+        Assert.Equal("Sample.App.IClock", manifestEntry.ConstructorParameters[0].TypeName);
+    }
+
     private static PresentationViewMetadata View(
         string viewTypeName,
         string viewModelTypeName,
