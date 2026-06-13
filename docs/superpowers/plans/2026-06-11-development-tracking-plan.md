@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`fd0d1d4 fix(Generator): protect plugin system collections`
-- 当前测试：`dotnet test tests/AtomUI.City.Security.Tests/AtomUI.City.Security.Tests.csproj --no-restore --filter MessageArgumentsRejectExternalMutation` 通过；`dotnet test tests/AtomUI.City.Security.Tests/AtomUI.City.Security.Tests.csproj --no-restore` 通过，38 tests passed；`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，649 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
-- 当前状态：已完成 Security authorization result message arguments readonly collection
+- 当前提交：`5402264 fix(Security): protect message arguments`
+- 当前测试：`dotnet test tests/AtomUI.City.Mvvm.Tests/AtomUI.City.Mvvm.Tests.csproj --no-restore --filter ValidationMessageArgumentsRejectExternalMutation` 通过；`dotnet test tests/AtomUI.City.Mvvm.Tests/AtomUI.City.Mvvm.Tests.csproj --no-restore` 通过，27 tests passed；`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，650 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
+- 当前状态：已完成 MVVM validation message arguments readonly collection
 
 **最新实现检查点：**
 
@@ -300,6 +300,7 @@
 - [x] Generator presentation readonly collections
 - [x] Generator plugin system readonly collections
 - [x] Security authorization result message arguments readonly collection
+- [x] MVVM validation message arguments readonly collection
 
 ## 状态定义
 

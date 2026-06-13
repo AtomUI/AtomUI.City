@@ -38,6 +38,19 @@ public sealed class ValidationScopeTests
     }
 
     [Fact]
+    public void ValidationMessageArgumentsRejectExternalMutation()
+    {
+        var arguments = new List<object?> { "Name" };
+        var message = new ValidationMessage("Name", "Name is required.", "Validation.Name.Required", arguments);
+        var exposedArguments = Assert.IsAssignableFrom<IList<object?>>(message.MessageArguments);
+
+        arguments[0] = "Changed";
+
+        Assert.Throws<NotSupportedException>(() => exposedArguments[0] = "Changed");
+        Assert.Equal("Name", message.MessageArguments![0]);
+    }
+
+    [Fact]
     public void ValidationCollectionsRejectExternalMutation()
     {
         var scope = new ValidationScope();

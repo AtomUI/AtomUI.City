@@ -14,7 +14,7 @@ public sealed class ValidationMessage
         Key = key;
         Message = message;
         MessageKey = messageKey;
-        MessageArguments = messageArguments;
+        MessageArguments = messageArguments is null ? null : Array.AsReadOnly(messageArguments.ToArray());
     }
 
     public string Key { get; }
