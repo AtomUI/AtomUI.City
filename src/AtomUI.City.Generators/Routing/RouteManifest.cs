@@ -4,7 +4,7 @@ public sealed class RouteManifest
 {
     public RouteManifest(IReadOnlyList<RouteManifestRoute> routes)
     {
-        Routes = routes ?? throw new ArgumentNullException(nameof(routes));
+        Routes = Array.AsReadOnly((routes ?? throw new ArgumentNullException(nameof(routes))).ToArray());
     }
 
     public IReadOnlyList<RouteManifestRoute> Routes { get; }

@@ -7,7 +7,7 @@ public sealed class RouteManifestResult
     public RouteManifestResult(RouteManifest manifest, IReadOnlyList<GeneratorDiagnostic> diagnostics)
     {
         Manifest = manifest ?? throw new ArgumentNullException(nameof(manifest));
-        Diagnostics = diagnostics ?? throw new ArgumentNullException(nameof(diagnostics));
+        Diagnostics = Array.AsReadOnly((diagnostics ?? throw new ArgumentNullException(nameof(diagnostics))).ToArray());
     }
 
     public RouteManifest Manifest { get; }

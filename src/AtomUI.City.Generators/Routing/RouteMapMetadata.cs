@@ -10,7 +10,7 @@ public sealed class RouteMapMetadata
         }
 
         TypeName = typeName;
-        Routes = routes ?? throw new ArgumentNullException(nameof(routes));
+        Routes = Array.AsReadOnly((routes ?? throw new ArgumentNullException(nameof(routes))).ToArray());
     }
 
     public string TypeName { get; }

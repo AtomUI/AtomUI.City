@@ -96,6 +96,36 @@ public sealed class RouteManifestBuilderTests
         Assert.Equal("Routes.Settings.ErrorTitle", route.ErrorTitleKey);
     }
 
+    [Fact]
+    public void BuildReturnsReadonlyRouteManifestCollections()
+    {
+        var result = RouteManifestBuilder.Build(
+            [
+                Route("Sample.App.AppRoutes", "Settings", "app.settings", RouteDefinitionMetadataKind.Route, "settings"),
+            ]);
+        var routes = Assert.IsAssignableFrom<IList<RouteManifestRoute>>(result.Manifest.Routes);
+        var diagnostics = Assert.IsAssignableFrom<IList<GeneratorDiagnostic>>(result.Diagnostics);
+
+        Assert.Throws<NotSupportedException>(() => routes[0] = new RouteManifestRoute("changed", RouteDefinitionMetadataKind.Route, "changed", "ChangedViewModel", null, "primary", null, null));
+        Assert.Throws<NotSupportedException>(() => diagnostics.Add(new GeneratorDiagnostic(GeneratorDiagnostics.InvalidManifestInput, "Changed")));
+        Assert.Equal("app.settings", result.Manifest.Routes[0].Id);
+        Assert.Empty(result.Diagnostics);
+    }
+
+    [Fact]
+    public void RouteMapMetadataRoutesRejectExternalMutation()
+    {
+        var routeList = new List<RouteDefinitionMetadata>
+        {
+            Route("Sample.App.AppRoutes", "Settings", "app.settings", RouteDefinitionMetadataKind.Route, "settings"),
+        };
+        var metadata = new RouteMapMetadata("Sample.App.AppRoutes", routeList);
+        var routes = Assert.IsAssignableFrom<IList<RouteDefinitionMetadata>>(metadata.Routes);
+
+        Assert.Throws<NotSupportedException>(() => routes[0] = Route("Sample.App.AppRoutes", "Other", "app.other", RouteDefinitionMetadataKind.Route, "other"));
+        Assert.Equal("app.settings", metadata.Routes[0].Id);
+    }
+
     private static RouteDefinitionMetadata Route(
         string routeMapTypeName,
         string methodName,
