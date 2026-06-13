@@ -52,6 +52,32 @@ public sealed class StateSnapshotTests
     }
 
     [Fact]
+    public void SnapshotEntriesRejectExternalListMutation()
+    {
+        var entry = new StateSnapshotEntry(
+            "AtomUI.City.Tests.Theme",
+            typeof(string),
+            "light",
+            version: 0,
+            schemaVersion: 1,
+            ownerModule: null,
+            pluginId: null);
+        var replacement = new StateSnapshotEntry(
+            "AtomUI.City.Tests.Replacement",
+            typeof(string),
+            "dark",
+            version: 1,
+            schemaVersion: 1,
+            ownerModule: null,
+            pluginId: null);
+        var snapshot = new StateSnapshot([entry]);
+        var list = Assert.IsAssignableFrom<IList<StateSnapshotEntry>>(snapshot.Entries);
+
+        Assert.Throws<NotSupportedException>(() => list[0] = replacement);
+        Assert.Equal(entry.StateName, snapshot.Entries[0].StateName);
+    }
+
+    [Fact]
     public void SnapshotRestoreAppliesCompatibleRegisteredValues()
     {
         var key = new StateKey<string>("AtomUI.City.Tests.Theme");

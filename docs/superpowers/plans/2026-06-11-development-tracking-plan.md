@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`9744fcc fix(State): order snapshot entries deterministically`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，601 tests passed
-- 当前状态：已完成 State snapshot null value restore
+- 当前提交：`cc698fa fix(State): restore null snapshot values`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，602 tests passed
+- 当前状态：已完成 State snapshot readonly entries
 
 **最新实现检查点：**
 
@@ -262,6 +262,7 @@
 - [x] State snapshot missing state restore diagnostic
 - [x] State snapshot deterministic entry ordering
 - [x] State snapshot null value restore
+- [x] State snapshot readonly entries
 
 ## 状态定义
 

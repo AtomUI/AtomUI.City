@@ -6,7 +6,7 @@ public sealed class StateSnapshot
     {
         ArgumentNullException.ThrowIfNull(entries);
 
-        Entries = entries.ToArray();
+        Entries = Array.AsReadOnly(entries.ToArray());
     }
 
     public IReadOnlyList<StateSnapshotEntry> Entries { get; }
