@@ -614,6 +614,20 @@
 - [x] Versioning policy
 - [x] Phase 14 验收
 
+## Release Candidate Productization Gate
+
+目标：完成初版发布前产品化验收，确认框架底座可以进入候选发布状态。
+
+- [x] Real dogfood app end-to-end smoke
+- [x] CLI doctor / inspect / build / test dogfood workflow
+- [x] Plugin install / discovery / load / activate / deactivate / unload dogfood workflow
+- [x] Public API review
+- [x] Dependency boundary review
+- [x] Version / release notes / NuGet package strategy review
+- [x] Platform integration test gate
+- [x] Release package validation
+- [ ] Remote CI verification
+
 ## 推荐立即执行顺序
 
 1. 完成 `Phase 0` 剩余工程基线，特别是 CI、format、license header。
