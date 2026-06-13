@@ -61,7 +61,7 @@ public sealed class InMemoryDataDiagnostics : IDataDiagnostics
         {
             lock (_syncRoot)
             {
-                return _records.ToArray();
+                return Array.AsReadOnly(_records.ToArray());
             }
         }
     }

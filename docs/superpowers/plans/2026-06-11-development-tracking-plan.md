@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`9bbd586 fix(Core): protect module registry modules`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，626 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
-- 当前状态：已完成 Core application context readonly startup arguments
+- 当前提交：`4746818 fix(Core): protect startup arguments`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，627 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
+- 当前状态：已完成 Data diagnostics readonly records
 
 **最新实现检查点：**
 
@@ -283,6 +283,7 @@
 - [x] Core lifecycle scope readonly children
 - [x] Core module registry readonly modules
 - [x] Core application context readonly startup arguments
+- [x] Data diagnostics readonly records
 
 ## 状态定义
 
