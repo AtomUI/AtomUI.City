@@ -127,6 +127,36 @@ public sealed class PresentationViewMetadataReaderTests
         Assert.Equal("Sample.App.SettingsService", parameter.TypeName);
     }
 
+    [Fact]
+    public void ReadResultRejectsExternalListMutation()
+    {
+        var views = ReadViews(
+            """
+            using AtomUI.City.Presentation;
+
+            namespace Sample.App;
+
+            public sealed class SettingsViewModel
+            {
+            }
+
+            [ViewFor(typeof(SettingsViewModel))]
+            public sealed class SettingsView
+            {
+            }
+            """);
+        var exposedViews = Assert.IsAssignableFrom<IList<PresentationViewMetadata>>(views);
+
+        Assert.Throws<NotSupportedException>(() => exposedViews[0] = new PresentationViewMetadata(
+            "Sample.App.ChangedView",
+            "Sample.App.ChangedViewModel",
+            viewKey: null,
+            pluginId: null,
+            contributionId: null,
+            location: null));
+        Assert.Equal("Sample.App.SettingsView", views[0].ViewTypeName);
+    }
+
     private static IReadOnlyList<PresentationViewMetadata> ReadViews(
         string source,
         string viewTypeName = "Sample.App.SettingsView")

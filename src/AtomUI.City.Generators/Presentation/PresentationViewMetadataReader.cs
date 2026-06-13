@@ -16,13 +16,14 @@ public static class PresentationViewMetadataReader
         var viewTypeName = GetTypeName(type);
         var constructorParameters = ReadConstructorParameters(type);
 
-        return type
-            .GetAttributes()
-            .Where(attribute => string.Equals(GetAttributeTypeName(attribute), ViewForAttributeName, StringComparison.Ordinal))
-            .Select(attribute => ReadView(viewTypeName, constructorParameters, attribute))
-            .Where(view => view is not null)
-            .Cast<PresentationViewMetadata>()
-            .ToArray();
+        return Array.AsReadOnly(
+            type
+                .GetAttributes()
+                .Where(attribute => string.Equals(GetAttributeTypeName(attribute), ViewForAttributeName, StringComparison.Ordinal))
+                .Select(attribute => ReadView(viewTypeName, constructorParameters, attribute))
+                .Where(view => view is not null)
+                .Cast<PresentationViewMetadata>()
+                .ToArray());
     }
 
     private static PresentationViewMetadata? ReadView(

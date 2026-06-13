@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`e92f08a fix(Testing): protect AOT diagnostics`
-- 当前测试：`dotnet test tests/AtomUI.City.Cli.Tests/AtomUI.City.Cli.Tests.csproj --no-restore --filter EnvelopeCopiesNestedCollectionDataSnapshot` 通过；`dotnet test tests/AtomUI.City.Cli.Tests/AtomUI.City.Cli.Tests.csproj --no-restore` 通过，18 tests passed
-- 当前状态：已完成 CLI envelope nested readonly data
+- 当前提交：`ff090f6 fix(Cli): protect nested envelope data`
+- 当前测试：`dotnet test tests/AtomUI.City.Generators.Tests/AtomUI.City.Generators.Tests.csproj --no-restore --filter ReadResultRejectsExternalListMutation` 通过；`dotnet test tests/AtomUI.City.Generators.Tests/AtomUI.City.Generators.Tests.csproj --no-restore` 通过，76 tests passed
+- 当前状态：已完成 Generator presentation reader readonly result
 
 **最新实现检查点：**
 
@@ -317,6 +317,7 @@
 - [x] Presentation registry readonly snapshots
 - [x] Testing AOT diagnostics readonly result
 - [x] CLI envelope nested readonly data
+- [x] Generator presentation reader readonly result
 
 ## 状态定义
 
