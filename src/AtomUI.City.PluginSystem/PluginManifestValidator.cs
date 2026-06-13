@@ -51,6 +51,21 @@ public static class PluginManifestValidator
                 "mainAssembly"));
         }
 
+        foreach (var contribution in manifest.Contributions)
+        {
+            if (!IsInvalidPackageRelativePath(contribution.Path))
+            {
+                continue;
+            }
+
+            diagnostics.Add(new PluginDiagnostic(
+                PluginDiagnosticIds.InvalidContributionPath,
+                $"Plugin contribution path '{contribution.Path}' must stay inside the package.",
+                manifest.PluginId,
+                contribution.Type,
+                contribution.Path));
+        }
+
         return new PluginValidationResult(diagnostics);
     }
 
@@ -68,5 +83,19 @@ public static class PluginManifestValidator
             value.Contains('/') ||
             value.Contains('\\') ||
             Path.IsPathRooted(value);
+    }
+
+    private static bool IsInvalidPackageRelativePath(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path) ||
+            path.Contains('\\') ||
+            Path.IsPathRooted(path))
+        {
+            return true;
+        }
+
+        return path
+            .Split('/')
+            .Any(segment => string.IsNullOrWhiteSpace(segment) || segment is "." or "..");
     }
 }

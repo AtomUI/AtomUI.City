@@ -109,6 +109,31 @@ public sealed class PluginManifestTests
                 && diagnostic.Field == "version");
     }
 
+    [Theory]
+    [InlineData("../routes.json")]
+    [InlineData("/atomui-city/routes.json")]
+    [InlineData("atomui-city\\routes.json")]
+    [InlineData("atomui-city/../routes.json")]
+    public void ManifestValidatorRejectsContributionPathsOutsidePackage(string path)
+    {
+        var manifest = PluginManifestBuilder.Minimal(
+            pluginId: "com.company.sales",
+            packageId: "Company.Sales.Plugin",
+            version: "1.0.0",
+            contributions:
+            [
+                new PluginContributionDescriptor("routes", path, Required: true),
+            ]);
+
+        var result = PluginManifestValidator.Validate(manifest);
+
+        Assert.False(result.Succeeded);
+        Assert.Contains(
+            result.Diagnostics,
+            diagnostic => diagnostic.Code == PluginDiagnosticIds.InvalidContributionPath
+                && diagnostic.Field == "routes");
+    }
+
     [Fact]
     public void ManifestCollectionsRejectExternalListMutation()
     {
