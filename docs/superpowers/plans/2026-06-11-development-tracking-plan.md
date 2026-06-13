@@ -5,12 +5,13 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`8a63138 fix(PluginSystem): reject incomplete install records`
-- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter "DiscoveryScannerRejectsInstallRecordsOutsideInstalledVersionPath|DiscoveryScannerRejectsInstallRecordsWithManifestPathOutsideRuntimeRoot"` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，61 tests passed
-- 当前状态：已完成 PluginSystem install record runtime path boundary diagnostics
+- 当前提交：`748dfcc fix(PluginSystem): validate install record paths`
+- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter DiscoveryScannerReportsInstallRecordsWithInvalidPathValues` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，62 tests passed
+- 当前状态：已完成 PluginSystem invalid install record path value diagnostics
 
 **最新实现检查点：**
 
+- [x] PluginSystem invalid install record path value diagnostics
 - [x] PluginSystem install record runtime path boundary diagnostics
 - [x] PluginSystem invalid install record required field diagnostics
 - [x] PluginSystem discovery missing install record diagnostic

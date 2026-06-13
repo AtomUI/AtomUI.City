@@ -319,6 +319,38 @@ public sealed class PluginPackageTests
     }
 
     [Fact]
+    public async Task DiscoveryScannerReportsInstallRecordsWithInvalidPathValues()
+    {
+        using var workspace = new PluginTestWorkspace();
+        var pluginsRoot = workspace.CreateDirectory("plugins");
+        var installedVersionPath = Path.Combine(pluginsRoot, "installed", "com.company.broken", "1.0.0");
+        var installRecordPath = Path.Combine(installedVersionPath, "install.json");
+        Directory.CreateDirectory(installedVersionPath);
+        await File.WriteAllTextAsync(
+            installRecordPath,
+            """
+            {
+              "pluginId": "com.company.broken",
+              "packageId": "Company.Broken.Plugin",
+              "version": "1.0.0",
+              "rootPath": "\u0000",
+              "manifestPath": "\u0000"
+            }
+            """);
+
+        var discovery = PluginDiscoveryScanner.DiscoverInstalled(pluginsRoot);
+
+        Assert.False(discovery.Succeeded);
+        Assert.Empty(discovery.Plugins);
+        Assert.Contains(
+            discovery.Diagnostics,
+            diagnostic => diagnostic.Code == PluginDiagnosticIds.InvalidInstallRecord
+                && diagnostic.PluginId == "com.company.broken"
+                && diagnostic.Field == "rootPath"
+                && diagnostic.Path == installRecordPath);
+    }
+
+    [Fact]
     public async Task DiscoveryScannerReportsInstallRecordVersionMismatch()
     {
         using var workspace = new PluginTestWorkspace();

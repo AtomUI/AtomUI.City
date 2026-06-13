@@ -46,7 +46,19 @@ public static class PluginDiscoveryScanner
 
             var installedVersionPath = Path.GetDirectoryName(installRecordPath)!;
             var expectedRootPath = Path.Combine(installedVersionPath, PluginPackagePaths.RuntimeRootDirectoryName);
-            if (!AreSamePath(installation.RootPath, expectedRootPath))
+            if (!TryNormalizePath(installation.RootPath, out var actualRootPath))
+            {
+                diagnostics.Add(new PluginDiagnostic(
+                    PluginDiagnosticIds.InvalidInstallRecord,
+                    $"Plugin install record root path '{installation.RootPath}' is not a valid path.",
+                    installation.PluginId,
+                    "rootPath",
+                    installRecordPath));
+                continue;
+            }
+
+            var normalizedExpectedRootPath = NormalizePath(expectedRootPath);
+            if (!string.Equals(actualRootPath, normalizedExpectedRootPath, StringComparison.Ordinal))
             {
                 diagnostics.Add(new PluginDiagnostic(
                     PluginDiagnosticIds.InvalidInstallRecord,
@@ -57,8 +69,20 @@ public static class PluginDiscoveryScanner
                 continue;
             }
 
-            var expectedManifestPath = PluginPackagePaths.GetManifestPath(installation.RootPath);
-            if (!AreSamePath(installation.ManifestPath, expectedManifestPath))
+            var expectedManifestPath = PluginPackagePaths.GetManifestPath(expectedRootPath);
+            if (!TryNormalizePath(installation.ManifestPath, out var actualManifestPath))
+            {
+                diagnostics.Add(new PluginDiagnostic(
+                    PluginDiagnosticIds.InvalidInstallRecord,
+                    $"Plugin install record manifest path '{installation.ManifestPath}' is not a valid path.",
+                    installation.PluginId,
+                    "manifestPath",
+                    installRecordPath));
+                continue;
+            }
+
+            var normalizedExpectedManifestPath = NormalizePath(expectedManifestPath);
+            if (!string.Equals(actualManifestPath, normalizedExpectedManifestPath, StringComparison.Ordinal))
             {
                 diagnostics.Add(new PluginDiagnostic(
                     PluginDiagnosticIds.InvalidInstallRecord,
@@ -156,9 +180,18 @@ public static class PluginDiscoveryScanner
         }
     }
 
-    private static bool AreSamePath(string left, string right)
+    private static bool TryNormalizePath(string path, out string normalizedPath)
     {
-        return string.Equals(NormalizePath(left), NormalizePath(right), StringComparison.Ordinal);
+        try
+        {
+            normalizedPath = NormalizePath(path);
+            return true;
+        }
+        catch (Exception exception) when (exception is ArgumentException or NotSupportedException or PathTooLongException)
+        {
+            normalizedPath = string.Empty;
+            return false;
+        }
     }
 
     private static string NormalizePath(string path)
