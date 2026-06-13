@@ -66,4 +66,35 @@ public sealed class PluginManifestTests
         Assert.False(result.Succeeded);
         Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == PluginDiagnosticIds.InvalidMainAssembly);
     }
+
+    [Fact]
+    public void ManifestCollectionsRejectExternalListMutation()
+    {
+        var capability = new PluginCapabilityDescriptor("routes", ["/sales/**"]);
+        var contribution = new PluginContributionDescriptor("routes", "atomui-city/manifests/routes.json", Required: true);
+        var dependency = new PluginDependencyDescriptor("com.company.identity", "[1.0.0,2.0.0)");
+        var module = new PluginModuleDescriptor("SalesModule", "Company.Sales.SalesModule");
+        var manifest = PluginManifestBuilder.Minimal(
+            pluginId: "com.company.sales",
+            packageId: "Company.Sales.Plugin",
+            version: "1.0.0",
+            capabilities: [capability],
+            contributions: [contribution],
+            dependencies: [dependency],
+            modules: [module]);
+
+        var capabilities = Assert.IsAssignableFrom<IList<PluginCapabilityDescriptor>>(manifest.Capabilities);
+        var contributions = Assert.IsAssignableFrom<IList<PluginContributionDescriptor>>(manifest.Contributions);
+        var dependencies = Assert.IsAssignableFrom<IList<PluginDependencyDescriptor>>(manifest.Dependencies);
+        var modules = Assert.IsAssignableFrom<IList<PluginModuleDescriptor>>(manifest.Modules);
+
+        Assert.Throws<NotSupportedException>(() => capabilities[0] = new PluginCapabilityDescriptor("commands", []));
+        Assert.Throws<NotSupportedException>(() => contributions[0] = new PluginContributionDescriptor("commands", "commands.json", Required: false));
+        Assert.Throws<NotSupportedException>(() => dependencies[0] = new PluginDependencyDescriptor("com.company.other", null));
+        Assert.Throws<NotSupportedException>(() => modules[0] = new PluginModuleDescriptor("OtherModule", "Company.Other.Module"));
+        Assert.Equal(capability.Name, manifest.Capabilities[0].Name);
+        Assert.Equal(contribution.Type, manifest.Contributions[0].Type);
+        Assert.Equal(dependency.PluginId, manifest.Dependencies[0].PluginId);
+        Assert.Equal(module.Name, manifest.Modules[0].Name);
+    }
 }

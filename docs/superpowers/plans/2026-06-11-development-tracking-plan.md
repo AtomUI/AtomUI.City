@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`d3af863 fix(EventBus): track cancelled deliveries`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，610 tests passed
-- 当前状态：已完成 PluginSystem result diagnostics readonly
+- 当前提交：`164569e fix(PluginSystem): protect result diagnostics`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，611 tests passed
+- 当前状态：已完成 PluginManifest readonly top-level collections
 
 **最新实现检查点：**
 
@@ -268,6 +268,7 @@
 - [x] EventBus publish result readonly deliveries
 - [x] EventBus delivery cancellation accounting
 - [x] PluginSystem result diagnostics readonly
+- [x] PluginManifest readonly top-level collections
 
 ## 状态定义
 

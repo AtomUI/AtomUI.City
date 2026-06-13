@@ -36,10 +36,10 @@ public sealed class PluginManifest
         MaxHostVersion = maxHostVersion;
         Unloadable = unloadable;
         AotCompatible = aotCompatible;
-        Capabilities = capabilities.ToArray();
-        Contributions = contributions.ToArray();
-        Dependencies = dependencies.ToArray();
-        Modules = modules.ToArray();
+        Capabilities = Array.AsReadOnly(capabilities.ToArray());
+        Contributions = Array.AsReadOnly(contributions.ToArray());
+        Dependencies = Array.AsReadOnly(dependencies.ToArray());
+        Modules = Array.AsReadOnly(modules.ToArray());
     }
 
     public string SchemaVersion { get; }
