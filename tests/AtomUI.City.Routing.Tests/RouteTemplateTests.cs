@@ -47,6 +47,20 @@ public sealed class RouteTemplateTests
     }
 
     [Fact]
+    public void TemplateCollectionsRejectExternalListMutation()
+    {
+        var template = RouteTemplate.Parse("items/{id:int}");
+        var replacement = RouteTemplate.Parse("replacement").Segments[0];
+        var segments = Assert.IsAssignableFrom<IList<RouteTemplateSegment>>(template.Segments);
+        var constraints = Assert.IsAssignableFrom<IList<string>>(template.Segments[1].Constraints);
+
+        Assert.Throws<NotSupportedException>(() => segments[0] = replacement);
+        Assert.Throws<NotSupportedException>(() => constraints[0] = "guid");
+        Assert.Equal(RouteTemplateSegmentKind.Literal, template.Segments[0].Kind);
+        Assert.Equal("int", template.Segments[1].Constraints[0]);
+    }
+
+    [Fact]
     public void TryMatchExtractsParametersAndAppliesConstraints()
     {
         var template = RouteTemplate.Parse("orders/{id:int}/items/{itemId:guid}");

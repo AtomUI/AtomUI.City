@@ -15,7 +15,7 @@ public sealed class RouteTemplateSegment
         Name = name;
         IsOptional = isOptional;
         DefaultValue = defaultValue;
-        Constraints = constraints;
+        Constraints = Array.AsReadOnly(constraints.ToArray());
     }
 
     public RouteTemplateSegmentKind Kind { get; }

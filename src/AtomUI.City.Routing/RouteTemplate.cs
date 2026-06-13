@@ -7,7 +7,7 @@ public sealed class RouteTemplate
     private RouteTemplate(string pattern, IReadOnlyList<RouteTemplateSegment> segments)
     {
         Pattern = pattern;
-        Segments = segments;
+        Segments = Array.AsReadOnly(segments.ToArray());
     }
 
     public string Pattern { get; }
