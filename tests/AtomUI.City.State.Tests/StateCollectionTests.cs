@@ -442,4 +442,32 @@ public sealed class StateCollectionTests
         Assert.Equal("settings", change.Key);
         Assert.Equal(1, args.Version);
     }
+
+    [Fact]
+    public void ChangedEventArgsRejectExternalListMutation()
+    {
+        var change = new StateCollectionChange<string, int>(
+            StateCollectionChangeKind.Added,
+            "settings",
+            HasOldItem: false,
+            OldItem: default,
+            HasNewItem: true,
+            NewItem: 1,
+            CollectionVersion: 1,
+            ItemVersion: 1);
+        var replacement = new StateCollectionChange<string, int>(
+            StateCollectionChangeKind.Added,
+            "layout",
+            HasOldItem: false,
+            OldItem: default,
+            HasNewItem: true,
+            NewItem: 2,
+            CollectionVersion: 2,
+            ItemVersion: 1);
+        var args = new StateCollectionChangedEventArgs<string, int>(change);
+        var list = Assert.IsAssignableFrom<IList<StateCollectionChange<string, int>>>(args.Changes);
+
+        Assert.Throws<NotSupportedException>(() => list[0] = replacement);
+        Assert.Equal(change.Key, args.Changes[0].Key);
+    }
 }
