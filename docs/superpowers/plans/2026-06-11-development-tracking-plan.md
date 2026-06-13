@@ -5,12 +5,13 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`23b1fe9 fix(PluginSystem): honor package install cancellation`
-- 当前测试：`dotnet test tests/AtomUI.City.Build.Tests/AtomUI.City.Build.Tests.csproj --no-restore --filter PackScriptAvoidsNounsetUnsafeOptionalArrayExpansion` 通过；`dotnet test tests/AtomUI.City.Build.Tests/AtomUI.City.Build.Tests.csproj --no-restore --filter GeneratorPackageSuppressesDependenciesWhenPacking` 通过；`dotnet test tests/AtomUI.City.Build.Tests/AtomUI.City.Build.Tests.csproj --no-restore` 通过，37 tests passed；`bash engineering/pack.sh --configuration Debug` 通过；`bash engineering/validate-packages.sh --configuration Debug` 通过；`bash engineering/check-template-smoke.sh` 通过
-- 当前状态：已完成 Build release package script and analyzer package warning hardening
+- 当前提交：`42822bd fix(Build): harden release package gates`
+- 当前测试：`dotnet test tests/AtomUI.City.Build.Tests/AtomUI.City.Build.Tests.csproj --no-restore --filter PackScriptTreatsWarningsAsErrors` 通过；`dotnet test tests/AtomUI.City.Build.Tests/AtomUI.City.Build.Tests.csproj --no-restore` 通过，38 tests passed；`bash engineering/pack.sh --configuration Debug --no-build` 通过；`bash engineering/validate-packages.sh --configuration Debug` 通过
+- 当前状态：已完成 Build pack warning-as-error release gate
 
 **最新实现检查点：**
 
+- [x] Build pack warning-as-error release gate
 - [x] Build release package script and analyzer package warning hardening
 - [x] PluginSystem package install pre-extraction cancellation guard
 - [x] PluginSystem discovery installed package layout validation

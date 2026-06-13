@@ -110,6 +110,19 @@ public sealed class EngineeringGateTests
     }
 
     [Fact]
+    public void PackScriptTreatsWarningsAsErrors()
+    {
+        var repositoryRoot = RepositoryPaths.FindRepositoryRoot();
+        var scriptPath = Path.Combine(repositoryRoot, EngineeringScriptsDirectoryName, "pack.sh");
+
+        Assert.True(File.Exists(scriptPath), "Expected package script at engineering/pack.sh.");
+
+        var script = File.ReadAllText(scriptPath);
+
+        Assert.Contains("-p:TreatWarningsAsErrors=true", script, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void CSharpSourceFilesDoNotUseRepositoryLicenseHeaders()
     {
         var repositoryRoot = RepositoryPaths.FindRepositoryRoot();

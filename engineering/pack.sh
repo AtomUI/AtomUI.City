@@ -26,8 +26,8 @@ mkdir -p "$package_output"
 
 while IFS= read -r project; do
   if [[ "$no_build" == true ]]; then
-    dotnet pack "$project" --configuration "$configuration" --output "$package_output" --no-build
+    dotnet pack "$project" --configuration "$configuration" --output "$package_output" --no-build -p:TreatWarningsAsErrors=true
   else
-    dotnet pack "$project" --configuration "$configuration" --output "$package_output"
+    dotnet pack "$project" --configuration "$configuration" --output "$package_output" -p:TreatWarningsAsErrors=true
   fi
 done < <(find src/AtomUI.City.* -name 'AtomUI.City.*.csproj' | sort)
