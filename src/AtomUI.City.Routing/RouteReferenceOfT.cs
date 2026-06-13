@@ -23,7 +23,9 @@ public readonly record struct RouteReference<TParameters>
 
     public IReadOnlyDictionary<string, string> BindParameters(TParameters parameters)
     {
-        return ParameterBinder?.Invoke(parameters) ?? new Dictionary<string, string>();
+        return ParameterBinder is null
+            ? RouteParameters.Empty()
+            : RouteParameters.Copy(ParameterBinder(parameters));
     }
 
     public override string ToString() => Id ?? string.Empty;

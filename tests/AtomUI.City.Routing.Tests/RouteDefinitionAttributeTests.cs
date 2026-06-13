@@ -76,6 +76,25 @@ public sealed class RouteDefinitionAttributeTests
         Assert.Equal("app.settings.details", parameterizedRoute.Id);
     }
 
+    [Fact]
+    public void RouteReferenceBindParametersReturnsReadonlyCopy()
+    {
+        var boundParameters = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["section"] = "profile",
+        };
+        var route = new RouteReference<SettingsParameters>(
+            "app.settings.details",
+            _ => boundParameters);
+        var parameters = route.BindParameters(new SettingsParameters("profile"));
+        var exposedParameters = Assert.IsAssignableFrom<IDictionary<string, string>>(parameters);
+
+        boundParameters["section"] = "changed";
+
+        Assert.Throws<NotSupportedException>(() => exposedParameters["section"] = "changed");
+        Assert.Equal("profile", parameters["section"]);
+    }
+
     private sealed class ShellViewModel;
 
     private sealed class HomeViewModel;
