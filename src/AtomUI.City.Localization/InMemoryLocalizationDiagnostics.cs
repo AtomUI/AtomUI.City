@@ -11,7 +11,7 @@ public sealed class InMemoryLocalizationDiagnostics : ILocalizationDiagnostics
         {
             lock (_syncRoot)
             {
-                return _records.ToArray();
+                return Array.AsReadOnly(_records.ToArray());
             }
         }
     }
