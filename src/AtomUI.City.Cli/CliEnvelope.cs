@@ -78,6 +78,17 @@ public sealed class CliEnvelope
             return Array.AsReadOnly(list.Select(NormalizeValue).ToArray());
         }
 
+        if (value is System.Collections.IList nonGenericList)
+        {
+            var normalized = new object?[nonGenericList.Count];
+            for (var i = 0; i < nonGenericList.Count; i++)
+            {
+                normalized[i] = NormalizeValue(nonGenericList[i]);
+            }
+
+            return Array.AsReadOnly(normalized);
+        }
+
         return value;
     }
 }
