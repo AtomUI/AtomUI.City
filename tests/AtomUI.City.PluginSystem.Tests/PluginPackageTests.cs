@@ -340,6 +340,55 @@ public sealed class PluginPackageTests
     }
 
     [Fact]
+    public async Task DiscoveryScannerReportsInvalidManifestFields()
+    {
+        using var workspace = new PluginTestWorkspace();
+        var pluginsRoot = workspace.CreateDirectory("plugins");
+        var installedVersionPath = Path.Combine(pluginsRoot, "installed", "com.company.sales", "1.0.0");
+        var installedRootPath = Path.Combine(installedVersionPath, "root");
+        var manifestPath = Path.Combine(installedRootPath, "atomui-city", "plugin.json");
+        Directory.CreateDirectory(Path.GetDirectoryName(manifestPath)!);
+        await File.WriteAllTextAsync(
+            manifestPath,
+            """
+            {
+              "schemaVersion": "1.0",
+              "pluginId": "com.company.sales",
+              "packageId": "Company.Sales.Plugin",
+              "version": "1.0.0",
+              "displayNameKey": "SalesPlugin.DisplayName",
+              "mainAssembly": "../Company.Sales.Plugin.dll",
+              "targetFramework": "net10.0",
+              "pluginApiVersion": "1.0",
+              "minHostVersion": "1.0.0",
+              "unloadable": true,
+              "aotCompatible": false
+            }
+            """);
+        await File.WriteAllTextAsync(
+            Path.Combine(installedVersionPath, "install.json"),
+            $$"""
+            {
+              "pluginId": "com.company.sales",
+              "packageId": "Company.Sales.Plugin",
+              "version": "1.0.0",
+              "rootPath": "{{installedRootPath}}",
+              "manifestPath": "{{manifestPath}}"
+            }
+            """);
+
+        var discovery = PluginDiscoveryScanner.DiscoverInstalled(pluginsRoot);
+
+        Assert.False(discovery.Succeeded);
+        Assert.Empty(discovery.Plugins);
+        Assert.Contains(
+            discovery.Diagnostics,
+            diagnostic => diagnostic.Code == PluginDiagnosticIds.InvalidMainAssembly
+                && diagnostic.PluginId == "com.company.sales"
+                && diagnostic.Field == "mainAssembly");
+    }
+
+    [Fact]
     public async Task InstallerCanInstallFromNuGetPackageArchive()
     {
         using var workspace = new PluginTestWorkspace();

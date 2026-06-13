@@ -61,6 +61,13 @@ public static class PluginDiscoveryScanner
                 continue;
             }
 
+            var manifestValidation = PluginManifestValidator.Validate(manifest);
+            if (!manifestValidation.Succeeded)
+            {
+                diagnostics.AddRange(manifestValidation.Diagnostics);
+                continue;
+            }
+
             if (!string.Equals(manifest.PluginId, installation.PluginId, StringComparison.Ordinal))
             {
                 diagnostics.Add(new PluginDiagnostic(
