@@ -58,6 +58,33 @@ public sealed class StateSnapshotTests
     }
 
     [Fact]
+    public void SnapshotRestoreRecordsDiagnosticsForMissingState()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var key = new StateKey<string>("AtomUI.City.Tests.Missing");
+        var registry = new ApplicationStateRegistry(diagnostics);
+        var snapshot = new StateSnapshot(
+            [
+                new StateSnapshotEntry(
+                    key.Name,
+                    typeof(string),
+                    "dark",
+                    version: 3,
+                    schemaVersion: 1,
+                    ownerModule: null,
+                    pluginId: null),
+            ]);
+
+        registry.Restore(snapshot);
+
+        var record = Assert.Single(diagnostics.Records);
+        Assert.Equal(StateDiagnosticIds.SnapshotRestoreFailed, record.Code);
+        Assert.Equal(HostDiagnosticSeverity.Warning, record.Severity);
+        Assert.Contains(key.Name, record.Message, StringComparison.Ordinal);
+        Assert.Contains("not registered", record.Message, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public void SnapshotRestoreSkipsNotificationForUnchangedValueAndVersion()
     {
         var key = new StateKey<string>("AtomUI.City.Tests.Theme");

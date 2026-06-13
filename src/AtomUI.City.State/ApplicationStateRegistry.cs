@@ -86,6 +86,7 @@ public sealed class ApplicationStateRegistry :
         {
             if (!_registrations.TryGetValue(entry.StateName, out var registration))
             {
+                WriteSnapshotRestoreFailedDiagnostic(entry, "state is not registered");
                 continue;
             }
 
@@ -148,6 +149,16 @@ public sealed class ApplicationStateRegistry :
         _diagnostics?.Write(new HostDiagnosticRecord(
             StateDiagnosticIds.ApplicationStateWriteDenied,
             $"Application state '{stateName}' with value type '{valueType.FullName}' rejected write because access policy is '{access}'.",
+            HostDiagnosticSeverity.Warning));
+    }
+
+    private void WriteSnapshotRestoreFailedDiagnostic(
+        StateSnapshotEntry entry,
+        string reason)
+    {
+        _diagnostics?.Write(new HostDiagnosticRecord(
+            StateDiagnosticIds.SnapshotRestoreFailed,
+            $"State snapshot restore failed for state '{entry.StateName}': {reason}.",
             HostDiagnosticSeverity.Warning));
     }
 
