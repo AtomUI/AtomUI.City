@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`8d41e51 fix(Presentation): protect unload result errors`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，621 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
-- 当前状态：已完成 Localization culture state readonly collections
+- 当前提交：`2f633f9 fix(Localization): protect culture state collections`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，622 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
+- 当前状态：已完成 Core module descriptor readonly dependencies
 
 **最新实现检查点：**
 
@@ -278,6 +278,7 @@
 - [x] Template render diagnostics readonly collection
 - [x] Presentation plugin unload result readonly errors
 - [x] Localization culture state readonly collections
+- [x] Core module descriptor readonly dependencies
 
 ## 状态定义
 

@@ -17,7 +17,7 @@ public sealed class ModuleDescriptor
         ModuleType = moduleType;
         Version = version;
         Description = description;
-        Dependencies = dependencies;
+        Dependencies = Array.AsReadOnly(dependencies.ToArray());
     }
 
     public string Name { get; }
