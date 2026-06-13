@@ -207,6 +207,15 @@ public sealed class ApplicationStateRegistry :
                 return;
             }
 
+            if (!string.Equals(entry.OwnerModule, Definition.OwnerModule, StringComparison.Ordinal))
+            {
+                WriteRestoreFailedDiagnostic(
+                    diagnostics,
+                    entry,
+                    $"owner module '{entry.OwnerModule ?? "<none>"}' does not match expected owner module '{Definition.OwnerModule ?? "<none>"}'");
+                return;
+            }
+
             if (entry.SchemaVersion != Definition.SchemaVersion)
             {
                 WriteRestoreFailedDiagnostic(
