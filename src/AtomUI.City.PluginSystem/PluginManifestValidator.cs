@@ -15,6 +15,14 @@ public static class PluginManifestValidator
                 "Plugin manifest field 'pluginId' is required.",
                 Field: "pluginId"));
         }
+        else if (IsInvalidPathSegment(manifest.PluginId))
+        {
+            diagnostics.Add(new PluginDiagnostic(
+                PluginDiagnosticIds.InvalidPluginId,
+                $"Plugin id '{manifest.PluginId}' must be a stable identifier, not a path segment.",
+                manifest.PluginId,
+                "pluginId"));
+        }
 
         if (!manifest.SchemaVersion.StartsWith("1.", StringComparison.Ordinal))
         {
@@ -43,5 +51,13 @@ public static class PluginManifestValidator
             mainAssembly.Contains('/') ||
             mainAssembly.Contains('\\') ||
             Path.GetFileName(mainAssembly) != mainAssembly;
+    }
+
+    private static bool IsInvalidPathSegment(string value)
+    {
+        return value is "." or ".." ||
+            value.Contains('/') ||
+            value.Contains('\\') ||
+            Path.IsPathRooted(value);
     }
 }

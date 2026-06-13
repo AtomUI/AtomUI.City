@@ -67,6 +67,27 @@ public sealed class PluginManifestTests
         Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == PluginDiagnosticIds.InvalidMainAssembly);
     }
 
+    [Theory]
+    [InlineData("../sales")]
+    [InlineData("com/company/sales")]
+    [InlineData("com\\company\\sales")]
+    [InlineData("..")]
+    public void ManifestValidatorRejectsPluginIdPathSegments(string pluginId)
+    {
+        var manifest = PluginManifestBuilder.Minimal(
+            pluginId: pluginId,
+            packageId: "Company.Sales.Plugin",
+            version: "1.0.0");
+
+        var result = PluginManifestValidator.Validate(manifest);
+
+        Assert.False(result.Succeeded);
+        Assert.Contains(
+            result.Diagnostics,
+            diagnostic => diagnostic.Code == PluginDiagnosticIds.InvalidPluginId
+                && diagnostic.Field == "pluginId");
+    }
+
     [Fact]
     public void ManifestCollectionsRejectExternalListMutation()
     {
