@@ -5,12 +5,13 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`eec2e57 fix(PluginSystem): report invalid install records`
-- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter DiscoveryScannerReportsInstallRecordVersionMismatch` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，54 tests passed
-- 当前状态：已完成 PluginSystem discovery install record version mismatch diagnostic
+- 当前提交：`7bef056 fix(PluginSystem): report discovered version mismatches`
+- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter DiscoveryScannerReportsInvalidManifestJsonAndContinues` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，55 tests passed
+- 当前状态：已完成 PluginSystem discovery invalid manifest JSON diagnostic
 
 **最新实现检查点：**
 
+- [x] PluginSystem discovery invalid manifest JSON diagnostic
 - [x] PluginSystem discovery install record version mismatch diagnostic
 - [x] PluginSystem discovery invalid install record diagnostic
 - [x] PluginSystem discovery missing installed manifest diagnostic

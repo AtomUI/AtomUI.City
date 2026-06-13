@@ -252,6 +252,45 @@ public sealed class PluginPackageTests
     }
 
     [Fact]
+    public async Task DiscoveryScannerReportsInvalidManifestJsonAndContinues()
+    {
+        using var workspace = new PluginTestWorkspace();
+        workspace.WriteStandardManifest();
+        workspace.CopyMainAssembly("Company.Sales.Plugin.dll");
+        var pluginsRoot = workspace.CreateDirectory("plugins");
+        var installer = new PluginPackageInstaller();
+        await installer.InstallFromDirectoryAsync(workspace.Root, pluginsRoot);
+
+        var installedVersionPath = Path.Combine(pluginsRoot, "installed", "com.company.broken", "1.0.0");
+        var installedRootPath = Path.Combine(installedVersionPath, "root");
+        var manifestPath = Path.Combine(installedRootPath, "atomui-city", "plugin.json");
+        Directory.CreateDirectory(Path.GetDirectoryName(manifestPath)!);
+        await File.WriteAllTextAsync(manifestPath, "not json");
+        await File.WriteAllTextAsync(
+            Path.Combine(installedVersionPath, "install.json"),
+            $$"""
+            {
+              "pluginId": "com.company.broken",
+              "packageId": "Company.Broken.Plugin",
+              "version": "1.0.0",
+              "rootPath": "{{installedRootPath}}",
+              "manifestPath": "{{manifestPath}}"
+            }
+            """);
+
+        var discovery = PluginDiscoveryScanner.DiscoverInstalled(pluginsRoot);
+
+        Assert.False(discovery.Succeeded);
+        Assert.Single(discovery.Plugins);
+        Assert.Contains(
+            discovery.Diagnostics,
+            diagnostic => diagnostic.Code == PluginDiagnosticIds.InvalidManifest
+                && diagnostic.PluginId == "com.company.broken"
+                && diagnostic.Field == "manifest"
+                && diagnostic.Path == manifestPath);
+    }
+
+    [Fact]
     public async Task InstallerCanInstallFromNuGetPackageArchive()
     {
         using var workspace = new PluginTestWorkspace();

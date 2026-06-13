@@ -45,7 +45,21 @@ public static class PluginDiscoveryScanner
                 continue;
             }
 
-            var manifest = PluginManifestReader.Read(installation.ManifestPath);
+            PluginManifest manifest;
+            try
+            {
+                manifest = PluginManifestReader.Read(installation.ManifestPath);
+            }
+            catch (Exception exception) when (exception is JsonException or IOException or UnauthorizedAccessException)
+            {
+                diagnostics.Add(new PluginDiagnostic(
+                    PluginDiagnosticIds.InvalidManifest,
+                    $"Installed plugin manifest '{installation.ManifestPath}' could not be read: {exception.Message}",
+                    installation.PluginId,
+                    "manifest",
+                    installation.ManifestPath));
+                continue;
+            }
 
             if (!string.Equals(manifest.PluginId, installation.PluginId, StringComparison.Ordinal))
             {
