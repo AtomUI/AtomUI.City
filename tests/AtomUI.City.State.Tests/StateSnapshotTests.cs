@@ -35,6 +35,23 @@ public sealed class StateSnapshotTests
     }
 
     [Fact]
+    public void SnapshotEntriesAreOrderedByStateName()
+    {
+        var theme = new StateKey<string>("AtomUI.City.Tests.Theme");
+        var counter = new StateKey<int>("AtomUI.City.Tests.Counter");
+        var registry = new ApplicationStateRegistry();
+        registry.Add(StateDefinition.Create(theme, "light", snapshotPolicy: StateSnapshotPolicy.Persisted));
+        registry.Add(StateDefinition.Create(counter, 1, snapshotPolicy: StateSnapshotPolicy.Persisted));
+
+        var snapshot = registry.CreateSnapshot();
+
+        Assert.Collection(
+            snapshot.Entries,
+            entry => Assert.Equal(counter.Name, entry.StateName),
+            entry => Assert.Equal(theme.Name, entry.StateName));
+    }
+
+    [Fact]
     public void SnapshotRestoreAppliesCompatibleRegisteredValues()
     {
         var key = new StateKey<string>("AtomUI.City.Tests.Theme");

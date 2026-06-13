@@ -72,6 +72,7 @@ public sealed class ApplicationStateRegistry :
         var entries = _registrations
             .Values
             .Where(registration => registration.Definition.SnapshotPolicy == StateSnapshotPolicy.Persisted)
+            .OrderBy(registration => registration.Definition.Name, StringComparer.Ordinal)
             .Select(registration => registration.CreateSnapshotEntry())
             .ToArray();
 
