@@ -13,9 +13,9 @@ public sealed class CultureState
     {
         CurrentCulture = currentCulture ?? throw new ArgumentNullException(nameof(currentCulture));
         CurrentUICulture = currentUICulture ?? throw new ArgumentNullException(nameof(currentUICulture));
-        FallbackCultures = fallbackCultures.ToArray();
+        FallbackCultures = Array.AsReadOnly(fallbackCultures.ToArray());
         Revision = revision;
-        LoadedPackageIds = loadedPackageIds.ToArray();
+        LoadedPackageIds = Array.AsReadOnly(loadedPackageIds.ToArray());
     }
 
     public CultureInfo CurrentCulture { get; }
