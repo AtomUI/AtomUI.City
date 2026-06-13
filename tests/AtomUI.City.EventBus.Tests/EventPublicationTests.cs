@@ -71,6 +71,28 @@ public sealed class EventPublicationTests
     }
 
     [Fact]
+    public void PublishResultDeliveriesRejectExternalListMutation()
+    {
+        var delivery = new EventDeliveryResult(
+            EventSubscriptionId.New(),
+            EventDispatchPolicy.Serialized,
+            Succeeded: true);
+        var replacement = new EventDeliveryResult(
+            EventSubscriptionId.New(),
+            EventDispatchPolicy.Background,
+            Succeeded: false,
+            ErrorMessage: "replaced");
+        var result = new EventPublishResult(
+            Guid.NewGuid(),
+            new EventContractId("atomui.city.tests.event.v1"),
+            [delivery]);
+        var list = Assert.IsAssignableFrom<IList<EventDeliveryResult>>(result.Deliveries);
+
+        Assert.Throws<NotSupportedException>(() => list[0] = replacement);
+        Assert.Equal(delivery.SubscriptionId, result.Deliveries[0].SubscriptionId);
+    }
+
+    [Fact]
     public async Task PostAsyncReturnsAcceptedEventIdUsedByDelivery()
     {
         var eventBus = new InMemoryEventBus();

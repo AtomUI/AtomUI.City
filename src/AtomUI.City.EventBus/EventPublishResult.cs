@@ -11,7 +11,7 @@ public sealed class EventPublishResult
 
         EventId = eventId;
         ContractId = contractId;
-        Deliveries = deliveries.ToArray();
+        Deliveries = Array.AsReadOnly(deliveries.ToArray());
     }
 
     public Guid EventId { get; }
