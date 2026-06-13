@@ -1,4 +1,5 @@
 using System.Text.Json;
+using AtomUI.City.Cli;
 
 namespace AtomUI.City.Cli.Tests;
 
@@ -45,5 +46,20 @@ public sealed class CliCommandArchitectureTests
         Assert.Equal(2, run.ExitCode);
         using var json = run.ReadJson();
         Assert.Equal("AUCCLI0002", json.RootElement.GetProperty("diagnostics")[0].GetProperty("code").GetString());
+    }
+
+    [Fact]
+    public void EnvelopeDiagnosticsRejectExternalListMutation()
+    {
+        var envelope = CliEnvelope.Failed(
+            "atomui city doctor",
+            CliExitCodes.ArgumentError,
+            CliDiagnostic.Error("AUCCLI0001", "Missing city root"),
+            CliDiagnostic.Error("AUCCLI0002", "Unknown command"));
+        var diagnostics = Assert.IsAssignableFrom<IList<CliDiagnostic>>(envelope.Diagnostics);
+
+        Assert.Throws<NotSupportedException>(() => diagnostics[0] = CliDiagnostic.Error("AUCCLI9999", "Changed"));
+        Assert.Equal("AUCCLI0001", envelope.Diagnostics[0].Code);
+        Assert.Equal("AUCCLI0002", envelope.Diagnostics[1].Code);
     }
 }

@@ -12,7 +12,7 @@ public sealed class CliEnvelope
         Command = command;
         Success = success;
         ExitCode = exitCode;
-        Diagnostics = diagnostics.ToArray();
+        Diagnostics = Array.AsReadOnly(diagnostics.ToArray());
         Data = data ?? new Dictionary<string, object?>();
     }
 
