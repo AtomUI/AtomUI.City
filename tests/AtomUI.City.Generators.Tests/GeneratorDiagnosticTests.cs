@@ -32,4 +32,13 @@ public sealed class GeneratorDiagnosticTests
 
         Assert.Equal(ids.Length, ids.Distinct(StringComparer.Ordinal).Count());
     }
+
+    [Fact]
+    public void AllDiagnosticDefinitionsRejectExternalMutation()
+    {
+        var diagnostics = Assert.IsAssignableFrom<IList<GeneratorDiagnosticDefinition>>(GeneratorDiagnostics.All);
+
+        Assert.Throws<NotSupportedException>(() => diagnostics[0] = GeneratorDiagnostics.DuplicateModuleName);
+        Assert.Equal(GeneratorDiagnostics.DynamicDiscoveryNotAllowed, GeneratorDiagnostics.All[0]);
+    }
 }

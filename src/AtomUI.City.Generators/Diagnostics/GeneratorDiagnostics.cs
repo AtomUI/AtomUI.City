@@ -38,7 +38,7 @@ public static class GeneratorDiagnostics
         "A view model can only have one presentation view for each view key.",
         GeneratorDiagnosticSeverity.Error);
 
-    public static IReadOnlyList<GeneratorDiagnosticDefinition> All { get; } = new[]
+    public static IReadOnlyList<GeneratorDiagnosticDefinition> All { get; } = Array.AsReadOnly(new[]
     {
         DynamicDiscoveryNotAllowed,
         DuplicateModuleName,
@@ -46,5 +46,5 @@ public static class GeneratorDiagnostics
         DuplicateRoute,
         InvalidManifestInput,
         DuplicatePresentationView,
-    };
+    });
 }
