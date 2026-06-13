@@ -99,6 +99,64 @@ public sealed class PluginManifestBuilderTests
         Assert.Empty(result.Manifest.Contributions);
     }
 
+    [Fact]
+    public void BuildReturnsReadonlyPluginManifestCollections()
+    {
+        var result = PluginManifestBuilder.Build(
+            Metadata(
+                capabilities:
+                [
+                    Capability("routes", ["/sales/**"]),
+                ],
+                contributions:
+                [
+                    Contribution("routes", "manifests/routes.json", required: true),
+                ],
+                dependencies:
+                [
+                    Dependency("com.company.identity", "[1.0.0,2.0.0)"),
+                ]));
+        var capabilities = Assert.IsAssignableFrom<IList<PluginCapabilityManifestEntry>>(result.Manifest.Capabilities);
+        var contributions = Assert.IsAssignableFrom<IList<PluginContributionManifestEntry>>(result.Manifest.Contributions);
+        var dependencies = Assert.IsAssignableFrom<IList<PluginDependencyManifestEntry>>(result.Manifest.Dependencies);
+        var diagnostics = Assert.IsAssignableFrom<IList<GeneratorDiagnostic>>(result.Diagnostics);
+        var capabilityScope = Assert.IsAssignableFrom<IList<string>>(result.Manifest.Capabilities[0].Scope);
+
+        Assert.Throws<NotSupportedException>(() => capabilities[0] = new PluginCapabilityManifestEntry("changed", []));
+        Assert.Throws<NotSupportedException>(() => contributions[0] = new PluginContributionManifestEntry("changed", "manifests/changed.json", true));
+        Assert.Throws<NotSupportedException>(() => dependencies[0] = new PluginDependencyManifestEntry("com.company.changed", null));
+        Assert.Throws<NotSupportedException>(() => diagnostics.Add(new GeneratorDiagnostic(GeneratorDiagnostics.InvalidManifestInput, "Changed")));
+        Assert.Throws<NotSupportedException>(() => capabilityScope[0] = "/changed/**");
+        Assert.Equal("routes", result.Manifest.Capabilities[0].Name);
+        Assert.Equal("routes", result.Manifest.Contributions[0].Type);
+        Assert.Equal("com.company.identity", result.Manifest.Dependencies[0].PluginId);
+        Assert.Equal("/sales/**", result.Manifest.Capabilities[0].Scope[0]);
+        Assert.Empty(result.Diagnostics);
+    }
+
+    [Fact]
+    public void PluginMetadataCollectionsRejectExternalMutation()
+    {
+        var capabilityScope = new List<string> { "/sales/**" };
+        var capabilities = new List<PluginCapabilityMetadata> { Capability("routes", capabilityScope) };
+        var contributions = new List<PluginContributionManifestMetadata> { Contribution("routes", "manifests/routes.json", required: true) };
+        var dependencies = new List<PluginDependencyMetadata> { Dependency("com.company.identity", "[1.0.0,2.0.0)") };
+        var metadata = Metadata(capabilities: capabilities, contributions: contributions, dependencies: dependencies);
+        var exposedCapabilities = Assert.IsAssignableFrom<IList<PluginCapabilityMetadata>>(metadata.Capabilities);
+        var exposedContributions = Assert.IsAssignableFrom<IList<PluginContributionManifestMetadata>>(metadata.Contributions);
+        var exposedDependencies = Assert.IsAssignableFrom<IList<PluginDependencyMetadata>>(metadata.Dependencies);
+        var exposedScope = Assert.IsAssignableFrom<IList<string>>(metadata.Capabilities[0].Scope);
+
+        Assert.Throws<NotSupportedException>(() => exposedCapabilities[0] = Capability("changed"));
+        Assert.Throws<NotSupportedException>(() => exposedContributions[0] = Contribution("changed", "manifests/changed.json", required: true));
+        Assert.Throws<NotSupportedException>(() => exposedDependencies[0] = Dependency("com.company.changed", null));
+        Assert.Throws<NotSupportedException>(() => exposedScope[0] = "/changed/**");
+        Assert.Equal("routes", metadata.Capabilities[0].Name);
+        Assert.Equal("routes", metadata.Contributions[0].Type);
+        Assert.Equal("com.company.identity", metadata.Dependencies[0].PluginId);
+        Assert.Equal("/sales/**", metadata.Capabilities[0].Scope[0]);
+    }
+
     private static PluginMetadata Metadata(
         string mainAssembly = "Company.Sales.Plugin.dll",
         IReadOnlyList<PluginCapabilityMetadata>? capabilities = null,

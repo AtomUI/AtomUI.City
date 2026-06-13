@@ -35,9 +35,9 @@ public sealed class PluginManifest
         MaxHostVersion = maxHostVersion;
         Unloadable = unloadable;
         AotCompatible = aotCompatible;
-        Capabilities = capabilities ?? throw new ArgumentNullException(nameof(capabilities));
-        Contributions = contributions ?? throw new ArgumentNullException(nameof(contributions));
-        Dependencies = dependencies ?? throw new ArgumentNullException(nameof(dependencies));
+        Capabilities = Array.AsReadOnly((capabilities ?? throw new ArgumentNullException(nameof(capabilities))).ToArray());
+        Contributions = Array.AsReadOnly((contributions ?? throw new ArgumentNullException(nameof(contributions))).ToArray());
+        Dependencies = Array.AsReadOnly((dependencies ?? throw new ArgumentNullException(nameof(dependencies))).ToArray());
     }
 
     public string SchemaVersion { get; }

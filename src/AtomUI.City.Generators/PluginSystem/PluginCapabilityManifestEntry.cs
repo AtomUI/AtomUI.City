@@ -10,7 +10,7 @@ public sealed class PluginCapabilityManifestEntry
         }
 
         Name = name;
-        Scope = scope ?? throw new ArgumentNullException(nameof(scope));
+        Scope = Array.AsReadOnly((scope ?? throw new ArgumentNullException(nameof(scope))).ToArray());
     }
 
     public string Name { get; }
