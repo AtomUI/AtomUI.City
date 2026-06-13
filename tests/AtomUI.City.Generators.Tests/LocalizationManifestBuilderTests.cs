@@ -83,6 +83,48 @@ public sealed class LocalizationManifestBuilderTests
         Assert.Empty(result.Manifest.Fallbacks);
     }
 
+    [Fact]
+    public void BuildReturnsReadonlyManifestCollections()
+    {
+        var result = LocalizationManifestBuilder.Build(
+            [
+                Package("Settings.en-US", "en-US"),
+            ],
+            [
+                Resource("Settings.Title", "Settings.en-US"),
+            ]);
+        var packages = Assert.IsAssignableFrom<IList<LanguagePackageManifestEntry>>(result.Manifest.Packages);
+        var resources = Assert.IsAssignableFrom<IList<LocalizedResourceManifestEntry>>(result.Manifest.Resources);
+        var supportedCultures = Assert.IsAssignableFrom<IList<string>>(result.Manifest.SupportedCultures);
+        var diagnostics = Assert.IsAssignableFrom<IList<GeneratorDiagnostic>>(result.Diagnostics);
+
+        Assert.Throws<NotSupportedException>(() => packages[0] = new LanguagePackageManifestEntry("Other", "en-US", ResourceScopeMetadata.Module, "Other", null, null, null));
+        Assert.Throws<NotSupportedException>(() => resources[0] = new LocalizedResourceManifestEntry("Other", "Settings.en-US", "en-US", LocalizedResourceMetadataKind.String, ResourceScopeMetadata.Module, null, false));
+        Assert.Throws<NotSupportedException>(() => supportedCultures[0] = "fr-FR");
+        Assert.Throws<NotSupportedException>(() => diagnostics.Add(new GeneratorDiagnostic(GeneratorDiagnostics.InvalidManifestInput, "Changed")));
+        Assert.Equal("Settings.en-US", result.Manifest.Packages[0].PackageId);
+        Assert.Equal("Settings.Title", result.Manifest.Resources[0].Key);
+        Assert.Equal("en-US", result.Manifest.SupportedCultures[0]);
+        Assert.Empty(result.Diagnostics);
+    }
+
+    [Fact]
+    public void LocalizationMetadataCollectionsRejectExternalMutation()
+    {
+        var packageList = new List<LanguagePackageMetadata> { Package("Settings.en-US", "en-US") };
+        var resourceList = new List<LocalizedResourceMetadata> { Resource("Settings.Title", "Settings.en-US") };
+        var metadata = new LocalizationMetadata(
+            packageList,
+            resourceList);
+        var packages = Assert.IsAssignableFrom<IList<LanguagePackageMetadata>>(metadata.Packages);
+        var resources = Assert.IsAssignableFrom<IList<LocalizedResourceMetadata>>(metadata.Resources);
+
+        Assert.Throws<NotSupportedException>(() => packages[0] = Package("Other", "en-US"));
+        Assert.Throws<NotSupportedException>(() => resources[0] = Resource("Other", "Settings.en-US"));
+        Assert.Equal("Settings.en-US", metadata.Packages[0].PackageId);
+        Assert.Equal("Settings.Title", metadata.Resources[0].Key);
+    }
+
     private static LanguagePackageMetadata Package(
         string packageId,
         string culture,

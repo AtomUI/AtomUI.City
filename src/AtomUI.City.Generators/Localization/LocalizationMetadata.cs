@@ -6,8 +6,8 @@ public sealed class LocalizationMetadata
         IReadOnlyList<LanguagePackageMetadata> packages,
         IReadOnlyList<LocalizedResourceMetadata> resources)
     {
-        Packages = packages ?? throw new ArgumentNullException(nameof(packages));
-        Resources = resources ?? throw new ArgumentNullException(nameof(resources));
+        Packages = Array.AsReadOnly((packages ?? throw new ArgumentNullException(nameof(packages))).ToArray());
+        Resources = Array.AsReadOnly((resources ?? throw new ArgumentNullException(nameof(resources))).ToArray());
     }
 
     public IReadOnlyList<LanguagePackageMetadata> Packages { get; }
