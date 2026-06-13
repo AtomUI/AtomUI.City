@@ -75,6 +75,30 @@ public sealed class StateSnapshotTests
     }
 
     [Fact]
+    public void SnapshotRestoreAppliesNullReferenceValues()
+    {
+        var key = new StateKey<string?>("AtomUI.City.Tests.OptionalTheme");
+        var registry = new ApplicationStateRegistry();
+        registry.Add(StateDefinition.Create(key, "light", snapshotPolicy: StateSnapshotPolicy.Persisted));
+        var snapshot = new StateSnapshot(
+            [
+                new StateSnapshotEntry(
+                    key.Name,
+                    typeof(string),
+                    value: null,
+                    version: 3,
+                    schemaVersion: 1,
+                    ownerModule: null,
+                    pluginId: null),
+            ]);
+
+        registry.Restore(snapshot);
+
+        Assert.Null(registry.Get(key).Value);
+        Assert.Equal(3, registry.Get(key).Version);
+    }
+
+    [Fact]
     public void SnapshotRestoreRecordsDiagnosticsForMissingState()
     {
         var diagnostics = new InMemoryHostDiagnostics();

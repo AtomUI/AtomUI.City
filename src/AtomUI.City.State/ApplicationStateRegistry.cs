@@ -246,6 +246,21 @@ public sealed class ApplicationStateRegistry :
                 return;
             }
 
+            if (entry.Value is null)
+            {
+                if (default(T) is null)
+                {
+                    State.Restore(default!, entry.Version);
+                    return;
+                }
+
+                WriteRestoreFailedDiagnostic(
+                    diagnostics,
+                    entry,
+                    $"null value cannot be restored as non-nullable value type '{typeof(T).FullName}'");
+                return;
+            }
+
             if (entry.Value is T value)
             {
                 State.Restore(value, entry.Version);
