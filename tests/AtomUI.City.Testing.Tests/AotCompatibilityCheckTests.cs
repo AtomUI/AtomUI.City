@@ -35,4 +35,22 @@ public sealed class AotCompatibilityCheckTests
 
         Assert.Empty(diagnostics);
     }
+
+    [Fact]
+    public void EvaluateDiagnosticsRejectExternalListMutation()
+    {
+        var check = AotCompatibilityCheck
+            .Create()
+            .ForbidPattern("AOT001", "Assembly.GetTypes");
+
+        var diagnostics = check.Evaluate(
+            [new SourceFile("ModuleScanner.cs", "var types = assembly.Assembly.GetTypes();")]);
+        var exposedDiagnostics = Assert.IsAssignableFrom<IList<AotCompatibilityDiagnostic>>(diagnostics);
+
+        Assert.Throws<NotSupportedException>(() => exposedDiagnostics[0] = new AotCompatibilityDiagnostic(
+            "AOT999",
+            "Changed.cs",
+            "Changed"));
+        Assert.Equal("AOT001", diagnostics[0].Id);
+    }
 }

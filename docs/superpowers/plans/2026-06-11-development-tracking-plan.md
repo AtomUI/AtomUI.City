@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`0475649 fix(Testing): protect plugin host records`
-- 当前测试：`dotnet test tests/AtomUI.City.Presentation.Tests/AtomUI.City.Presentation.Tests.csproj --no-restore --filter "ContributionsRejectExternalListMutation|ActiveViewsRejectExternalListMutation"` 通过；`dotnet test tests/AtomUI.City.Presentation.Tests/AtomUI.City.Presentation.Tests.csproj --no-restore` 通过，133 tests passed
-- 当前状态：已完成 Presentation registry readonly snapshots
+- 当前提交：`6b98249 fix(Presentation): protect registry snapshots`
+- 当前测试：`dotnet test tests/AtomUI.City.Testing.Tests/AtomUI.City.Testing.Tests.csproj --no-restore --filter EvaluateDiagnosticsRejectExternalListMutation` 通过；`dotnet test tests/AtomUI.City.Testing.Tests/AtomUI.City.Testing.Tests.csproj --no-restore` 通过，29 tests passed
+- 当前状态：已完成 Testing AOT diagnostics readonly result
 
 **最新实现检查点：**
 
@@ -315,6 +315,7 @@
 - [x] DataError init readonly message arguments
 - [x] Testing plugin host readonly records snapshot
 - [x] Presentation registry readonly snapshots
+- [x] Testing AOT diagnostics readonly result
 
 ## 状态定义
 

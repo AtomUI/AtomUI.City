@@ -43,7 +43,7 @@ public sealed class AotCompatibilityCheck
             }
         }
 
-        return diagnostics;
+        return Array.AsReadOnly(diagnostics.ToArray());
     }
 
     private sealed record ForbiddenAotPattern(string DiagnosticId, string Pattern);
