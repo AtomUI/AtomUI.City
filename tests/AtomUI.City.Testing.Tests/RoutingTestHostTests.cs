@@ -48,6 +48,20 @@ public sealed class RoutingTestHostTests
         Assert.Equal("customer-details", host.Routes[0].Name);
     }
 
+    [Fact]
+    public void MatchParametersRejectExternalMutation()
+    {
+        var host = RoutingTestHost
+            .CreateBuilder()
+            .MapRoute("customer-details", "/customers/{id}", typeof(CustomerDetailsViewModel))
+            .Build();
+        var match = host.Match("/customers/42");
+        var parameters = Assert.IsAssignableFrom<IDictionary<string, string>>(match.Parameters);
+
+        Assert.Throws<NotSupportedException>(() => parameters["id"] = "99");
+        Assert.Equal("42", match.Parameters["id"]);
+    }
+
     private sealed class CustomerDetailsViewModel;
 
     private sealed class OrderDetailsViewModel;

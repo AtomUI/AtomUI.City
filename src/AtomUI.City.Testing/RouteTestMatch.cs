@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+
 namespace AtomUI.City.Testing;
 
 public sealed class RouteTestMatch
@@ -12,7 +14,8 @@ public sealed class RouteTestMatch
         IsMatch = isMatch;
         RouteName = routeName;
         ViewModelType = viewModelType;
-        Parameters = parameters;
+        Parameters = new ReadOnlyDictionary<string, string>(
+            new Dictionary<string, string>(parameters, StringComparer.OrdinalIgnoreCase));
         ErrorCode = errorCode;
     }
 
@@ -33,6 +36,6 @@ public sealed class RouteTestMatch
 
     public static RouteTestMatch NotFound()
     {
-        return new RouteTestMatch(false, null, null, new Dictionary<string, string>(), "CITY-ROUTE-NOT-FOUND");
+        return new RouteTestMatch(false, null, null, new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase), "CITY-ROUTE-NOT-FOUND");
     }
 }

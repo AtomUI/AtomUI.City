@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`497d5f7 fix(Routing): protect parameter dictionaries`
-- 当前测试：`dotnet test tests/AtomUI.City.Mvvm.Tests/AtomUI.City.Mvvm.Tests.csproj --no-restore --filter ActivationContextPropertiesRejectExternalMutation` 通过；`dotnet test tests/AtomUI.City.Mvvm.Tests/AtomUI.City.Mvvm.Tests.csproj --no-restore` 通过，28 tests passed；`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，659 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
-- 当前状态：已完成 MVVM activation context readonly properties
+- 当前提交：`4b0f4c0 fix(Mvvm): protect activation context properties`
+- 当前测试：`dotnet test tests/AtomUI.City.Testing.Tests/AtomUI.City.Testing.Tests.csproj --no-restore --filter MatchParametersRejectExternalMutation` 通过；`dotnet test tests/AtomUI.City.Testing.Tests/AtomUI.City.Testing.Tests.csproj --no-restore` 通过，27 tests passed；`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，660 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
+- 当前状态：已完成 Testing route test match readonly parameters
 
 **最新实现检查点：**
 
@@ -305,6 +305,7 @@
 - [x] Data error message arguments readonly collection
 - [x] Routing parameter dictionaries readonly collections
 - [x] MVVM activation context readonly properties
+- [x] Testing route test match readonly parameters
 
 ## 状态定义
 
