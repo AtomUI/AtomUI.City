@@ -72,6 +72,20 @@ public sealed class ModuleTestHostTests
         Assert.Equal(typeof(RecordingModule), record.Module.GetType());
     }
 
+    [Fact]
+    public void ModulesRejectExternalMutation()
+    {
+        using var host = ModuleTestHost
+            .CreateBuilder()
+            .UseModule("Sample", new RecordingModule("Sample", []))
+            .Build();
+
+        var modules = Assert.IsAssignableFrom<IList<ModuleTestRecord>>(host.Modules);
+
+        Assert.Throws<NotSupportedException>(() => modules[0] = new ModuleTestRecord("Other", new RecordingModule("Other", [])));
+        Assert.Equal("Sample", host.Modules[0].Name);
+    }
+
     private sealed class RecordingModule : ModuleBase
     {
         private readonly List<string> _calls;

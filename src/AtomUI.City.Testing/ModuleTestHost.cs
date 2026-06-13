@@ -15,7 +15,7 @@ public sealed class ModuleTestHost : IDisposable, IAsyncDisposable
     internal ModuleTestHost(TestHost host, IReadOnlyList<ModuleTestRecord> modules)
     {
         _host = host;
-        Modules = modules;
+        Modules = Array.AsReadOnly(modules.ToArray());
     }
 
     public IReadOnlyList<ModuleTestRecord> Modules { get; }
