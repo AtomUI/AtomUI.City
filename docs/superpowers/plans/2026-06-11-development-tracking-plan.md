@@ -5,12 +5,13 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`6c5349b fix(PluginSystem): skip invalid target framework probes`
-- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter DependencyValidatorRejectsDuplicatePluginIds` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，44 tests passed
-- 当前状态：已完成 PluginSystem duplicate PluginId dependency validation diagnostic
+- 当前提交：`060b828 fix(PluginSystem): reject duplicate plugin ids`
+- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter DependencyValidatorRejectsUnsatisfiedPluginDependencyVersionRange` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，45 tests passed
+- 当前状态：已完成 PluginSystem dependency version range mismatch diagnostic
 
 **最新实现检查点：**
 
+- [x] PluginSystem dependency version range mismatch diagnostic
 - [x] PluginSystem duplicate PluginId dependency validation diagnostic
 - [x] Security command authorization source
 - [x] Security command authorization refresh on authentication / permission / descriptor changes

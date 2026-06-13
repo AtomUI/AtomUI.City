@@ -18,4 +18,5 @@ public static class PluginDiagnosticIds
     public const string InvalidTargetFramework = "AUCPLG0013";
     public const string PackageExtractionFailed = "AUCPLG0014";
     public const string PluginIdConflict = "AUCPLG0015";
+    public const string PluginDependencyVersionMismatch = "AUCPLG0016";
 }
