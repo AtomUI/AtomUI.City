@@ -636,4 +636,21 @@ public sealed class PluginPackageTests
 
         Assert.False(Directory.Exists(Path.Combine(pluginsRoot, PluginPackagePaths.StagingDirectoryName)));
     }
+
+    [Fact]
+    public async Task InstallerHonorsPackageInstallCancellationBeforeExtraction()
+    {
+        using var workspace = new PluginTestWorkspace();
+        var packagePath = Path.Combine(workspace.Temp, "broken.nupkg");
+        await File.WriteAllTextAsync(packagePath, "not a zip package");
+        var pluginsRoot = workspace.CreateDirectory("plugins");
+        var installer = new PluginPackageInstaller();
+        using var cancellation = new CancellationTokenSource();
+        await cancellation.CancelAsync();
+
+        await Assert.ThrowsAsync<OperationCanceledException>(
+            () => installer.InstallFromPackageAsync(packagePath, pluginsRoot, cancellation.Token).AsTask());
+
+        Assert.False(Directory.Exists(Path.Combine(pluginsRoot, PluginPackagePaths.StagingDirectoryName)));
+    }
 }

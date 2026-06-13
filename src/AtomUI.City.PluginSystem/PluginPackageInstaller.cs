@@ -12,6 +12,7 @@ public sealed class PluginPackageInstaller
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(packageRoot);
         ArgumentException.ThrowIfNullOrWhiteSpace(pluginsRoot);
+        cancellationToken.ThrowIfCancellationRequested();
 
         var stagingRoot = Path.Combine(
             pluginsRoot,
@@ -44,6 +45,7 @@ public sealed class PluginPackageInstaller
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(packagePath);
         ArgumentException.ThrowIfNullOrWhiteSpace(pluginsRoot);
+        cancellationToken.ThrowIfCancellationRequested();
 
         var stagingRoot = Path.Combine(
             pluginsRoot,

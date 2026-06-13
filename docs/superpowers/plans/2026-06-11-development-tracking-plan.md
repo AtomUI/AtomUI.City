@@ -5,12 +5,13 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`cc15254 fix(PluginSystem): handle invalid install record paths`
-- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter DiscoveryScannerReportsMissingInstalledMainAssembly` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，63 tests passed
-- 当前状态：已完成 PluginSystem discovery installed package layout validation
+- 当前提交：`1ea474b fix(PluginSystem): validate discovered package layout`
+- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter "InstallerHonorsPackageInstallCancellationBeforeExtraction|InstallerDeletesStagingWhenDirectoryInstallIsCancelled"` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，64 tests passed
+- 当前状态：已完成 PluginSystem package install pre-extraction cancellation guard
 
 **最新实现检查点：**
 
+- [x] PluginSystem package install pre-extraction cancellation guard
 - [x] PluginSystem discovery installed package layout validation
 - [x] PluginSystem invalid install record path value diagnostics
 - [x] PluginSystem install record runtime path boundary diagnostics
