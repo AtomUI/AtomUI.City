@@ -26,6 +26,7 @@ mkdir -p "$package_output"
 
 while IFS= read -r project; do
   if [[ "$no_build" == true ]]; then
+    dotnet restore "$project" -p:Configuration="$configuration"
     dotnet pack "$project" --configuration "$configuration" --output "$package_output" --no-build -p:TreatWarningsAsErrors=true
   else
     dotnet pack "$project" --configuration "$configuration" --output "$package_output" -p:TreatWarningsAsErrors=true

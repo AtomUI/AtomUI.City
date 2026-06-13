@@ -123,6 +123,34 @@ public sealed class EngineeringGateTests
     }
 
     [Fact]
+    public void PackScriptRestoresSelectedConfigurationBeforeNoBuildPack()
+    {
+        var repositoryRoot = RepositoryPaths.FindRepositoryRoot();
+        var scriptPath = Path.Combine(repositoryRoot, EngineeringScriptsDirectoryName, "pack.sh");
+
+        Assert.True(File.Exists(scriptPath), "Expected package script at engineering/pack.sh.");
+
+        var script = File.ReadAllText(scriptPath);
+
+        Assert.Contains("dotnet restore \"$project\" -p:Configuration=\"$configuration\"", script, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void PublicApiScriptFallsBackWhenRipgrepIsUnavailable()
+    {
+        var repositoryRoot = RepositoryPaths.FindRepositoryRoot();
+        var scriptPath = Path.Combine(repositoryRoot, EngineeringScriptsDirectoryName, "check-public-api.sh");
+
+        Assert.True(File.Exists(scriptPath), "Expected public API check script at engineering/check-public-api.sh.");
+
+        var script = File.ReadAllText(scriptPath);
+
+        Assert.Contains("command -v rg", script, StringComparison.Ordinal);
+        Assert.Contains("find src -name '*.cs' -print0", script, StringComparison.Ordinal);
+        Assert.Contains("xargs -0 grep", script, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void CSharpSourceFilesDoNotUseRepositoryLicenseHeaders()
     {
         var repositoryRoot = RepositoryPaths.FindRepositoryRoot();

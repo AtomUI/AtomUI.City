@@ -7,7 +7,17 @@ output_file="$output_dir/public-api.txt"
 
 mkdir -p "$output_dir"
 
-if ! rg -n '^[[:space:]]*public[[:space:]]+((abstract|sealed|static|partial|readonly|record)[[:space:]]+)*(class|interface|enum|struct|record|delegate)[[:space:]]+' src --glob '*.cs' > "$output_file"; then
+public_api_pattern='^[[:space:]]*public[[:space:]]+((abstract|sealed|static|partial|readonly|record)[[:space:]]+)*(class|interface|enum|struct|record|delegate)[[:space:]]+'
+
+if command -v rg >/dev/null 2>&1; then
+  public_api_found=true
+  rg -n "$public_api_pattern" src --glob '*.cs' > "$output_file" || public_api_found=false
+else
+  public_api_found=true
+  find src -name '*.cs' -print0 | xargs -0 grep -nE "$public_api_pattern" > "$output_file" || public_api_found=false
+fi
+
+if [[ "$public_api_found" != true ]]; then
   printf 'No public API declarations found.\n' >&2
   exit 1
 fi
