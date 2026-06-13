@@ -91,6 +91,23 @@ public sealed class PresentationResourceRegistryTests
     }
 
     [Fact]
+    public void ContributionsRejectExternalListMutation()
+    {
+        var registry = new PresentationResourceRegistry();
+        var lease = registry.Register(new PresentationResourceContribution(
+            "style",
+            new object(),
+            pluginId: "com.company.sales",
+            contributionId: "sales.style"));
+
+        var contributions = Assert.IsAssignableFrom<IList<PresentationResourceContribution>>(registry.Contributions);
+
+        Assert.Throws<NotSupportedException>(
+            () => contributions[0] = new PresentationResourceContribution("style", new object()));
+        Assert.Same(lease.Contribution, registry.Contributions[0]);
+    }
+
+    [Fact]
     public void RevokePluginRecordsFailureAndContinuesRevokingOtherResources()
     {
         var diagnostics = new InMemoryHostDiagnostics();

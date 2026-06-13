@@ -23,10 +23,11 @@ public sealed class PresentationResourceRegistry : IPresentationResourceRegistry
         {
             lock (_gate)
             {
-                return _leases
-                    .Where(static lease => !lease.IsDisposed)
-                    .Select(static lease => lease.Contribution)
-                    .ToArray();
+                return Array.AsReadOnly(
+                    _leases
+                        .Where(static lease => !lease.IsDisposed)
+                        .Select(static lease => lease.Contribution)
+                        .ToArray());
             }
         }
     }

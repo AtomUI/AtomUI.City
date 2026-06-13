@@ -23,10 +23,11 @@ public sealed class ActivePluginViewRegistry : IActivePluginViewRegistry
         {
             lock (_gate)
             {
-                return _leases
-                    .Where(static lease => !lease.IsDisposed)
-                    .Select(static lease => lease.View)
-                    .ToArray();
+                return Array.AsReadOnly(
+                    _leases
+                        .Where(static lease => !lease.IsDisposed)
+                        .Select(static lease => lease.View)
+                        .ToArray());
             }
         }
     }

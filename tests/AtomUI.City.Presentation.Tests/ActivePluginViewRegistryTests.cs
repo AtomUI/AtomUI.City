@@ -101,6 +101,25 @@ public sealed class ActivePluginViewRegistryTests
     }
 
     [Fact]
+    public void ActiveViewsRejectExternalListMutation()
+    {
+        var registry = new ActivePluginViewRegistry();
+        var outlet = new RouteOutlet("primary", new InlineDispatcher());
+        var handle = BoundViewHandle.FromExisting(new SettingsView(), new SettingsViewModel());
+        var lease = registry.Track(new ActivePluginView(
+            "com.company.sales",
+            outlet,
+            handle,
+            contributionId: "sales.settings"));
+
+        var activeViews = Assert.IsAssignableFrom<IList<ActivePluginView>>(registry.ActiveViews);
+
+        Assert.Throws<NotSupportedException>(
+            () => activeViews[0] = new ActivePluginView("changed", outlet, handle));
+        Assert.Same(lease.View, registry.ActiveViews[0]);
+    }
+
+    [Fact]
     public async Task ClosePluginViewsDoesNotClearOutletWhenTrackedViewWasReplaced()
     {
         var registry = new ActivePluginViewRegistry();
