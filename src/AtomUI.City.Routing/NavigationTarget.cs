@@ -12,7 +12,7 @@ public sealed class NavigationTarget
         Kind = kind;
         RouteId = routeId;
         Path = path;
-        Parameters = parameters;
+        Parameters = RouteParameters.Copy(parameters);
         Options = options;
     }
 
@@ -37,7 +37,7 @@ public sealed class NavigationTarget
             NavigationTargetKind.Path,
             routeId: null,
             path,
-            EmptyParameters(),
+            RouteParameters.Empty(),
             options);
     }
 
@@ -53,9 +53,7 @@ public sealed class NavigationTarget
             NavigationTargetKind.RouteReference,
             routeId,
             path: null,
-            parameters is null
-                ? EmptyParameters()
-                : new Dictionary<string, string>(parameters, StringComparer.OrdinalIgnoreCase),
+            parameters ?? RouteParameters.Empty(),
             options);
     }
 
@@ -67,7 +65,7 @@ public sealed class NavigationTarget
             NavigationTargetKind.Journal,
             routeId: null,
             path: null,
-            EmptyParameters(),
+            RouteParameters.Empty(),
             options);
     }
 
@@ -82,8 +80,4 @@ public sealed class NavigationTarget
         };
     }
 
-    private static Dictionary<string, string> EmptyParameters()
-    {
-        return new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-    }
 }

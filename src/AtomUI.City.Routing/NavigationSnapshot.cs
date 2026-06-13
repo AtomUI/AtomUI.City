@@ -8,7 +8,7 @@ public sealed class NavigationSnapshot
         long routeGraphVersion)
     {
         ActiveRoute = activeRoute;
-        Parameters = parameters;
+        Parameters = RouteParameters.Copy(parameters);
         RouteGraphVersion = routeGraphVersion;
     }
 
@@ -24,7 +24,7 @@ public sealed class NavigationSnapshot
     {
         return new NavigationSnapshot(
             activeRoute: null,
-            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+            RouteParameters.Empty(),
             routeGraphVersion);
     }
 
@@ -38,7 +38,7 @@ public sealed class NavigationSnapshot
 
         return new NavigationSnapshot(
             activeRoute,
-            new Dictionary<string, string>(parameters, StringComparer.OrdinalIgnoreCase),
+            parameters,
             routeGraphVersion);
     }
 }

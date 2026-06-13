@@ -14,7 +14,7 @@ public sealed class NavigationResult
         Status = status;
         Target = target;
         ActiveRoute = route;
-        Parameters = parameters;
+        Parameters = RouteParameters.Copy(parameters);
         Error = error;
     }
 
@@ -47,7 +47,7 @@ public sealed class NavigationResult
             NavigationResultStatus.Success,
             target,
             route,
-            new Dictionary<string, string>(parameters, StringComparer.OrdinalIgnoreCase),
+            parameters,
             error: null);
     }
 

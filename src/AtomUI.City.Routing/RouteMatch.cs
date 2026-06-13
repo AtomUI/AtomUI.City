@@ -10,7 +10,7 @@ public sealed class RouteMatch
     {
         Status = status;
         MatchedRoute = route;
-        Parameters = parameters;
+        Parameters = RouteParameters.Copy(parameters);
         UnmatchedPath = unmatchedPath;
     }
 
@@ -36,6 +36,6 @@ public sealed class RouteMatch
 
     public static RouteMatch NotFound(string path)
     {
-        return new RouteMatch(RouteMatchStatus.NotFound, null, new Dictionary<string, string>(), path);
+        return new RouteMatch(RouteMatchStatus.NotFound, null, RouteParameters.Empty(), path);
     }
 }

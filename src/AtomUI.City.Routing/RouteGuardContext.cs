@@ -18,7 +18,7 @@ public sealed class RouteGuardContext
         Target = target;
         Route = route;
         CurrentSnapshot = currentSnapshot;
-        Parameters = parameters;
+        Parameters = RouteParameters.Copy(parameters);
     }
 
     public Guid NavigationId { get; }
