@@ -22,6 +22,19 @@ public sealed class ApplicationTemplateBuildSmokeTests
     }
 
     [Fact]
+    public void TemplateRenderDiagnosticsRejectExternalListMutation()
+    {
+        var result = TemplateRenderResult.Failed(
+            new TemplateDiagnostic("AUCTPL0001", "First"),
+            new TemplateDiagnostic("AUCTPL0002", "Second"));
+        var diagnostics = Assert.IsAssignableFrom<IList<TemplateDiagnostic>>(result.Diagnostics);
+
+        Assert.Throws<NotSupportedException>(() => diagnostics[0] = new TemplateDiagnostic("AUCTPL9999", "Changed"));
+        Assert.Equal("AUCTPL0001", result.Diagnostics[0].Code);
+        Assert.Equal("AUCTPL0002", result.Diagnostics[1].Code);
+    }
+
+    [Fact]
     public void ApplicationTemplateGeneratesBuildAndTestProjectFiles()
     {
         using var workspace = new TemplateSmokeWorkspace();

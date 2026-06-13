@@ -5,7 +5,7 @@ public sealed class TemplateRenderResult
     private TemplateRenderResult(TemplatePlan? plan, IReadOnlyList<TemplateDiagnostic> diagnostics)
     {
         Plan = plan;
-        Diagnostics = diagnostics.ToArray();
+        Diagnostics = Array.AsReadOnly(diagnostics.ToArray());
     }
 
     public TemplatePlan? Plan { get; }
