@@ -88,6 +88,27 @@ public sealed class PluginManifestTests
                 && diagnostic.Field == "pluginId");
     }
 
+    [Theory]
+    [InlineData("../1.0.0")]
+    [InlineData("1/0/0")]
+    [InlineData("1\\0\\0")]
+    [InlineData("..")]
+    public void ManifestValidatorRejectsVersionPathSegments(string version)
+    {
+        var manifest = PluginManifestBuilder.Minimal(
+            pluginId: "com.company.sales",
+            packageId: "Company.Sales.Plugin",
+            version: version);
+
+        var result = PluginManifestValidator.Validate(manifest);
+
+        Assert.False(result.Succeeded);
+        Assert.Contains(
+            result.Diagnostics,
+            diagnostic => diagnostic.Code == PluginDiagnosticIds.InvalidPluginVersion
+                && diagnostic.Field == "version");
+    }
+
     [Fact]
     public void ManifestCollectionsRejectExternalListMutation()
     {

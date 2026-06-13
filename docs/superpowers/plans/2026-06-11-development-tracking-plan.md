@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`8f790a5 fix(Cli): protect value-type envelope dictionaries`
-- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter ManifestValidatorRejectsPluginIdPathSegments` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，27 tests passed
-- 当前状态：已完成 PluginSystem manifest plugin id path validation
+- 当前提交：`b076452 fix(PluginSystem): reject plugin id path segments`
+- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter ManifestValidatorRejectsVersionPathSegments` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，31 tests passed
+- 当前状态：已完成 PluginSystem manifest version path validation
 
 **最新实现检查点：**
 
@@ -321,6 +321,7 @@
 - [x] CLI envelope nested value-type collection data
 - [x] CLI envelope value-type dictionary data
 - [x] PluginSystem manifest plugin id path validation
+- [x] PluginSystem manifest version path validation
 
 ## 状态定义
 

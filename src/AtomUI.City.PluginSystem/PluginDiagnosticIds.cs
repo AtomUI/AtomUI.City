@@ -13,4 +13,5 @@ public static class PluginDiagnosticIds
     public const string PluginDependencyMissing = "AUCPLG0008";
     public const string PluginDependencyCycle = "AUCPLG0009";
     public const string InvalidPluginId = "AUCPLG0010";
+    public const string InvalidPluginVersion = "AUCPLG0011";
 }

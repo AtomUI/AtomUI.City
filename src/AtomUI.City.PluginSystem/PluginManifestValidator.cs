@@ -33,6 +33,15 @@ public static class PluginManifestValidator
                 "schemaVersion"));
         }
 
+        if (IsInvalidPathSegment(manifest.Version))
+        {
+            diagnostics.Add(new PluginDiagnostic(
+                PluginDiagnosticIds.InvalidPluginVersion,
+                $"Plugin version '{manifest.Version}' must be a stable version, not a path segment.",
+                manifest.PluginId,
+                "version"));
+        }
+
         if (IsInvalidMainAssembly(manifest.MainAssembly))
         {
             diagnostics.Add(new PluginDiagnostic(
