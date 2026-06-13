@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`773792d fix(Testing): protect module test host modules`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，635 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
-- 当前状态：已完成 Generator diagnostics readonly definitions
+- 当前提交：`3020bb9 fix(Generator): protect diagnostic definitions`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，636 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
+- 当前状态：已完成 CLI dotnet invocation readonly arguments
 
 **最新实现检查点：**
 
@@ -292,6 +292,7 @@
 - [x] Testing routing test host readonly routes
 - [x] Testing module test host readonly modules
 - [x] Generator diagnostics readonly definitions
+- [x] CLI dotnet invocation readonly arguments
 
 ## 状态定义
 

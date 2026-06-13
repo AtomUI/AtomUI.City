@@ -1,3 +1,6 @@
+using System.Reflection;
+using AtomUI.City.Cli;
+
 namespace AtomUI.City.Cli.Tests;
 
 public sealed class CliBuildAndTestCommandTests
@@ -45,5 +48,29 @@ public sealed class CliBuildAndTestCommandTests
         var invocation = json.RootElement.GetProperty("data").GetProperty("invocation");
         Assert.Equal("dotnet", invocation.GetProperty("executable").GetString());
         Assert.Equal("test", invocation.GetProperty("arguments")[0].GetString());
+    }
+
+    [Fact]
+    public void DotnetInvocationArgumentsRejectExternalMutation()
+    {
+        var constructor = typeof(DotnetInvocation).GetConstructor(
+            BindingFlags.Instance | BindingFlags.NonPublic,
+            [typeof(IReadOnlyList<string>)]);
+        var invocation = Assert.IsType<DotnetInvocation>(
+            constructor?.Invoke(
+                [
+                    new[]
+                    {
+                        "build",
+                        "src/App/App.csproj",
+                        "--configuration",
+                        "Release",
+                    },
+                ]));
+        var arguments = Assert.IsAssignableFrom<IList<string>>(invocation.Arguments);
+
+        Assert.Throws<NotSupportedException>(() => arguments[0] = "changed");
+        Assert.Equal("build", invocation.Arguments[0]);
+        Assert.Equal("src/App/App.csproj", invocation.Arguments[1]);
     }
 }

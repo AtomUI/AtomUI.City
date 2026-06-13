@@ -4,7 +4,7 @@ public sealed class DotnetInvocation
 {
     private DotnetInvocation(IReadOnlyList<string> arguments)
     {
-        Arguments = arguments.ToArray();
+        Arguments = Array.AsReadOnly(arguments.ToArray());
     }
 
     public string Executable { get; } = "dotnet";
