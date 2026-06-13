@@ -86,7 +86,7 @@ public static class PluginManifestValidator
             Path.GetFileName(mainAssembly) != mainAssembly;
     }
 
-    private static bool IsInvalidPathSegment(string value)
+    internal static bool IsInvalidPathSegment(string value)
     {
         return value is "." or ".." ||
             value.Contains('/') ||

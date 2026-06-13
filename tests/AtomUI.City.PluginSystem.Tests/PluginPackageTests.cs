@@ -46,6 +46,36 @@ public sealed class PluginPackageTests
     }
 
     [Fact]
+    public void PackageLayoutValidatorDoesNotProbeInvalidTargetFrameworkPaths()
+    {
+        using var workspace = new PluginTestWorkspace();
+        workspace.WriteManifest(
+            """
+            {
+              "schemaVersion": "1.0",
+              "pluginId": "com.company.sales",
+              "packageId": "Company.Sales.Plugin",
+              "version": "1.0.0",
+              "displayNameKey": "SalesPlugin.DisplayName",
+              "mainAssembly": "Company.Sales.Plugin.dll",
+              "targetFramework": "../net10.0",
+              "pluginApiVersion": "1.0",
+              "minHostVersion": "1.0.0",
+              "unloadable": true,
+              "aotCompatible": false
+            }
+            """);
+
+        var result = PluginPackageLayoutValidator.Validate(workspace.Root);
+
+        Assert.False(result.Succeeded);
+        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == PluginDiagnosticIds.InvalidTargetFramework);
+        Assert.DoesNotContain(
+            result.Diagnostics,
+            diagnostic => diagnostic.Code == PluginDiagnosticIds.MainAssemblyNotFound);
+    }
+
+    [Fact]
     public async Task InstallerInstallsPackageIntoVersionedRuntimeRoot()
     {
         using var workspace = new PluginTestWorkspace();

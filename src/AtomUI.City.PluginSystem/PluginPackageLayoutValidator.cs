@@ -22,7 +22,8 @@ public static class PluginPackageLayoutValidator
         var manifest = PluginManifestReader.Read(manifestPath);
         diagnostics.AddRange(PluginManifestValidator.Validate(manifest).Diagnostics);
 
-        if (!PluginManifestValidator.IsInvalidMainAssembly(manifest.MainAssembly))
+        if (!PluginManifestValidator.IsInvalidMainAssembly(manifest.MainAssembly) &&
+            !PluginManifestValidator.IsInvalidPathSegment(manifest.TargetFramework))
         {
             var mainAssemblyPath = PluginPackagePaths.GetMainAssemblyPath(
                 packageRoot,
