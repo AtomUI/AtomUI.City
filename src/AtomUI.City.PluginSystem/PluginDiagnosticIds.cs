@@ -16,4 +16,5 @@ public static class PluginDiagnosticIds
     public const string InvalidPluginVersion = "AUCPLG0011";
     public const string InvalidContributionPath = "AUCPLG0012";
     public const string InvalidTargetFramework = "AUCPLG0013";
+    public const string PackageExtractionFailed = "AUCPLG0014";
 }

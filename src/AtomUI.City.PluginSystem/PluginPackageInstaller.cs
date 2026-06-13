@@ -43,7 +43,23 @@ public sealed class PluginPackageInstaller
             Guid.NewGuid().ToString("N"));
         var extractRoot = Path.Combine(stagingRoot, "extract");
         Directory.CreateDirectory(extractRoot);
-        ZipFile.ExtractToDirectory(packagePath, extractRoot);
+
+        try
+        {
+            ZipFile.ExtractToDirectory(packagePath, extractRoot);
+        }
+        catch (Exception exception) when (exception is InvalidDataException or IOException or UnauthorizedAccessException)
+        {
+            DeleteStagingRoot(stagingRoot);
+
+            return PluginInstallResult.Failed(
+                [
+                    new PluginDiagnostic(
+                        PluginDiagnosticIds.PackageExtractionFailed,
+                        $"Plugin package '{packagePath}' extraction failed: {exception.Message}",
+                        Path: packagePath),
+                ]);
+        }
 
         return await InstallFromExtractedRootAsync(
                 extractRoot,
@@ -64,7 +80,7 @@ public sealed class PluginPackageInstaller
         var validation = PluginPackageLayoutValidator.Validate(extractRoot);
         if (!validation.Succeeded)
         {
-            DeleteDirectoryIfExists(stagingRoot);
+            DeleteStagingRoot(stagingRoot);
             return PluginInstallResult.Failed(validation.Diagnostics);
         }
 
@@ -77,7 +93,7 @@ public sealed class PluginPackageInstaller
 
         if (Directory.Exists(installedVersionPath))
         {
-            DeleteDirectoryIfExists(stagingRoot);
+            DeleteStagingRoot(stagingRoot);
             return PluginInstallResult.Failed(
                 [
                     new PluginDiagnostic(
@@ -108,7 +124,7 @@ public sealed class PluginPackageInstaller
         await File.WriteAllTextAsync(installRecordPath, installRecordJson, cancellationToken)
             .ConfigureAwait(false);
 
-        DeleteDirectoryIfExists(stagingRoot);
+        DeleteStagingRoot(stagingRoot);
 
         return PluginInstallResult.Success(installation);
     }
@@ -136,5 +152,20 @@ public sealed class PluginPackageInstaller
         {
             Directory.Delete(path, recursive: true);
         }
+    }
+
+    private static void DeleteStagingRoot(string stagingRoot)
+    {
+        DeleteDirectoryIfExists(stagingRoot);
+
+        var stagingDirectory = Path.GetDirectoryName(stagingRoot);
+        if (string.IsNullOrWhiteSpace(stagingDirectory) ||
+            !Directory.Exists(stagingDirectory) ||
+            Directory.EnumerateFileSystemEntries(stagingDirectory).Any())
+        {
+            return;
+        }
+
+        Directory.Delete(stagingDirectory);
     }
 }

@@ -67,4 +67,20 @@ public sealed class PluginPackageTests
         Assert.True(Directory.Exists(result.Installation.RootPath));
         Assert.Equal("Company.Sales.Plugin", result.Installation.PackageId);
     }
+
+    [Fact]
+    public async Task InstallerDeletesStagingWhenPackageExtractionFails()
+    {
+        using var workspace = new PluginTestWorkspace();
+        var packagePath = Path.Combine(workspace.Temp, "broken.nupkg");
+        await File.WriteAllTextAsync(packagePath, "not a zip package");
+        var pluginsRoot = workspace.CreateDirectory("plugins");
+        var installer = new PluginPackageInstaller();
+
+        var result = await installer.InstallFromPackageAsync(packagePath, pluginsRoot);
+
+        Assert.False(result.Succeeded);
+        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == PluginDiagnosticIds.PackageExtractionFailed);
+        Assert.False(Directory.Exists(Path.Combine(pluginsRoot, PluginPackagePaths.StagingDirectoryName)));
+    }
 }
