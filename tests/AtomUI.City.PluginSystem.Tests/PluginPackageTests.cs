@@ -179,6 +179,30 @@ public sealed class PluginPackageTests
     }
 
     [Fact]
+    public async Task DiscoveryScannerReportsInvalidInstallRecordsAndContinues()
+    {
+        using var workspace = new PluginTestWorkspace();
+        workspace.WriteStandardManifest();
+        workspace.CopyMainAssembly("Company.Sales.Plugin.dll");
+        var pluginsRoot = workspace.CreateDirectory("plugins");
+        var installer = new PluginPackageInstaller();
+        await installer.InstallFromDirectoryAsync(workspace.Root, pluginsRoot);
+        var invalidRecordPath = Path.Combine(pluginsRoot, "installed", "com.company.broken", "1.0.0", "install.json");
+        Directory.CreateDirectory(Path.GetDirectoryName(invalidRecordPath)!);
+        await File.WriteAllTextAsync(invalidRecordPath, "not json");
+
+        var discovery = PluginDiscoveryScanner.DiscoverInstalled(pluginsRoot);
+
+        Assert.False(discovery.Succeeded);
+        Assert.Single(discovery.Plugins);
+        Assert.Contains(
+            discovery.Diagnostics,
+            diagnostic => diagnostic.Code == PluginDiagnosticIds.InvalidInstallRecord
+                && diagnostic.Field == "installRecord"
+                && diagnostic.Path == invalidRecordPath);
+    }
+
+    [Fact]
     public async Task InstallerCanInstallFromNuGetPackageArchive()
     {
         using var workspace = new PluginTestWorkspace();

@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace AtomUI.City.PluginSystem;
 
 public static class PluginDiscoveryScanner
@@ -17,7 +19,21 @@ public static class PluginDiscoveryScanner
 
         foreach (var installRecordPath in EnumerateInstallRecords(installedRoot))
         {
-            var installation = PluginInstallationReader.Read(installRecordPath);
+            PluginInstallation installation;
+            try
+            {
+                installation = PluginInstallationReader.Read(installRecordPath);
+            }
+            catch (Exception exception) when (exception is JsonException or IOException or UnauthorizedAccessException)
+            {
+                diagnostics.Add(new PluginDiagnostic(
+                    PluginDiagnosticIds.InvalidInstallRecord,
+                    $"Plugin install record '{installRecordPath}' could not be read: {exception.Message}",
+                    Field: "installRecord",
+                    Path: installRecordPath));
+                continue;
+            }
+
             if (!File.Exists(installation.ManifestPath))
             {
                 diagnostics.Add(new PluginDiagnostic(
