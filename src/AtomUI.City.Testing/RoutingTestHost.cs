@@ -4,7 +4,7 @@ public sealed class RoutingTestHost
 {
     internal RoutingTestHost(IReadOnlyList<RouteTestDefinition> routes)
     {
-        Routes = routes;
+        Routes = Array.AsReadOnly(routes.ToArray());
     }
 
     public IReadOnlyList<RouteTestDefinition> Routes { get; }

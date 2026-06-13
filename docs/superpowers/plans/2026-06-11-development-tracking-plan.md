@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`c568f60 fix(Testing): protect source generation test case collections`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，632 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
-- 当前状态：已完成 Testing diagnostics readonly entries
+- 当前提交：`ff5c47a fix(Testing): protect diagnostics entries`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，633 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
+- 当前状态：已完成 Testing routing test host readonly routes
 
 **最新实现检查点：**
 
@@ -289,6 +289,7 @@
 - [x] MVVM validation scope readonly collections
 - [x] Testing source generation test case readonly collections
 - [x] Testing diagnostics readonly entries
+- [x] Testing routing test host readonly routes
 
 ## 状态定义
 

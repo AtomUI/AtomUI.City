@@ -34,5 +34,21 @@ public sealed class RoutingTestHostTests
         Assert.Equal("CITY-ROUTE-NOT-FOUND", match.ErrorCode);
     }
 
+    [Fact]
+    public void RoutesRejectExternalMutation()
+    {
+        var host = RoutingTestHost
+            .CreateBuilder()
+            .MapRoute("customer-details", "/customers/{id}", typeof(CustomerDetailsViewModel))
+            .Build();
+
+        var routes = Assert.IsAssignableFrom<IList<RouteTestDefinition>>(host.Routes);
+
+        Assert.Throws<NotSupportedException>(() => routes[0] = new RouteTestDefinition("orders", "/orders/{id}", typeof(OrderDetailsViewModel)));
+        Assert.Equal("customer-details", host.Routes[0].Name);
+    }
+
     private sealed class CustomerDetailsViewModel;
+
+    private sealed class OrderDetailsViewModel;
 }
