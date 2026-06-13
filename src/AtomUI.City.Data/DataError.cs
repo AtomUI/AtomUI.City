@@ -8,6 +8,12 @@ public sealed record DataError(
     IReadOnlyList<object?>? MessageArguments = null,
     Exception? Exception = null)
 {
-    public IReadOnlyList<object?>? MessageArguments { get; init; } =
+    private readonly IReadOnlyList<object?>? _messageArguments =
         MessageArguments is null ? null : Array.AsReadOnly(MessageArguments.ToArray());
+
+    public IReadOnlyList<object?>? MessageArguments
+    {
+        get => _messageArguments;
+        init => _messageArguments = value is null ? null : Array.AsReadOnly(value.ToArray());
+    }
 }

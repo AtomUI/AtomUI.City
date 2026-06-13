@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`aef6964 fix(Security): protect registry collections`
-- 当前测试：`dotnet test tests/AtomUI.City.Cli.Tests/AtomUI.City.Cli.Tests.csproj --no-restore --filter "EnvelopeCopiesDictionaryDataSnapshot|EnvelopeDictionaryDataRejectsExternalMutation"` 通过；`dotnet test tests/AtomUI.City.Cli.Tests/AtomUI.City.Cli.Tests.csproj --no-restore` 通过，17 tests passed
-- 当前状态：已完成 CLI envelope readonly data snapshot
+- 当前提交：`99a3b96 fix(Cli): protect envelope data`
+- 当前测试：`dotnet test tests/AtomUI.City.Data.Tests/AtomUI.City.Data.Tests.csproj --no-restore --filter DataErrorInitMessageArgumentsRejectExternalMutation` 通过；`dotnet test tests/AtomUI.City.Data.Tests/AtomUI.City.Data.Tests.csproj --no-restore` 通过，99 tests passed
+- 当前状态：已完成 DataError init readonly message arguments
 
 **最新实现检查点：**
 
@@ -312,6 +312,7 @@
 - [x] Routing matcher readonly match collection
 - [x] Security registry/provider readonly collections
 - [x] CLI envelope readonly data snapshot
+- [x] DataError init readonly message arguments
 
 ## 状态定义
 
