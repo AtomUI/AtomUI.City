@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`1f66002 fix(Generator): protect presentation collections`
-- 当前测试：`dotnet test tests/AtomUI.City.Generators.Tests/AtomUI.City.Generators.Tests.csproj --no-restore --filter BuildReturnsReadonlyPluginManifestCollections` 通过；`dotnet test tests/AtomUI.City.Generators.Tests/AtomUI.City.Generators.Tests.csproj --no-restore --filter PluginMetadataCollectionsRejectExternalMutation` 通过；`dotnet test tests/AtomUI.City.Generators.Tests/AtomUI.City.Generators.Tests.csproj --no-restore` 通过，75 tests passed；`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，648 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
-- 当前状态：已完成 Generator plugin system readonly collections
+- 当前提交：`fd0d1d4 fix(Generator): protect plugin system collections`
+- 当前测试：`dotnet test tests/AtomUI.City.Security.Tests/AtomUI.City.Security.Tests.csproj --no-restore --filter MessageArgumentsRejectExternalMutation` 通过；`dotnet test tests/AtomUI.City.Security.Tests/AtomUI.City.Security.Tests.csproj --no-restore` 通过，38 tests passed；`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，649 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
+- 当前状态：已完成 Security authorization result message arguments readonly collection
 
 **最新实现检查点：**
 
@@ -299,6 +299,7 @@
 - [x] Generator dependency injection readonly collections
 - [x] Generator presentation readonly collections
 - [x] Generator plugin system readonly collections
+- [x] Security authorization result message arguments readonly collection
 
 ## 状态定义
 

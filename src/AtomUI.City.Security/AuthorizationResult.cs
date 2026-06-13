@@ -16,7 +16,7 @@ public sealed class AuthorizationResult
         FailedRequirement = failedRequirement;
         Message = message;
         MessageKey = messageKey;
-        MessageArguments = messageArguments;
+        MessageArguments = messageArguments is null ? null : Array.AsReadOnly(messageArguments.ToArray());
         Exception = exception;
     }
 
