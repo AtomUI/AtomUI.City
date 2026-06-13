@@ -198,6 +198,15 @@ public sealed class ApplicationStateRegistry :
             StateSnapshotEntry entry,
             IHostDiagnostics? diagnostics)
         {
+            if (!string.Equals(entry.PluginId, Definition.PluginId, StringComparison.Ordinal))
+            {
+                WriteRestoreFailedDiagnostic(
+                    diagnostics,
+                    entry,
+                    $"plugin id '{entry.PluginId ?? "<none>"}' does not match expected plugin id '{Definition.PluginId ?? "<none>"}'");
+                return;
+            }
+
             if (entry.SchemaVersion != Definition.SchemaVersion)
             {
                 WriteRestoreFailedDiagnostic(

@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`970e982 fix(Data): guard transport timeout`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，595 tests passed
-- 当前状态：已完成 State application state type mismatch diagnostic
+- 当前提交：`d6e137f fix(State): diagnose application state type mismatches`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，596 tests passed
+- 当前状态：已完成 State snapshot plugin mismatch restore diagnostic
 
 **最新实现检查点：**
 
@@ -256,6 +256,7 @@
 - [x] Data cache read late timeout guard
 - [x] Data transport late timeout guard
 - [x] State application state type mismatch diagnostic
+- [x] State snapshot plugin mismatch restore diagnostic
 
 ## 状态定义
 

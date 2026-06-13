@@ -112,4 +112,33 @@ public sealed class StateSnapshotTests
         Assert.Contains(key.Name, record.Message, StringComparison.Ordinal);
         Assert.Contains("schema", record.Message, StringComparison.OrdinalIgnoreCase);
     }
+
+    [Fact]
+    public void SnapshotRestoreRecordsDiagnosticsForPluginMismatch()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var key = new StateKey<string>("AtomUI.City.Tests.Theme");
+        var registry = new ApplicationStateRegistry(diagnostics);
+        registry.Add(StateDefinition.Create(key, "light", snapshotPolicy: StateSnapshotPolicy.Persisted));
+        var snapshot = new StateSnapshot(
+            [
+                new StateSnapshotEntry(
+                    key.Name,
+                    typeof(string),
+                    "dark",
+                    version: 3,
+                    schemaVersion: 1,
+                    ownerModule: null,
+                    pluginId: "plugin.catalog"),
+            ]);
+
+        registry.Restore(snapshot);
+
+        Assert.Equal("light", registry.Get(key).Value);
+        var record = Assert.Single(diagnostics.Records);
+        Assert.Equal(StateDiagnosticIds.SnapshotRestoreFailed, record.Code);
+        Assert.Equal(HostDiagnosticSeverity.Warning, record.Severity);
+        Assert.Contains(key.Name, record.Message, StringComparison.Ordinal);
+        Assert.Contains("plugin", record.Message, StringComparison.OrdinalIgnoreCase);
+    }
 }
