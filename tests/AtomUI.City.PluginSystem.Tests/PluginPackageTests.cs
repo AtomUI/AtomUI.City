@@ -83,4 +83,21 @@ public sealed class PluginPackageTests
         Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == PluginDiagnosticIds.PackageExtractionFailed);
         Assert.False(Directory.Exists(Path.Combine(pluginsRoot, PluginPackagePaths.StagingDirectoryName)));
     }
+
+    [Fact]
+    public async Task InstallerDeletesStagingWhenDirectoryInstallIsCancelled()
+    {
+        using var workspace = new PluginTestWorkspace();
+        workspace.WriteStandardManifest();
+        workspace.CopyMainAssembly("Company.Sales.Plugin.dll");
+        var pluginsRoot = workspace.CreateDirectory("plugins");
+        var installer = new PluginPackageInstaller();
+        using var cancellation = new CancellationTokenSource();
+        await cancellation.CancelAsync();
+
+        await Assert.ThrowsAsync<OperationCanceledException>(
+            () => installer.InstallFromDirectoryAsync(workspace.Root, pluginsRoot, cancellation.Token).AsTask());
+
+        Assert.False(Directory.Exists(Path.Combine(pluginsRoot, PluginPackagePaths.StagingDirectoryName)));
+    }
 }

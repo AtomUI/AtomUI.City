@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`714a085 fix(PluginSystem): reject target framework path segments`
-- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter InstallerDeletesStagingWhenPackageExtractionFails` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，40 tests passed
-- 当前状态：已完成 PluginSystem package extraction failure staging cleanup
+- 当前提交：`1d95f3e fix(PluginSystem): clean staging on extraction failure`
+- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter InstallerDeletesStagingWhenDirectoryInstallIsCancelled` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，41 tests passed
+- 当前状态：已完成 PluginSystem directory install cancellation staging cleanup
 
 **最新实现检查点：**
 
@@ -325,6 +325,7 @@
 - [x] PluginSystem manifest contribution path validation
 - [x] PluginSystem manifest target framework path validation
 - [x] PluginSystem package extraction failure staging cleanup
+- [x] PluginSystem directory install cancellation staging cleanup
 
 ## 状态定义
 

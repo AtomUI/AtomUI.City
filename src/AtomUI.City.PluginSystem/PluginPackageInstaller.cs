@@ -19,14 +19,22 @@ public sealed class PluginPackageInstaller
             Guid.NewGuid().ToString("N"));
         var extractRoot = Path.Combine(stagingRoot, "extract");
 
-        CopyDirectory(packageRoot, extractRoot);
+        try
+        {
+            CopyDirectory(packageRoot, extractRoot);
 
-        return await InstallFromExtractedRootAsync(
-                extractRoot,
-                stagingRoot,
-                pluginsRoot,
-                cancellationToken)
-            .ConfigureAwait(false);
+            return await InstallFromExtractedRootAsync(
+                    extractRoot,
+                    stagingRoot,
+                    pluginsRoot,
+                    cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            DeleteStagingRoot(stagingRoot);
+            throw;
+        }
     }
 
     public async ValueTask<PluginInstallResult> InstallFromPackageAsync(
@@ -61,12 +69,20 @@ public sealed class PluginPackageInstaller
                 ]);
         }
 
-        return await InstallFromExtractedRootAsync(
-                extractRoot,
-                stagingRoot,
-                pluginsRoot,
-                cancellationToken)
-            .ConfigureAwait(false);
+        try
+        {
+            return await InstallFromExtractedRootAsync(
+                    extractRoot,
+                    stagingRoot,
+                    pluginsRoot,
+                    cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            DeleteStagingRoot(stagingRoot);
+            throw;
+        }
     }
 
     private static async ValueTask<PluginInstallResult> InstallFromExtractedRootAsync(
