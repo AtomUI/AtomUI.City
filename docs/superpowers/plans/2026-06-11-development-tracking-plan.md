@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`7f06702 fix(Generator): protect presentation reader results`
-- 当前测试：`dotnet test tests/AtomUI.City.Cli.Tests/AtomUI.City.Cli.Tests.csproj --no-restore --filter EnvelopeCopiesNestedValueTypeCollectionDataSnapshot` 通过；`dotnet test tests/AtomUI.City.Cli.Tests/AtomUI.City.Cli.Tests.csproj --no-restore` 通过，19 tests passed
-- 当前状态：已完成 CLI envelope nested value-type collection data
+- 当前提交：`657e253 fix(Cli): protect nested value-type envelope data`
+- 当前测试：`dotnet test tests/AtomUI.City.Cli.Tests/AtomUI.City.Cli.Tests.csproj --no-restore --filter EnvelopeCopiesValueTypeDictionaryDataSnapshot` 通过；`dotnet test tests/AtomUI.City.Cli.Tests/AtomUI.City.Cli.Tests.csproj --no-restore` 通过，20 tests passed
+- 当前状态：已完成 CLI envelope value-type dictionary data
 
 **最新实现检查点：**
 
@@ -319,6 +319,7 @@
 - [x] CLI envelope nested readonly data
 - [x] Generator presentation reader readonly result
 - [x] CLI envelope nested value-type collection data
+- [x] CLI envelope value-type dictionary data
 
 ## 状态定义
 

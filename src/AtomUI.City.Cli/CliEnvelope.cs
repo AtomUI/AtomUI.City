@@ -73,6 +73,23 @@ public sealed class CliEnvelope
                     StringComparer.Ordinal));
         }
 
+        if (value is System.Collections.IDictionary nonGenericDictionary)
+        {
+            var normalized = new Dictionary<string, object?>(StringComparer.Ordinal);
+
+            foreach (System.Collections.DictionaryEntry entry in nonGenericDictionary)
+            {
+                if (entry.Key is not string key)
+                {
+                    return value;
+                }
+
+                normalized[key] = NormalizeValue(entry.Value);
+            }
+
+            return new System.Collections.ObjectModel.ReadOnlyDictionary<string, object?>(normalized);
+        }
+
         if (value is IReadOnlyList<object?> list)
         {
             return Array.AsReadOnly(list.Select(NormalizeValue).ToArray());

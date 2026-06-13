@@ -90,6 +90,21 @@ public sealed class CliCommandArchitectureTests
     }
 
     [Fact]
+    public void EnvelopeCopiesValueTypeDictionaryDataSnapshot()
+    {
+        var data = new Dictionary<string, int> { ["count"] = 1 };
+        var envelope = CliEnvelope.Succeeded("atomui city inspect", data);
+
+        data["count"] = 99;
+        data["extra"] = 2;
+
+        var envelopeData = Assert.IsAssignableFrom<IReadOnlyDictionary<string, object?>>(envelope.Data);
+
+        Assert.Equal(1, envelopeData["count"]);
+        Assert.False(envelopeData.ContainsKey("extra"));
+    }
+
+    [Fact]
     public void EnvelopeCopiesNestedCollectionDataSnapshot()
     {
         object?[] projects = ["src/App/App.csproj"];
