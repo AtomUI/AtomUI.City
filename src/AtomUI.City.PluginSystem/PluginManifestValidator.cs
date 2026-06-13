@@ -33,11 +33,11 @@ public static class PluginManifestValidator
                 "schemaVersion"));
         }
 
-        if (IsInvalidPathSegment(manifest.Version))
+        if (IsInvalidPluginVersion(manifest.Version))
         {
             diagnostics.Add(new PluginDiagnostic(
                 PluginDiagnosticIds.InvalidPluginVersion,
-                $"Plugin version '{manifest.Version}' must be a stable version, not a path segment.",
+                $"Plugin version '{manifest.Version}' must be a semantic version and not a path segment.",
                 manifest.PluginId,
                 "version"));
         }
@@ -78,6 +78,12 @@ public static class PluginManifestValidator
         return new PluginValidationResult(diagnostics);
     }
 
+    internal static bool IsInvalidPluginVersion(string version)
+    {
+        return IsInvalidPathSegment(version) ||
+            !IsSemanticVersion(version);
+    }
+
     internal static bool IsInvalidMainAssembly(string mainAssembly)
     {
         return string.IsNullOrWhiteSpace(mainAssembly) ||
@@ -106,5 +112,71 @@ public static class PluginManifestValidator
         return path
             .Split('/')
             .Any(segment => string.IsNullOrWhiteSpace(segment) || segment is "." or "..");
+    }
+
+    private static bool IsSemanticVersion(string version)
+    {
+        if (string.IsNullOrWhiteSpace(version))
+        {
+            return false;
+        }
+
+        var buildSeparatorIndex = version.IndexOf('+', StringComparison.Ordinal);
+        var versionWithoutBuild = buildSeparatorIndex < 0
+            ? version
+            : version[..buildSeparatorIndex];
+        var build = buildSeparatorIndex < 0
+            ? null
+            : version[(buildSeparatorIndex + 1)..];
+
+        if (build is not null && !IsValidSemanticIdentifierList(build, allowLeadingZeroNumbers: true))
+        {
+            return false;
+        }
+
+        var prereleaseSeparatorIndex = versionWithoutBuild.IndexOf('-', StringComparison.Ordinal);
+        var core = prereleaseSeparatorIndex < 0
+            ? versionWithoutBuild
+            : versionWithoutBuild[..prereleaseSeparatorIndex];
+        var prerelease = prereleaseSeparatorIndex < 0
+            ? null
+            : versionWithoutBuild[(prereleaseSeparatorIndex + 1)..];
+
+        if (prerelease is not null && !IsValidSemanticIdentifierList(prerelease, allowLeadingZeroNumbers: false))
+        {
+            return false;
+        }
+
+        var coreParts = core.Split('.');
+        return coreParts.Length == 3 &&
+            coreParts.All(IsValidSemanticNumericIdentifier);
+    }
+
+    private static bool IsValidSemanticIdentifierList(string value, bool allowLeadingZeroNumbers)
+    {
+        return value.Length > 0 &&
+            value
+                .Split('.')
+                .All(identifier => IsValidSemanticIdentifier(identifier, allowLeadingZeroNumbers));
+    }
+
+    private static bool IsValidSemanticIdentifier(string identifier, bool allowLeadingZeroNumbers)
+    {
+        if (identifier.Length == 0 ||
+            identifier.Any(character => !char.IsAsciiLetterOrDigit(character) && character != '-'))
+        {
+            return false;
+        }
+
+        return allowLeadingZeroNumbers ||
+            !identifier.All(char.IsAsciiDigit) ||
+            IsValidSemanticNumericIdentifier(identifier);
+    }
+
+    private static bool IsValidSemanticNumericIdentifier(string identifier)
+    {
+        return identifier.Length > 0 &&
+            identifier.All(char.IsAsciiDigit) &&
+            (identifier.Length == 1 || identifier[0] != '0');
     }
 }

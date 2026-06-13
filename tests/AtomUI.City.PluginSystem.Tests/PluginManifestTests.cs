@@ -110,6 +110,26 @@ public sealed class PluginManifestTests
     }
 
     [Theory]
+    [InlineData("not-a-version")]
+    [InlineData("1.0")]
+    [InlineData(" ")]
+    public void ManifestValidatorRejectsInvalidPluginVersions(string version)
+    {
+        var manifest = PluginManifestBuilder.Minimal(
+            pluginId: "com.company.sales",
+            packageId: "Company.Sales.Plugin",
+            version: version);
+
+        var result = PluginManifestValidator.Validate(manifest);
+
+        Assert.False(result.Succeeded);
+        Assert.Contains(
+            result.Diagnostics,
+            diagnostic => diagnostic.Code == PluginDiagnosticIds.InvalidPluginVersion
+                && diagnostic.Field == "version");
+    }
+
+    [Theory]
     [InlineData("../net10.0")]
     [InlineData("net/10.0")]
     [InlineData("net\\10.0")]
