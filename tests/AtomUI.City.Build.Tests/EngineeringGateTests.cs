@@ -97,6 +97,19 @@ public sealed class EngineeringGateTests
     }
 
     [Fact]
+    public void PackScriptAvoidsNounsetUnsafeOptionalArrayExpansion()
+    {
+        var repositoryRoot = RepositoryPaths.FindRepositoryRoot();
+        var scriptPath = Path.Combine(repositoryRoot, EngineeringScriptsDirectoryName, "pack.sh");
+
+        Assert.True(File.Exists(scriptPath), "Expected package script at engineering/pack.sh.");
+
+        var script = File.ReadAllText(scriptPath);
+
+        Assert.DoesNotContain("\"${no_build[@]}\"", script, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void CSharpSourceFilesDoNotUseRepositoryLicenseHeaders()
     {
         var repositoryRoot = RepositoryPaths.FindRepositoryRoot();

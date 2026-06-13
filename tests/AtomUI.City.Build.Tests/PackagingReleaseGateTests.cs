@@ -73,6 +73,17 @@ public sealed class PackagingReleaseGateTests
     }
 
     [Fact]
+    public void GeneratorPackageSuppressesDependenciesWhenPacking()
+    {
+        var repositoryRoot = RepositoryPaths.FindRepositoryRoot();
+        var generatorProject = XDocument.Load(Path.Combine(repositoryRoot, "src", "AtomUI.City.Generators", "AtomUI.City.Generators.csproj"));
+        var properties = ReadProperties(generatorProject);
+
+        Assert.Equal("false", properties["IncludeBuildOutput"]);
+        Assert.Equal("true", properties["SuppressDependenciesWhenPacking"]);
+    }
+
+    [Fact]
     public void MainPackageVersionsAreUnified()
     {
         var repositoryRoot = RepositoryPaths.FindRepositoryRoot();

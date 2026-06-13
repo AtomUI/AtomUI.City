@@ -2,7 +2,7 @@
 set -euo pipefail
 
 configuration="${CONFIGURATION:-Debug}"
-no_build=()
+no_build=false
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -11,7 +11,7 @@ while [[ $# -gt 0 ]]; do
       shift 2
       ;;
     --no-build)
-      no_build=(--no-build)
+      no_build=true
       shift
       ;;
     *)
@@ -25,5 +25,9 @@ package_output="output/NuGet/$configuration"
 mkdir -p "$package_output"
 
 while IFS= read -r project; do
-  dotnet pack "$project" --configuration "$configuration" --output "$package_output" "${no_build[@]}"
+  if [[ "$no_build" == true ]]; then
+    dotnet pack "$project" --configuration "$configuration" --output "$package_output" --no-build
+  else
+    dotnet pack "$project" --configuration "$configuration" --output "$package_output"
+  fi
 done < <(find src/AtomUI.City.* -name 'AtomUI.City.*.csproj' | sort)
