@@ -79,6 +79,20 @@ public sealed class ViewModelBaseTests
         Assert.Null(accessor.Current);
     }
 
+    [Fact]
+    public void ActivationContextPropertiesRejectExternalMutation()
+    {
+        using var scope = new ActivationScope();
+        var properties = new Dictionary<string, object?> { ["route"] = "settings" };
+        var context = new ActivationContext(scope, properties: properties);
+        var exposedProperties = Assert.IsAssignableFrom<IDictionary<string, object?>>(context.Properties);
+
+        properties["route"] = "changed";
+
+        Assert.Throws<NotSupportedException>(() => exposedProperties["route"] = "changed");
+        Assert.Equal("settings", context.Properties["route"]);
+    }
+
     public sealed class TestViewModel : ViewModelBase
     {
         public int ActivatedCount { get; private set; }

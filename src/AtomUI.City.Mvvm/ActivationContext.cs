@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+
 namespace AtomUI.City.Mvvm;
 
 public sealed class ActivationContext
@@ -11,7 +13,10 @@ public sealed class ActivationContext
 
         Scope = scope;
         Source = source;
-        Properties = properties ?? new Dictionary<string, object?>();
+        Properties = new ReadOnlyDictionary<string, object?>(
+            properties is null
+                ? new Dictionary<string, object?>(StringComparer.Ordinal)
+                : new Dictionary<string, object?>(properties, StringComparer.Ordinal));
     }
 
     public IActivationScope Scope { get; }

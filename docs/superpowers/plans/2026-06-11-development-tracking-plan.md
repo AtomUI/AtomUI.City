@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`b7d4fac fix(Data): protect message arguments`
-- 当前测试：`dotnet test tests/AtomUI.City.Routing.Tests/AtomUI.City.Routing.Tests.csproj --no-restore --filter FullyQualifiedName~RoutingParameterBoundaryTests` 通过；`dotnet test tests/AtomUI.City.Routing.Tests/AtomUI.City.Routing.Tests.csproj --no-restore` 通过，32 tests passed；`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，658 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
-- 当前状态：已完成 Routing parameter dictionaries readonly collections
+- 当前提交：`497d5f7 fix(Routing): protect parameter dictionaries`
+- 当前测试：`dotnet test tests/AtomUI.City.Mvvm.Tests/AtomUI.City.Mvvm.Tests.csproj --no-restore --filter ActivationContextPropertiesRejectExternalMutation` 通过；`dotnet test tests/AtomUI.City.Mvvm.Tests/AtomUI.City.Mvvm.Tests.csproj --no-restore` 通过，28 tests passed；`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，659 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
+- 当前状态：已完成 MVVM activation context readonly properties
 
 **最新实现检查点：**
 
@@ -304,6 +304,7 @@
 - [x] Presentation text descriptor message arguments readonly collections
 - [x] Data error message arguments readonly collection
 - [x] Routing parameter dictionaries readonly collections
+- [x] MVVM activation context readonly properties
 
 ## 状态定义
 
