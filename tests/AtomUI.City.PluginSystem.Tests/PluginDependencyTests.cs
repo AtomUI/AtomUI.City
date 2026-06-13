@@ -22,6 +22,32 @@ public sealed class PluginDependencyTests
     }
 
     [Fact]
+    public void DependencyValidatorRejectsDuplicatePluginIds()
+    {
+        var first = PluginDescriptor.FromManifest(
+            PluginManifestBuilder.Minimal(
+                pluginId: "com.company.identity",
+                packageId: "Company.Identity.Plugin",
+                version: "1.0.0"),
+            rootPath: "/plugins/installed/com.company.identity/1.0.0/root");
+        var second = PluginDescriptor.FromManifest(
+            PluginManifestBuilder.Minimal(
+                pluginId: "com.company.identity",
+                packageId: "Company.Identity.Experimental.Plugin",
+                version: "2.0.0"),
+            rootPath: "/plugins/installed/com.company.identity/2.0.0/root");
+
+        var result = PluginDependencyValidator.Validate([first, second]);
+
+        Assert.False(result.Succeeded);
+        Assert.Contains(
+            result.Diagnostics,
+            diagnostic => diagnostic.Code == PluginDiagnosticIds.PluginIdConflict
+                && diagnostic.PluginId == "com.company.identity"
+                && diagnostic.Field == "pluginId");
+    }
+
+    [Fact]
     public void DependencyValidatorRejectsDependencyCycles()
     {
         var first = PluginDescriptor.FromManifest(

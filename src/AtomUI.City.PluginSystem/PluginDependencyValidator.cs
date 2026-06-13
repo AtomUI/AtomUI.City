@@ -7,7 +7,7 @@ public static class PluginDependencyValidator
         ArgumentNullException.ThrowIfNull(plugins);
 
         var diagnostics = new List<PluginDiagnostic>();
-        var byPluginId = plugins.ToDictionary(plugin => plugin.PluginId, StringComparer.Ordinal);
+        var byPluginId = BuildPluginIndex(plugins, diagnostics);
 
         foreach (var plugin in plugins)
         {
@@ -27,6 +27,27 @@ public static class PluginDependencyValidator
         AddCycleDiagnostics(plugins, byPluginId, diagnostics);
 
         return new PluginValidationResult(diagnostics);
+    }
+
+    private static IReadOnlyDictionary<string, PluginDescriptor> BuildPluginIndex(
+        IReadOnlyList<PluginDescriptor> plugins,
+        ICollection<PluginDiagnostic> diagnostics)
+    {
+        var byPluginId = new Dictionary<string, PluginDescriptor>(StringComparer.Ordinal);
+
+        foreach (var plugin in plugins)
+        {
+            if (!byPluginId.TryAdd(plugin.PluginId, plugin))
+            {
+                diagnostics.Add(new PluginDiagnostic(
+                    PluginDiagnosticIds.PluginIdConflict,
+                    $"Plugin id '{plugin.PluginId}' is provided by multiple plugin descriptors.",
+                    plugin.PluginId,
+                    "pluginId"));
+            }
+        }
+
+        return byPluginId;
     }
 
     private static void AddCycleDiagnostics(

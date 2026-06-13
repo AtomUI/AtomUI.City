@@ -5,12 +5,13 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`8a2455a fix(PluginSystem): skip invalid contribution path probes`
-- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter PackageLayoutValidatorDoesNotProbeInvalidTargetFrameworkPaths` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，43 tests passed
-- 当前状态：已完成 PluginSystem layout invalid target framework probe guard
+- 当前提交：`6c5349b fix(PluginSystem): skip invalid target framework probes`
+- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter DependencyValidatorRejectsDuplicatePluginIds` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，44 tests passed
+- 当前状态：已完成 PluginSystem duplicate PluginId dependency validation diagnostic
 
 **最新实现检查点：**
 
+- [x] PluginSystem duplicate PluginId dependency validation diagnostic
 - [x] Security command authorization source
 - [x] Security command authorization refresh on authentication / permission / descriptor changes
 - [x] Security command authorization cancellation does not allow execution
