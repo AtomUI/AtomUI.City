@@ -2,14 +2,14 @@ namespace AtomUI.City.Routing;
 
 public sealed class RouteGraphSnapshot
 {
-    private readonly IReadOnlyDictionary<string, RouteDescriptor[]> _childrenByParentId;
+    private readonly IReadOnlyDictionary<string, IReadOnlyList<RouteDescriptor>> _childrenByParentId;
     private readonly IReadOnlyDictionary<string, RouteDescriptor> _routesById;
 
     private RouteGraphSnapshot(
         long version,
         IReadOnlyList<RouteDescriptor> routes,
         IReadOnlyDictionary<string, RouteDescriptor> routesById,
-        IReadOnlyDictionary<string, RouteDescriptor[]> childrenByParentId)
+        IReadOnlyDictionary<string, IReadOnlyList<RouteDescriptor>> childrenByParentId)
     {
         Version = version;
         Routes = routes;
@@ -62,10 +62,14 @@ public sealed class RouteGraphSnapshot
             .GroupBy(route => route.ParentRouteId!, StringComparer.Ordinal)
             .ToDictionary(
                 group => group.Key,
-                group => group.ToArray(),
+                group => (IReadOnlyList<RouteDescriptor>)Array.AsReadOnly(group.ToArray()),
                 StringComparer.Ordinal);
 
-        return new RouteGraphSnapshot(version, routes.ToArray(), routesById, childrenByParentId);
+        return new RouteGraphSnapshot(
+            version,
+            Array.AsReadOnly(routes.ToArray()),
+            routesById,
+            childrenByParentId);
     }
 
     public RouteDescriptor GetRequiredRoute(string routeId)

@@ -27,9 +27,9 @@ public sealed class RouteDescriptor
         OutletName = outletName;
         ExtensionPoint = extensionPoint;
         RedirectTargetRouteId = redirectTargetRouteId;
-        EnterGuardTypes = enterGuardTypes?.ToArray() ?? [];
-        LeaveGuardTypes = leaveGuardTypes?.ToArray() ?? [];
-        MatchPolicyTypes = matchPolicyTypes?.ToArray() ?? [];
+        EnterGuardTypes = AsReadOnly(enterGuardTypes);
+        LeaveGuardTypes = AsReadOnly(leaveGuardTypes);
+        MatchPolicyTypes = AsReadOnly(matchPolicyTypes);
         Metadata = metadata ?? RouteMetadataDescriptor.Empty;
     }
 
@@ -56,4 +56,11 @@ public sealed class RouteDescriptor
     public IReadOnlyList<Type> MatchPolicyTypes { get; }
 
     public RouteMetadataDescriptor Metadata { get; }
+
+    private static IReadOnlyList<Type> AsReadOnly(IReadOnlyList<Type>? values)
+    {
+        return values is null
+            ? Array.Empty<Type>()
+            : Array.AsReadOnly(values.ToArray());
+    }
 }

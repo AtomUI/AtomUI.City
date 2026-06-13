@@ -86,6 +86,48 @@ public sealed class RouteGraphAndMatcherTests
         Assert.Equal("Routes.Settings.ErrorTitle", descriptor.Metadata.ErrorTitleKey);
     }
 
+    [Fact]
+    public void RouteDescriptorGuardCollectionsRejectExternalListMutation()
+    {
+        Type[] enterGuards = [typeof(SettingsViewModel)];
+        Type[] leaveGuards = [typeof(ProfileViewModel)];
+        Type[] matchPolicies = [typeof(DynamicViewModel)];
+        var descriptor = new RouteDescriptor(
+            "settings",
+            RouteDefinitionKind.Route,
+            "settings",
+            new ViewModelTargetDescriptor(typeof(SettingsViewModel)),
+            enterGuardTypes: enterGuards,
+            leaveGuardTypes: leaveGuards,
+            matchPolicyTypes: matchPolicies);
+        var enterGuardList = Assert.IsAssignableFrom<IList<Type>>(descriptor.EnterGuardTypes);
+        var leaveGuardList = Assert.IsAssignableFrom<IList<Type>>(descriptor.LeaveGuardTypes);
+        var matchPolicyList = Assert.IsAssignableFrom<IList<Type>>(descriptor.MatchPolicyTypes);
+
+        Assert.Throws<NotSupportedException>(() => enterGuardList[0] = typeof(ProfileViewModel));
+        Assert.Throws<NotSupportedException>(() => leaveGuardList[0] = typeof(SettingsViewModel));
+        Assert.Throws<NotSupportedException>(() => matchPolicyList[0] = typeof(SettingsViewModel));
+        Assert.Equal(typeof(SettingsViewModel), descriptor.EnterGuardTypes[0]);
+        Assert.Equal(typeof(ProfileViewModel), descriptor.LeaveGuardTypes[0]);
+        Assert.Equal(typeof(DynamicViewModel), descriptor.MatchPolicyTypes[0]);
+    }
+
+    [Fact]
+    public void RouteGraphCollectionsRejectExternalListMutation()
+    {
+        var shell = Layout("shell", typeof(ShellViewModel));
+        var settings = Route("settings", "settings", typeof(SettingsViewModel), parentRouteId: "shell");
+        var replacement = Route("replacement", "replacement", typeof(DynamicViewModel), parentRouteId: "shell");
+        var snapshot = RouteGraphSnapshot.Create([shell, settings]);
+        var routes = Assert.IsAssignableFrom<IList<RouteDescriptor>>(snapshot.Routes);
+        var children = Assert.IsAssignableFrom<IList<RouteDescriptor>>(snapshot.GetChildren("shell"));
+
+        Assert.Throws<NotSupportedException>(() => routes[0] = replacement);
+        Assert.Throws<NotSupportedException>(() => children[0] = replacement);
+        Assert.Equal(shell.RouteId, snapshot.Routes[0].RouteId);
+        Assert.Equal(settings.RouteId, snapshot.GetChildren("shell")[0].RouteId);
+    }
+
     private static RouteDescriptor Layout(string id, Type viewModelType)
     {
         return new RouteDescriptor(

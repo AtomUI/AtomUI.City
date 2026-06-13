@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`9d59043 fix(PluginSystem): protect manifest collections`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，612 tests passed
-- 当前状态：已完成 PluginManifest readonly nested collections
+- 当前提交：`784ba0b fix(PluginSystem): protect manifest nested collections`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，614 tests passed
+- 当前状态：已完成 Routing descriptor and graph readonly collections
 
 **最新实现检查点：**
 
@@ -270,6 +270,7 @@
 - [x] PluginSystem result diagnostics readonly
 - [x] PluginManifest readonly top-level collections
 - [x] PluginManifest readonly nested collections
+- [x] Routing descriptor and graph readonly collections
 
 ## 状态定义
 
