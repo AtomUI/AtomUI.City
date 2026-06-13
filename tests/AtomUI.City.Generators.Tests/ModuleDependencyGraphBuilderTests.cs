@@ -74,6 +74,36 @@ public sealed class ModuleDependencyGraphBuilderTests
         Assert.Equal(["Sample.App.AppModule"], result.OrderedModules.Select(module => module.TypeName));
     }
 
+    [Fact]
+    public void BuildReturnsReadonlyGraphCollections()
+    {
+        var result = ModuleDependencyGraphBuilder.Build(
+            [
+                Module("Sample.App.AppModule"),
+            ]);
+        var orderedModules = Assert.IsAssignableFrom<IList<ModuleMetadata>>(result.OrderedModules);
+        var diagnostics = Assert.IsAssignableFrom<IList<GeneratorDiagnostic>>(result.Diagnostics);
+
+        Assert.Throws<NotSupportedException>(() => orderedModules[0] = Module("Sample.App.ChangedModule"));
+        Assert.Throws<NotSupportedException>(() => diagnostics.Add(new GeneratorDiagnostic(GeneratorDiagnostics.InvalidManifestInput, "Changed")));
+        Assert.Equal("Sample.App.AppModule", result.OrderedModules[0].TypeName);
+        Assert.Empty(result.Diagnostics);
+    }
+
+    [Fact]
+    public void ModuleMetadataDependenciesRejectExternalMutation()
+    {
+        var dependencies = new List<ModuleDependencyMetadata>
+        {
+            Dependency("Sample.App.CoreModule"),
+        };
+        var module = Module("Sample.App.AppModule", dependencies);
+        var exposedDependencies = Assert.IsAssignableFrom<IList<ModuleDependencyMetadata>>(module.Dependencies);
+
+        Assert.Throws<NotSupportedException>(() => exposedDependencies[0] = Dependency("Sample.App.ChangedModule"));
+        Assert.Equal("Sample.App.CoreModule", module.Dependencies[0].TypeName);
+    }
+
     private static ModuleDependencyMetadata Dependency(string typeName, bool optional = false)
     {
         return new ModuleDependencyMetadata(typeName, optional);

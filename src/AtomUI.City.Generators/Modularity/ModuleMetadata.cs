@@ -23,7 +23,7 @@ public sealed class ModuleMetadata
         TypeName = typeName;
         Version = version;
         Description = description;
-        Dependencies = dependencies ?? throw new ArgumentNullException(nameof(dependencies));
+        Dependencies = Array.AsReadOnly((dependencies ?? throw new ArgumentNullException(nameof(dependencies))).ToArray());
     }
 
     public string Name { get; }

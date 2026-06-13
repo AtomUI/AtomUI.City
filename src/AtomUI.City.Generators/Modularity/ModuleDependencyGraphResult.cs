@@ -8,8 +8,8 @@ public sealed class ModuleDependencyGraphResult
         IReadOnlyList<ModuleMetadata> orderedModules,
         IReadOnlyList<GeneratorDiagnostic> diagnostics)
     {
-        OrderedModules = orderedModules ?? throw new ArgumentNullException(nameof(orderedModules));
-        Diagnostics = diagnostics ?? throw new ArgumentNullException(nameof(diagnostics));
+        OrderedModules = Array.AsReadOnly((orderedModules ?? throw new ArgumentNullException(nameof(orderedModules))).ToArray());
+        Diagnostics = Array.AsReadOnly((diagnostics ?? throw new ArgumentNullException(nameof(diagnostics))).ToArray());
     }
 
     public IReadOnlyList<ModuleMetadata> OrderedModules { get; }
