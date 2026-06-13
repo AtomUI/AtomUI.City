@@ -5,12 +5,13 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`35f2ffa feat(PluginSystem): add install record reader`
-- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter DiscoveryScannerFindsInstalledPlugins` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，51 tests passed
-- 当前状态：已完成 PluginSystem installed plugin discovery scanner
+- 当前提交：`9865a2d feat(PluginSystem): discover installed plugins`
+- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter DiscoveryScannerReportsMissingInstalledManifest` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，52 tests passed
+- 当前状态：已完成 PluginSystem discovery missing installed manifest diagnostic
 
 **最新实现检查点：**
 
+- [x] PluginSystem discovery missing installed manifest diagnostic
 - [x] PluginSystem installed plugin discovery scanner
 - [x] PluginSystem install record reader
 - [x] PluginSystem prerelease dependency version range support

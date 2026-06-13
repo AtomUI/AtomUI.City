@@ -147,6 +147,38 @@ public sealed class PluginPackageTests
     }
 
     [Fact]
+    public async Task DiscoveryScannerReportsMissingInstalledManifest()
+    {
+        using var workspace = new PluginTestWorkspace();
+        var pluginsRoot = workspace.CreateDirectory("plugins");
+        var installedVersionPath = Path.Combine(pluginsRoot, "installed", "com.company.sales", "1.0.0");
+        var installedRootPath = Path.Combine(installedVersionPath, "root");
+        var manifestPath = Path.Combine(installedRootPath, "atomui-city", "plugin.json");
+        Directory.CreateDirectory(installedVersionPath);
+        await File.WriteAllTextAsync(
+            Path.Combine(installedVersionPath, "install.json"),
+            $$"""
+            {
+              "pluginId": "com.company.sales",
+              "packageId": "Company.Sales.Plugin",
+              "version": "1.0.0",
+              "rootPath": "{{installedRootPath}}",
+              "manifestPath": "{{manifestPath}}"
+            }
+            """);
+
+        var discovery = PluginDiscoveryScanner.DiscoverInstalled(pluginsRoot);
+
+        Assert.False(discovery.Succeeded);
+        Assert.Empty(discovery.Plugins);
+        Assert.Contains(
+            discovery.Diagnostics,
+            diagnostic => diagnostic.Code == PluginDiagnosticIds.ManifestNotFound
+                && diagnostic.PluginId == "com.company.sales"
+                && diagnostic.Path == manifestPath);
+    }
+
+    [Fact]
     public async Task InstallerCanInstallFromNuGetPackageArchive()
     {
         using var workspace = new PluginTestWorkspace();

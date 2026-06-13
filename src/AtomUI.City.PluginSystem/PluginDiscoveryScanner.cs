@@ -18,6 +18,17 @@ public static class PluginDiscoveryScanner
         foreach (var installRecordPath in EnumerateInstallRecords(installedRoot))
         {
             var installation = PluginInstallationReader.Read(installRecordPath);
+            if (!File.Exists(installation.ManifestPath))
+            {
+                diagnostics.Add(new PluginDiagnostic(
+                    PluginDiagnosticIds.ManifestNotFound,
+                    $"Installed plugin manifest '{installation.ManifestPath}' was not found.",
+                    installation.PluginId,
+                    "manifestPath",
+                    installation.ManifestPath));
+                continue;
+            }
+
             var manifest = PluginManifestReader.Read(installation.ManifestPath);
 
             if (!string.Equals(manifest.PluginId, installation.PluginId, StringComparison.Ordinal))
