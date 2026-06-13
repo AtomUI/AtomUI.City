@@ -14,7 +14,7 @@ public sealed class PluginInstallResult
         IReadOnlyList<PluginDiagnostic> diagnostics)
     {
         Installation = installation;
-        Diagnostics = diagnostics.ToArray();
+        Diagnostics = Array.AsReadOnly(diagnostics.ToArray());
     }
 
     public PluginInstallation? Installation { get; }

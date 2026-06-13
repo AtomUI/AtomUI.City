@@ -7,7 +7,7 @@ public sealed class PluginLoadResult
         IReadOnlyList<PluginDiagnostic> diagnostics)
     {
         Runtime = runtime!;
-        Diagnostics = diagnostics.ToArray();
+        Diagnostics = Array.AsReadOnly(diagnostics.ToArray());
     }
 
     public PluginRuntime Runtime { get; }

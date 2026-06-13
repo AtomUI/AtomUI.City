@@ -11,7 +11,7 @@ public sealed class PluginValidationResult
 {
     public PluginValidationResult(IReadOnlyList<PluginDiagnostic> diagnostics)
     {
-        Diagnostics = diagnostics.ToArray();
+        Diagnostics = Array.AsReadOnly(diagnostics.ToArray());
     }
 
     public IReadOnlyList<PluginDiagnostic> Diagnostics { get; }
