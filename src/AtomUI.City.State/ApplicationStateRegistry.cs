@@ -225,6 +225,15 @@ public sealed class ApplicationStateRegistry :
                 return;
             }
 
+            if (entry.ValueType != typeof(T))
+            {
+                WriteRestoreFailedDiagnostic(
+                    diagnostics,
+                    entry,
+                    $"value type '{entry.ValueType.FullName}' does not match expected value type '{typeof(T).FullName}'");
+                return;
+            }
+
             if (entry.Value is T value)
             {
                 State.Restore(value, entry.Version);

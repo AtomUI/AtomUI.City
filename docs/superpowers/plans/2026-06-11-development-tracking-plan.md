@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`7bcd0bb fix(State): guard snapshot plugin restore`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，597 tests passed
-- 当前状态：已完成 State snapshot owner module mismatch restore diagnostic
+- 当前提交：`415cfe9 fix(State): guard snapshot owner restore`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，598 tests passed
+- 当前状态：已完成 State snapshot value type mismatch restore diagnostic
 
 **最新实现检查点：**
 
@@ -258,6 +258,7 @@
 - [x] State application state type mismatch diagnostic
 - [x] State snapshot plugin mismatch restore diagnostic
 - [x] State snapshot owner module mismatch restore diagnostic
+- [x] State snapshot value type mismatch restore diagnostic
 
 ## 状态定义
 
