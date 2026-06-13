@@ -79,10 +79,42 @@ public sealed class PluginManifest
     public IReadOnlyList<PluginModuleDescriptor> Modules { get; }
 }
 
-public sealed record PluginCapabilityDescriptor(string Name, IReadOnlyList<string> Scope);
+public sealed record PluginCapabilityDescriptor
+{
+    public PluginCapabilityDescriptor(string name, IReadOnlyList<string> scope)
+    {
+        ArgumentNullException.ThrowIfNull(scope);
+
+        Name = name;
+        Scope = Array.AsReadOnly(scope.ToArray());
+    }
+
+    public string Name { get; }
+
+    public IReadOnlyList<string> Scope { get; }
+}
 
 public sealed record PluginContributionDescriptor(string Type, string Path, bool Required);
 
 public sealed record PluginDependencyDescriptor(string PluginId, string? VersionRange);
 
-public sealed record PluginModuleDescriptor(string Name, string TypeName, IReadOnlyList<string>? Dependencies = null);
+public sealed record PluginModuleDescriptor
+{
+    public PluginModuleDescriptor(
+        string name,
+        string typeName,
+        IReadOnlyList<string>? dependencies = null)
+    {
+        Name = name;
+        TypeName = typeName;
+        Dependencies = dependencies is null
+            ? null
+            : Array.AsReadOnly(dependencies.ToArray());
+    }
+
+    public string Name { get; }
+
+    public string TypeName { get; }
+
+    public IReadOnlyList<string>? Dependencies { get; }
+}

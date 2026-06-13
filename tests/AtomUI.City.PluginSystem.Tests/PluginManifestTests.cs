@@ -97,4 +97,20 @@ public sealed class PluginManifestTests
         Assert.Equal(dependency.PluginId, manifest.Dependencies[0].PluginId);
         Assert.Equal(module.Name, manifest.Modules[0].Name);
     }
+
+    [Fact]
+    public void ManifestNestedCollectionsRejectExternalListMutation()
+    {
+        string[] scope = ["/sales/**"];
+        string[] dependencies = ["IdentityModule"];
+        var capability = new PluginCapabilityDescriptor("routes", scope);
+        var module = new PluginModuleDescriptor("SalesModule", "Company.Sales.SalesModule", dependencies);
+        var scopes = Assert.IsAssignableFrom<IList<string>>(capability.Scope);
+        var moduleDependencies = Assert.IsAssignableFrom<IList<string>>(module.Dependencies);
+
+        Assert.Throws<NotSupportedException>(() => scopes[0] = "/other/**");
+        Assert.Throws<NotSupportedException>(() => moduleDependencies[0] = "OtherModule");
+        Assert.Equal("/sales/**", capability.Scope[0]);
+        Assert.Equal("IdentityModule", module.Dependencies![0]);
+    }
 }
