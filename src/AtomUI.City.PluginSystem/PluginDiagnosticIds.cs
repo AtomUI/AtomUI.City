@@ -20,4 +20,5 @@ public static class PluginDiagnosticIds
     public const string PluginIdConflict = "AUCPLG0015";
     public const string PluginDependencyVersionMismatch = "AUCPLG0016";
     public const string InvalidInstallRecord = "AUCPLG0017";
+    public const string PluginVersionMismatch = "AUCPLG0018";
 }

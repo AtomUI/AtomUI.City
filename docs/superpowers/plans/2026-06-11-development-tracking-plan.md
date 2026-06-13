@@ -5,12 +5,13 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`d94fd2e fix(PluginSystem): report missing discovered manifests`
-- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter DiscoveryScannerReportsInvalidInstallRecordsAndContinues` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，53 tests passed
-- 当前状态：已完成 PluginSystem discovery invalid install record diagnostic
+- 当前提交：`eec2e57 fix(PluginSystem): report invalid install records`
+- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter DiscoveryScannerReportsInstallRecordVersionMismatch` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，54 tests passed
+- 当前状态：已完成 PluginSystem discovery install record version mismatch diagnostic
 
 **最新实现检查点：**
 
+- [x] PluginSystem discovery install record version mismatch diagnostic
 - [x] PluginSystem discovery invalid install record diagnostic
 - [x] PluginSystem discovery missing installed manifest diagnostic
 - [x] PluginSystem installed plugin discovery scanner

@@ -58,6 +58,17 @@ public static class PluginDiscoveryScanner
                 continue;
             }
 
+            if (!string.Equals(manifest.Version, installation.Version, StringComparison.Ordinal))
+            {
+                diagnostics.Add(new PluginDiagnostic(
+                    PluginDiagnosticIds.PluginVersionMismatch,
+                    $"Install record version '{installation.Version}' does not match manifest version '{manifest.Version}'.",
+                    installation.PluginId,
+                    "version",
+                    installRecordPath));
+                continue;
+            }
+
             plugins.Add(PluginDescriptor.FromManifest(manifest, installation.RootPath));
         }
 
