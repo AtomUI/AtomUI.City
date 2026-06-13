@@ -127,6 +127,26 @@ public sealed class PluginPackageTests
     }
 
     [Fact]
+    public async Task DiscoveryScannerFindsInstalledPlugins()
+    {
+        using var workspace = new PluginTestWorkspace();
+        workspace.WriteStandardManifest();
+        workspace.CopyMainAssembly("Company.Sales.Plugin.dll");
+        var pluginsRoot = workspace.CreateDirectory("plugins");
+        var installer = new PluginPackageInstaller();
+        var installResult = await installer.InstallFromDirectoryAsync(workspace.Root, pluginsRoot);
+        Assert.NotNull(installResult.Installation);
+
+        var discovery = PluginDiscoveryScanner.DiscoverInstalled(pluginsRoot);
+
+        Assert.True(discovery.Succeeded);
+        var plugin = Assert.Single(discovery.Plugins);
+        Assert.Equal("com.company.sales", plugin.PluginId);
+        Assert.Equal("1.0.0", plugin.Version);
+        Assert.Equal(installResult.Installation.RootPath, plugin.RootPath);
+    }
+
+    [Fact]
     public async Task InstallerCanInstallFromNuGetPackageArchive()
     {
         using var workspace = new PluginTestWorkspace();

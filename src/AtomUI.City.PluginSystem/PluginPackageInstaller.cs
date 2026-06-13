@@ -136,7 +136,11 @@ public sealed class PluginPackageInstaller
             manifest.Version);
         var installRecordJson = JsonSerializer.Serialize(
             installation,
-            new JsonSerializerOptions { WriteIndented = true });
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                WriteIndented = true,
+            });
         await File.WriteAllTextAsync(installRecordPath, installRecordJson, cancellationToken)
             .ConfigureAwait(false);
 
