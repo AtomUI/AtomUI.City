@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`8e11f2a fix(Core): protect host diagnostics records`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，624 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
-- 当前状态：已完成 Core lifecycle scope readonly children
+- 当前提交：`bcbaf97 fix(Core): protect lifecycle children`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，625 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
+- 当前状态：已完成 Core module registry readonly modules
 
 **最新实现检查点：**
 
@@ -281,6 +281,7 @@
 - [x] Core module descriptor readonly dependencies
 - [x] Core host diagnostics readonly records
 - [x] Core lifecycle scope readonly children
+- [x] Core module registry readonly modules
 
 ## 状态定义
 

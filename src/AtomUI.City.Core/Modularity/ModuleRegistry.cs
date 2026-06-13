@@ -14,7 +14,7 @@ public sealed class ModuleRegistry : IModuleRegistry
     private ModuleRegistry(IReadOnlyList<ModuleEntry> orderedEntries)
     {
         _orderedEntries = orderedEntries;
-        Modules = orderedEntries.Select(entry => entry.Descriptor).ToArray();
+        Modules = Array.AsReadOnly(orderedEntries.Select(entry => entry.Descriptor).ToArray());
     }
 
     public IReadOnlyList<ModuleDescriptor> Modules { get; }

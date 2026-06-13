@@ -96,6 +96,25 @@ public sealed class ApplicationHostModuleLifecycleTests
         Assert.Contains("Optional:OnApplicationInitialization", ModuleRecorder.Calls);
     }
 
+    [Fact]
+    public async Task ModuleRegistryModulesRejectExternalListMutation()
+    {
+        var builder = ApplicationHost.CreateBuilder();
+        builder.UseModule<CoreModule>();
+
+        await using var host = builder.Build();
+        var registry = host.Services.GetRequiredService<IModuleRegistry>();
+        var modules = Assert.IsAssignableFrom<IList<ModuleDescriptor>>(registry.Modules);
+
+        Assert.Throws<NotSupportedException>(() => modules[0] = new ModuleDescriptor(
+            "Replacement",
+            typeof(AsyncModule),
+            version: null,
+            description: null,
+            []));
+        Assert.Equal(typeof(CoreModule), registry.Modules[0].ModuleType);
+    }
+
     private interface ICoreService;
 
     private sealed class CoreService : ICoreService;
