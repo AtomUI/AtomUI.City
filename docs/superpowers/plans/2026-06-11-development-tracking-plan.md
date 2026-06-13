@@ -5,12 +5,13 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`5e812ee fix(PluginSystem): reject invalid plugin versions`
-- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter DependencyValidatorAcceptsPrereleasePluginDependencyVersionRange` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，49 tests passed
-- 当前状态：已完成 PluginSystem prerelease dependency version range support
+- 当前提交：`f24edc1 fix(PluginSystem): support prerelease dependency ranges`
+- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter InstallationReaderReadsInstallRecord` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，50 tests passed
+- 当前状态：已完成 PluginSystem install record reader
 
 **最新实现检查点：**
 
+- [x] PluginSystem install record reader
 - [x] PluginSystem prerelease dependency version range support
 - [x] PluginSystem invalid plugin version manifest validation
 - [x] PluginSystem dependency version range mismatch diagnostic

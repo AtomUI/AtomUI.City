@@ -96,6 +96,37 @@ public sealed class PluginPackageTests
     }
 
     [Fact]
+    public async Task InstallationReaderReadsInstallRecord()
+    {
+        using var workspace = new PluginTestWorkspace();
+        var pluginsRoot = workspace.CreateDirectory("plugins");
+        var installedVersionPath = Path.Combine(pluginsRoot, "installed", "com.company.sales", "1.0.0");
+        var installedRootPath = Path.Combine(installedVersionPath, "root");
+        var manifestPath = Path.Combine(installedRootPath, "atomui-city", "plugin.json");
+        Directory.CreateDirectory(Path.GetDirectoryName(manifestPath)!);
+        var installRecordPath = Path.Combine(installedVersionPath, "install.json");
+        await File.WriteAllTextAsync(
+            installRecordPath,
+            $$"""
+            {
+              "pluginId": "com.company.sales",
+              "packageId": "Company.Sales.Plugin",
+              "version": "1.0.0",
+              "rootPath": "{{installedRootPath}}",
+              "manifestPath": "{{manifestPath}}"
+            }
+            """);
+
+        var installation = PluginInstallationReader.Read(installRecordPath);
+
+        Assert.Equal("com.company.sales", installation.PluginId);
+        Assert.Equal("Company.Sales.Plugin", installation.PackageId);
+        Assert.Equal("1.0.0", installation.Version);
+        Assert.Equal(installedRootPath, installation.RootPath);
+        Assert.Equal(manifestPath, installation.ManifestPath);
+    }
+
+    [Fact]
     public async Task InstallerCanInstallFromNuGetPackageArchive()
     {
         using var workspace = new PluginTestWorkspace();
