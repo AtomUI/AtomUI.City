@@ -5,6 +5,23 @@ namespace AtomUI.City.TemplateSmokeTests;
 public sealed class ApplicationTemplateBuildSmokeTests
 {
     [Fact]
+    public void TemplatePlanCollectionsRejectExternalMutation()
+    {
+        var plan = new TemplatePlan(
+            "new-app-SalesClient",
+            "atomui city new app",
+            new Dictionary<string, object?> { ["appName"] = "SalesClient" },
+            [TemplateChange.Create("src/SalesClient/SalesClient.csproj")]);
+        var inputs = Assert.IsAssignableFrom<IDictionary<string, object?>>(plan.Inputs);
+        var changes = Assert.IsAssignableFrom<IList<TemplateChange>>(plan.Changes);
+
+        Assert.Throws<NotSupportedException>(() => inputs["appName"] = "Changed");
+        Assert.Throws<NotSupportedException>(() => changes[0] = TemplateChange.Create("changed"));
+        Assert.Equal("SalesClient", plan.Inputs["appName"]);
+        Assert.Equal("src/SalesClient/SalesClient.csproj", plan.Changes[0].Path);
+    }
+
+    [Fact]
     public void ApplicationTemplateGeneratesBuildAndTestProjectFiles()
     {
         using var workspace = new TemplateSmokeWorkspace();

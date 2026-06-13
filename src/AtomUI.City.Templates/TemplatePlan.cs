@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+
 namespace AtomUI.City.Templates;
 
 public sealed class TemplatePlan
@@ -13,8 +15,9 @@ public sealed class TemplatePlan
 
         OperationId = operationId;
         Command = command;
-        Inputs = new Dictionary<string, object?>(inputs, StringComparer.Ordinal);
-        Changes = changes.ToArray();
+        Inputs = new ReadOnlyDictionary<string, object?>(
+            new Dictionary<string, object?>(inputs, StringComparer.Ordinal));
+        Changes = Array.AsReadOnly(changes.ToArray());
     }
 
     public string SchemaVersion { get; } = "1.0";

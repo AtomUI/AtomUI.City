@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`b09ec01 fix(Security): protect policy requirements`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，617 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
-- 当前状态：已完成 CLI envelope diagnostics readonly collection
+- 当前提交：`6a7a5de fix(Cli): protect envelope diagnostics`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，618 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
+- 当前状态：已完成 Template plan readonly collections
 
 **最新实现检查点：**
 
@@ -274,6 +274,7 @@
 - [x] Routing template readonly collections
 - [x] Security policy requirements readonly collection
 - [x] CLI envelope diagnostics readonly collection
+- [x] Template plan readonly collections
 
 ## 状态定义
 
