@@ -65,7 +65,7 @@ public static class PluginDependencyValidator
             return true;
         }
 
-        if (!Version.TryParse(version, out var parsedVersion))
+        if (!PluginSemanticVersion.TryParse(version, out var parsedVersion))
         {
             return false;
         }
@@ -73,16 +73,16 @@ public static class PluginDependencyValidator
         var range = versionRange.Trim();
         if (range.Length < 2)
         {
-            return Version.TryParse(range, out var exactVersion)
-                && parsedVersion == exactVersion;
+            return PluginSemanticVersion.TryParse(range, out var exactVersion)
+                && parsedVersion.CompareTo(exactVersion) == 0;
         }
 
         var hasLowerBound = range[0] is '[' or '(';
         var hasUpperBound = range[^1] is ']' or ')';
         if (!hasLowerBound || !hasUpperBound)
         {
-            return Version.TryParse(range, out var exactVersion)
-                && parsedVersion == exactVersion;
+            return PluginSemanticVersion.TryParse(range, out var exactVersion)
+                && parsedVersion.CompareTo(exactVersion) == 0;
         }
 
         var parts = range[1..^1].Split(',', 2, StringSplitOptions.TrimEntries);
@@ -99,14 +99,14 @@ public static class PluginDependencyValidator
         return SatisfiesUpperBound(parsedVersion, parts[1], range[^1] == ']');
     }
 
-    private static bool SatisfiesLowerBound(Version version, string bound, bool inclusive)
+    private static bool SatisfiesLowerBound(PluginSemanticVersion version, string bound, bool inclusive)
     {
         if (bound.Length == 0)
         {
             return true;
         }
 
-        if (!Version.TryParse(bound, out var lowerBound))
+        if (!PluginSemanticVersion.TryParse(bound, out var lowerBound))
         {
             return false;
         }
@@ -117,14 +117,14 @@ public static class PluginDependencyValidator
             : comparison > 0;
     }
 
-    private static bool SatisfiesUpperBound(Version version, string bound, bool inclusive)
+    private static bool SatisfiesUpperBound(PluginSemanticVersion version, string bound, bool inclusive)
     {
         if (bound.Length == 0)
         {
             return true;
         }
 
-        if (!Version.TryParse(bound, out var upperBound))
+        if (!PluginSemanticVersion.TryParse(bound, out var upperBound))
         {
             return false;
         }

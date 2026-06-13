@@ -5,12 +5,13 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`7c9a1d2 fix(PluginSystem): reject dependency version mismatches`
-- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter ManifestValidatorRejectsInvalidPluginVersions` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，48 tests passed
-- 当前状态：已完成 PluginSystem invalid plugin version manifest validation
+- 当前提交：`5e812ee fix(PluginSystem): reject invalid plugin versions`
+- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter DependencyValidatorAcceptsPrereleasePluginDependencyVersionRange` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，49 tests passed
+- 当前状态：已完成 PluginSystem prerelease dependency version range support
 
 **最新实现检查点：**
 
+- [x] PluginSystem prerelease dependency version range support
 - [x] PluginSystem invalid plugin version manifest validation
 - [x] PluginSystem dependency version range mismatch diagnostic
 - [x] PluginSystem duplicate PluginId dependency validation diagnostic

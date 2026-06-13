@@ -75,6 +75,28 @@ public sealed class PluginDependencyTests
     }
 
     [Fact]
+    public void DependencyValidatorAcceptsPrereleasePluginDependencyVersionRange()
+    {
+        var sales = PluginDescriptor.FromManifest(
+            PluginManifestBuilder.Minimal(
+                pluginId: "com.company.sales",
+                packageId: "Company.Sales.Plugin",
+                version: "1.0.0",
+                dependencies: [new PluginDependencyDescriptor("com.company.identity", "[1.0.0-preview.1,1.0.0)")]),
+            rootPath: "/plugins/installed/com.company.sales/1.0.0/root");
+        var identity = PluginDescriptor.FromManifest(
+            PluginManifestBuilder.Minimal(
+                pluginId: "com.company.identity",
+                packageId: "Company.Identity.Plugin",
+                version: "1.0.0-preview.1"),
+            rootPath: "/plugins/installed/com.company.identity/1.0.0-preview.1/root");
+
+        var result = PluginDependencyValidator.Validate([sales, identity]);
+
+        Assert.True(result.Succeeded);
+    }
+
+    [Fact]
     public void DependencyValidatorRejectsDependencyCycles()
     {
         var first = PluginDescriptor.FromManifest(
