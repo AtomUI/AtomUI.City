@@ -49,6 +49,22 @@ public sealed class PluginDeclarationAttributeTests
     }
 
     [Fact]
+    public void PluginCapabilityAttributeScopeRejectsExternalArrayMutation()
+    {
+        string[] scope = ["/sales/**"];
+        var attribute = new PluginCapabilityAttribute("routes")
+        {
+            Scope = scope,
+        };
+        var exposedScope = attribute.Scope;
+
+        scope[0] = "/changed/**";
+        exposedScope[0] = "/also-changed/**";
+
+        Assert.Equal("/sales/**", attribute.Scope[0]);
+    }
+
+    [Fact]
     public void ContributionManifestAttributeStoresManifestIndexEntry()
     {
         var attribute = new ContributionManifestAttribute("routes", "manifests/routes.json")

@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`4b0f4c0 fix(Mvvm): protect activation context properties`
-- 当前测试：`dotnet test tests/AtomUI.City.Testing.Tests/AtomUI.City.Testing.Tests.csproj --no-restore --filter MatchParametersRejectExternalMutation` 通过；`dotnet test tests/AtomUI.City.Testing.Tests/AtomUI.City.Testing.Tests.csproj --no-restore` 通过，27 tests passed；`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，660 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
-- 当前状态：已完成 Testing route test match readonly parameters
+- 当前提交：`68d18d6 fix(Testing): protect route match parameters`
+- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter PluginCapabilityAttributeScopeRejectsExternalArrayMutation` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，23 tests passed；`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，661 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
+- 当前状态：已完成 PluginSystem capability attribute scope defensive copy
 
 **最新实现检查点：**
 
@@ -306,6 +306,7 @@
 - [x] Routing parameter dictionaries readonly collections
 - [x] MVVM activation context readonly properties
 - [x] Testing route test match readonly parameters
+- [x] PluginSystem capability attribute scope defensive copy
 
 ## 状态定义
 
