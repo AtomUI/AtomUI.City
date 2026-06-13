@@ -19,7 +19,7 @@ public sealed class NotificationTextDescriptor
         TitleKey = NormalizeKey(titleKey);
         Message = message;
         MessageKey = NormalizeKey(messageKey);
-        MessageArguments = messageArguments;
+        MessageArguments = messageArguments is null ? null : Array.AsReadOnly(messageArguments.ToArray());
         ActionText = actionText;
         ActionTextKey = NormalizeKey(actionTextKey);
     }

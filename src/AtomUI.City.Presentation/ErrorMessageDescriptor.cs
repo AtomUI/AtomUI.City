@@ -13,7 +13,7 @@ public sealed class ErrorMessageDescriptor
         ErrorCode = errorCode;
         Message = message;
         MessageKey = NormalizeKey(messageKey);
-        MessageArguments = messageArguments;
+        MessageArguments = messageArguments is null ? null : Array.AsReadOnly(messageArguments.ToArray());
     }
 
     public string ErrorCode { get; }
