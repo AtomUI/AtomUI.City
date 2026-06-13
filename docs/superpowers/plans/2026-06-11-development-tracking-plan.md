@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`137e46d fix(Core): protect module dependencies`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，623 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
-- 当前状态：已完成 Core host diagnostics readonly records
+- 当前提交：`8e11f2a fix(Core): protect host diagnostics records`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，624 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
+- 当前状态：已完成 Core lifecycle scope readonly children
 
 **最新实现检查点：**
 
@@ -280,6 +280,7 @@
 - [x] Localization culture state readonly collections
 - [x] Core module descriptor readonly dependencies
 - [x] Core host diagnostics readonly records
+- [x] Core lifecycle scope readonly children
 
 ## 状态定义
 

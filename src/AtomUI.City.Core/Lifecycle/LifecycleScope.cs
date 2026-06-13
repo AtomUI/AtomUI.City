@@ -27,7 +27,7 @@ public sealed class LifecycleScope : IDisposable, IAsyncDisposable
 
     public LifecycleScope? Parent { get; }
 
-    public IReadOnlyList<LifecycleScope> Children => _children;
+    public IReadOnlyList<LifecycleScope> Children => Array.AsReadOnly(_children.ToArray());
 
     public LifecycleScopeState State { get; private set; }
 

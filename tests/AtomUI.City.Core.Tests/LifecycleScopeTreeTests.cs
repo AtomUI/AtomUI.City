@@ -21,6 +21,17 @@ public sealed class LifecycleScopeTreeTests
     }
 
     [Fact]
+    public void ChildrenRejectExternalListMutation()
+    {
+        using var host = LifecycleScope.CreateRoot(LifecycleScopeKind.Host, "host");
+        var application = host.CreateChild(LifecycleScopeKind.Application, "application");
+        var children = Assert.IsAssignableFrom<IList<LifecycleScope>>(host.Children);
+
+        Assert.Throws<NotSupportedException>(() => children.Add(application));
+        Assert.Equal([application], host.Children);
+    }
+
+    [Fact]
     public async Task StoppingParentScopeStopsChildrenAndCancelsTokens()
     {
         await using var host = LifecycleScope.CreateRoot(LifecycleScopeKind.Host, "host");
