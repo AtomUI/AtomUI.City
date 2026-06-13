@@ -27,7 +27,7 @@ public sealed class PermissionRegistry : IPermissionRegistry
         {
             lock (_syncRoot)
             {
-                return _permissions.Values.ToArray();
+                return Array.AsReadOnly(_permissions.Values.ToArray());
             }
         }
     }

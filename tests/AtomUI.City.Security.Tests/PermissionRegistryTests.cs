@@ -49,4 +49,16 @@ public sealed class PermissionRegistryTests
         Assert.False(registry.Contains("plugin.sales.export"));
         Assert.True(registry.Contains("settings.read"));
     }
+
+    [Fact]
+    public void PermissionsRejectsExternalListMutation()
+    {
+        var registry = new PermissionRegistry();
+        registry.Add(new PermissionDescriptor("settings.read"));
+
+        var permissions = registry.Permissions;
+
+        var mutable = Assert.IsAssignableFrom<IList<PermissionDescriptor>>(permissions);
+        Assert.Throws<NotSupportedException>(() => mutable[0] = new PermissionDescriptor("settings.write"));
+    }
 }

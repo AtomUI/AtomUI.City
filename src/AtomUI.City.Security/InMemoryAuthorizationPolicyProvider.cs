@@ -25,7 +25,7 @@ public sealed class InMemoryAuthorizationPolicyProvider : IAuthorizationPolicyPr
         {
             lock (_syncRoot)
             {
-                return _policies.Values.ToArray();
+                return Array.AsReadOnly(_policies.Values.ToArray());
             }
         }
     }

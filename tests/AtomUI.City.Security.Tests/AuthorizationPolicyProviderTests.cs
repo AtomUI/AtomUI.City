@@ -44,4 +44,16 @@ public sealed class AuthorizationPolicyProviderTests
         Assert.True(provider.Contains("HostPolicy"));
         Assert.False(provider.Contains("PluginPolicy"));
     }
+
+    [Fact]
+    public void PoliciesRejectsExternalListMutation()
+    {
+        var provider = new InMemoryAuthorizationPolicyProvider();
+        provider.Add(AuthorizationPolicy.RequireAuthenticated("SignedIn"));
+
+        var policies = provider.Policies;
+
+        var mutable = Assert.IsAssignableFrom<IList<AuthorizationPolicy>>(policies);
+        Assert.Throws<NotSupportedException>(() => mutable[0] = AuthorizationPolicy.RequireAuthenticated("Other"));
+    }
 }
