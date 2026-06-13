@@ -160,6 +160,13 @@ public static class PluginDiscoveryScanner
                 continue;
             }
 
+            var layoutValidation = PluginPackageLayoutValidator.Validate(installation.RootPath);
+            if (!layoutValidation.Succeeded)
+            {
+                diagnostics.AddRange(layoutValidation.Diagnostics);
+                continue;
+            }
+
             plugins.Add(PluginDescriptor.FromManifest(manifest, installation.RootPath));
         }
 

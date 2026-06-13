@@ -5,12 +5,13 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`748dfcc fix(PluginSystem): validate install record paths`
-- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter DiscoveryScannerReportsInstallRecordsWithInvalidPathValues` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，62 tests passed
-- 当前状态：已完成 PluginSystem invalid install record path value diagnostics
+- 当前提交：`cc15254 fix(PluginSystem): handle invalid install record paths`
+- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter DiscoveryScannerReportsMissingInstalledMainAssembly` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，63 tests passed
+- 当前状态：已完成 PluginSystem discovery installed package layout validation
 
 **最新实现检查点：**
 
+- [x] PluginSystem discovery installed package layout validation
 - [x] PluginSystem invalid install record path value diagnostics
 - [x] PluginSystem install record runtime path boundary diagnostics
 - [x] PluginSystem invalid install record required field diagnostics
