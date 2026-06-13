@@ -41,4 +41,21 @@ public sealed class SourceGenerationTestKitTests
         Assert.Collection(testCase.Sources, source => Assert.Equal("Module.cs", source.Path));
         Assert.Collection(testCase.ExpectedDiagnostics, diagnostic => Assert.Equal("AUCGEN001", diagnostic.Id));
     }
+
+    [Fact]
+    public void SourceGenerationTestCaseCollectionsRejectExternalMutation()
+    {
+        var testCase = SourceGenerationTestCase
+            .Create("module manifest")
+            .AddSource("Module.cs", "public sealed class TestModule {}")
+            .ExpectDiagnostic("AUCGEN001");
+
+        var sources = Assert.IsAssignableFrom<IList<SourceFile>>(testCase.Sources);
+        var expectedDiagnostics = Assert.IsAssignableFrom<IList<ExpectedDiagnostic>>(testCase.ExpectedDiagnostics);
+
+        Assert.Throws<NotSupportedException>(() => sources.Add(new SourceFile("Other.cs", "public sealed class Other {}")));
+        Assert.Throws<NotSupportedException>(() => expectedDiagnostics.Add(new ExpectedDiagnostic("AUCGEN002")));
+        Assert.Single(testCase.Sources);
+        Assert.Single(testCase.ExpectedDiagnostics);
+    }
 }
