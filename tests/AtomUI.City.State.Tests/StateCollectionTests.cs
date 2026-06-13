@@ -408,6 +408,18 @@ public sealed class StateCollectionTests
     }
 
     [Fact]
+    public void SnapshotItemsRejectExternalListMutation()
+    {
+        var item = new StateCollectionSnapshotEntry<string, int>("settings", 1, ItemVersion: 1);
+        var replacement = new StateCollectionSnapshotEntry<string, int>("layout", 2, ItemVersion: 1);
+        var snapshot = new StateCollectionSnapshot<string, int>(collectionVersion: 1, [item]);
+        var list = Assert.IsAssignableFrom<IList<StateCollectionSnapshotEntry<string, int>>>(snapshot.Items);
+
+        Assert.Throws<NotSupportedException>(() => list[0] = replacement);
+        Assert.Equal(item.Key, snapshot.Items[0].Key);
+    }
+
+    [Fact]
     public void ChangedEventArgsCopiesChangesFromConstructorInput()
     {
         var changes = new List<StateCollectionChange<string, int>>

@@ -10,7 +10,7 @@ public sealed class StateCollectionSnapshot<TKey, TItem>
         ArgumentNullException.ThrowIfNull(items);
 
         CollectionVersion = collectionVersion;
-        Items = items.ToArray();
+        Items = Array.AsReadOnly(items.ToArray());
     }
 
     public long CollectionVersion { get; }
