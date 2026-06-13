@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`aa0457c fix(Core): protect service type attributes`
-- 当前测试：`dotnet test tests/AtomUI.City.Routing.Tests/AtomUI.City.Routing.Tests.csproj --no-restore --filter RouteReferenceBindParametersReturnsReadonlyCopy` 通过；`dotnet test tests/AtomUI.City.Routing.Tests/AtomUI.City.Routing.Tests.csproj --no-restore` 通过，33 tests passed；`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，663 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
-- 当前状态：已完成 Routing route reference readonly bound parameters
+- 当前提交：`e5dba71 fix(Routing): protect route reference parameters`
+- 当前测试：`dotnet test tests/AtomUI.City.Routing.Tests/AtomUI.City.Routing.Tests.csproj --no-restore --filter MatcherMatchAllRejectsExternalListMutation` 通过；`dotnet test tests/AtomUI.City.Routing.Tests/AtomUI.City.Routing.Tests.csproj --no-restore` 通过，34 tests passed；`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，664 tests passed；`dotnet format AtomUICity.slnx --verify-no-changes --no-restore` 通过；`bash engineering/check-docs.sh` 通过；`git diff --check` 通过
+- 当前状态：已完成 Routing matcher readonly match collection
 
 **最新实现检查点：**
 
@@ -309,6 +309,7 @@
 - [x] PluginSystem capability attribute scope defensive copy
 - [x] Core service type attribute defensive copy
 - [x] Routing route reference readonly bound parameters
+- [x] Routing matcher readonly match collection
 
 ## 状态定义
 

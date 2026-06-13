@@ -52,6 +52,20 @@ public sealed class RouteGraphAndMatcherTests
     }
 
     [Fact]
+    public void MatcherMatchAllRejectsExternalListMutation()
+    {
+        var snapshot = RouteGraphSnapshot.Create(
+            [
+                Route("profile", "profile/{id:int}", typeof(ProfileViewModel)),
+            ]);
+        var matches = snapshot.Matcher.MatchAll("profile/42");
+        var matchList = Assert.IsAssignableFrom<IList<RouteMatch>>(matches);
+
+        Assert.Throws<NotSupportedException>(() => matchList[0] = RouteMatch.NotFound("changed"));
+        Assert.Equal("profile", matches[0].Route.RouteId);
+    }
+
+    [Fact]
     public void GraphRejectsDuplicateRouteIds()
     {
         var exception = Assert.Throws<RouteGraphException>(

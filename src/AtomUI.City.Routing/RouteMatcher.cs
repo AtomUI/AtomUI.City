@@ -49,7 +49,7 @@ public sealed class RouteMatcher
             }
         }
 
-        return matches;
+        return Array.AsReadOnly(matches.ToArray());
     }
 
     private sealed record RouteMatcherEntry(RouteDescriptor Route, RouteTemplate Template);
