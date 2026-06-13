@@ -72,6 +72,68 @@ public sealed class EventDiagnosticsTests
     }
 
     [Fact]
+    public async Task HandlerCancellationIsTrackedSeparatelyFromFailure()
+    {
+        var diagnostics = new InMemoryHostDiagnostics();
+        var eventBus = new InMemoryEventBus(diagnostics: diagnostics);
+        using var cancellation = new CancellationTokenSource();
+
+        eventBus.Subscribe<TestEvent>(context =>
+        {
+            cancellation.Cancel();
+            context.CancellationToken.ThrowIfCancellationRequested();
+
+            return ValueTask.CompletedTask;
+        });
+
+        var result = await eventBus.PublishAsync(
+            new TestEvent("cancel"),
+            cancellationToken: cancellation.Token);
+
+        var delivery = Assert.Single(result.Deliveries);
+        Assert.False(result.Succeeded);
+        Assert.Equal(1, result.DeliveredCount);
+        Assert.Equal(0, result.FailedCount);
+        Assert.Equal(1, result.CanceledCount);
+        Assert.False(delivery.Succeeded);
+        Assert.True(delivery.Canceled);
+        Assert.Contains(diagnostics.Records, record => record.Code == EventDiagnosticIds.EventDeliveryCancelled);
+        Assert.DoesNotContain(diagnostics.Records, record => record.Code == EventDiagnosticIds.EventDeliveryFailed);
+    }
+
+    [Fact]
+    public async Task HandlerCancellationStopsLaterDeliveriesWithoutThrowing()
+    {
+        var eventBus = new InMemoryEventBus();
+        using var cancellation = new CancellationTokenSource();
+        var laterHandlerCalled = false;
+
+        eventBus.Subscribe<TestEvent>(context =>
+        {
+            cancellation.Cancel();
+            context.CancellationToken.ThrowIfCancellationRequested();
+
+            return ValueTask.CompletedTask;
+        });
+        eventBus.Subscribe<TestEvent>(_ =>
+        {
+            laterHandlerCalled = true;
+
+            return ValueTask.CompletedTask;
+        });
+
+        var result = await eventBus.PublishAsync(
+            new TestEvent("cancel"),
+            cancellationToken: cancellation.Token);
+
+        Assert.False(result.Succeeded);
+        Assert.False(laterHandlerCalled);
+        Assert.Equal(1, result.DeliveredCount);
+        Assert.Equal(1, result.CanceledCount);
+        Assert.Equal(0, result.FailedCount);
+    }
+
+    [Fact]
     public async Task PostAsyncAcceptedPublicationWritesDiagnostic()
     {
         var diagnostics = new InMemoryHostDiagnostics();

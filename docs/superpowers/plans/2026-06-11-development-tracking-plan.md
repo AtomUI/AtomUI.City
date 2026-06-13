@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`bf2a817 fix(State): protect collection change records`
-- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，605 tests passed
-- 当前状态：已完成 EventBus publish result readonly deliveries
+- 当前提交：`a9042a2 fix(EventBus): protect publish deliveries`
+- 当前测试：`dotnet build AtomUICity.slnx --no-restore` 通过；`bash engineering/test-ci.sh` 通过，607 tests passed
+- 当前状态：已完成 EventBus delivery cancellation accounting
 
 **最新实现检查点：**
 
@@ -266,6 +266,7 @@
 - [x] State collection snapshot readonly items
 - [x] State collection changed event readonly changes
 - [x] EventBus publish result readonly deliveries
+- [x] EventBus delivery cancellation accounting
 
 ## 状态定义
 

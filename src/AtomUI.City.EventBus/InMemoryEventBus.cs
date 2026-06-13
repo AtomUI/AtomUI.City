@@ -143,7 +143,15 @@ public sealed class InMemoryEventBus : IEventBus
 
         foreach (var subscription in snapshot)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            if (cancellationToken.IsCancellationRequested)
+            {
+                if (deliveries.Count > 0)
+                {
+                    break;
+                }
+
+                cancellationToken.ThrowIfCancellationRequested();
+            }
 
             var delivery = await subscription.DeliverAsync(
                     eventData!,
@@ -162,6 +170,11 @@ public sealed class InMemoryEventBus : IEventBus
             }
 
             deliveries.Add(delivery);
+
+            if (delivery.Canceled)
+            {
+                break;
+            }
 
             if (!delivery.Succeeded
                 && subscription.Options.ErrorPolicy == EventErrorPolicy.StopPublication)
@@ -560,6 +573,21 @@ public sealed class InMemoryEventBus : IEventBus
                     Id,
                     Options.DispatchPolicy,
                     Succeeded: true);
+            }
+            catch (OperationCanceledException exception) when (cancellationToken.IsCancellationRequested)
+            {
+                _diagnostics?.Write(
+                    new HostDiagnosticRecord(
+                        EventDiagnosticIds.EventDeliveryCancelled,
+                        $"Event handler '{Id}' was cancelled: {exception.Message}",
+                        HostDiagnosticSeverity.Trace));
+
+                return new EventDeliveryResult(
+                    Id,
+                    Options.DispatchPolicy,
+                    Succeeded: false,
+                    exception.Message,
+                    Canceled: true);
             }
             catch (Exception exception)
             {

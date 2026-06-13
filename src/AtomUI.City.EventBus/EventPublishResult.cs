@@ -22,13 +22,16 @@ public sealed class EventPublishResult
 
     public int DeliveredCount => Deliveries.Count;
 
-    public int FailedCount => Deliveries.Count(delivery => !delivery.Succeeded);
+    public int FailedCount => Deliveries.Count(delivery => !delivery.Succeeded && !delivery.Canceled);
 
-    public bool Succeeded => FailedCount == 0;
+    public int CanceledCount => Deliveries.Count(delivery => delivery.Canceled);
+
+    public bool Succeeded => FailedCount == 0 && CanceledCount == 0;
 }
 
 public sealed record EventDeliveryResult(
     EventSubscriptionId SubscriptionId,
     EventDispatchPolicy DispatchPolicy,
     bool Succeeded,
-    string? ErrorMessage = null);
+    string? ErrorMessage = null,
+    bool Canceled = false);
