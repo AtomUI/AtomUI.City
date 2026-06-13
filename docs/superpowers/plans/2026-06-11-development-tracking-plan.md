@@ -5,9 +5,9 @@
 **当前基线：**
 
 - 分支：`develop`
-- 当前提交：`b89312f fix(PluginSystem): reject version path segments`
-- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter ManifestValidatorRejectsContributionPathsOutsidePackage` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，35 tests passed
-- 当前状态：已完成 PluginSystem manifest contribution path validation
+- 当前提交：`9fd63ed fix(PluginSystem): reject contribution path traversal`
+- 当前测试：`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore --filter ManifestValidatorRejectsTargetFrameworkPathSegments` 通过；`dotnet test tests/AtomUI.City.PluginSystem.Tests/AtomUI.City.PluginSystem.Tests.csproj --no-restore` 通过，39 tests passed
+- 当前状态：已完成 PluginSystem manifest target framework path validation
 
 **最新实现检查点：**
 
@@ -323,6 +323,7 @@
 - [x] PluginSystem manifest plugin id path validation
 - [x] PluginSystem manifest version path validation
 - [x] PluginSystem manifest contribution path validation
+- [x] PluginSystem manifest target framework path validation
 
 ## 状态定义
 

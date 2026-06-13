@@ -110,6 +110,42 @@ public sealed class PluginManifestTests
     }
 
     [Theory]
+    [InlineData("../net10.0")]
+    [InlineData("net/10.0")]
+    [InlineData("net\\10.0")]
+    [InlineData("..")]
+    public void ManifestValidatorRejectsTargetFrameworkPathSegments(string targetFramework)
+    {
+        var manifest = new PluginManifest(
+            schemaVersion: "1.0",
+            pluginId: "com.company.sales",
+            packageId: "Company.Sales.Plugin",
+            version: "1.0.0",
+            displayNameKey: "SalesPlugin.DisplayName",
+            descriptionKey: null,
+            publisher: null,
+            mainAssembly: "Company.Sales.Plugin.dll",
+            targetFramework: targetFramework,
+            pluginApiVersion: "1.0",
+            minHostVersion: "1.0.0",
+            maxHostVersion: null,
+            unloadable: true,
+            aotCompatible: false,
+            capabilities: [],
+            contributions: [],
+            dependencies: [],
+            modules: []);
+
+        var result = PluginManifestValidator.Validate(manifest);
+
+        Assert.False(result.Succeeded);
+        Assert.Contains(
+            result.Diagnostics,
+            diagnostic => diagnostic.Code == PluginDiagnosticIds.InvalidTargetFramework
+                && diagnostic.Field == "targetFramework");
+    }
+
+    [Theory]
     [InlineData("../routes.json")]
     [InlineData("/atomui-city/routes.json")]
     [InlineData("atomui-city\\routes.json")]

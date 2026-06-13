@@ -42,6 +42,15 @@ public static class PluginManifestValidator
                 "version"));
         }
 
+        if (IsInvalidPathSegment(manifest.TargetFramework))
+        {
+            diagnostics.Add(new PluginDiagnostic(
+                PluginDiagnosticIds.InvalidTargetFramework,
+                $"Plugin target framework '{manifest.TargetFramework}' must be a framework moniker, not a path segment.",
+                manifest.PluginId,
+                "targetFramework"));
+        }
+
         if (IsInvalidMainAssembly(manifest.MainAssembly))
         {
             diagnostics.Add(new PluginDiagnostic(
