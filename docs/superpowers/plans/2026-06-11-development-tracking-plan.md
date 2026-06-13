@@ -626,7 +626,7 @@
 - [x] Version / release notes / NuGet package strategy review
 - [x] Platform integration test gate
 - [x] Release package validation
-- [ ] Remote CI verification
+- [x] Remote CI verification
 
 ## 推荐立即执行顺序
 
